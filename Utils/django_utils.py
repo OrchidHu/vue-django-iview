@@ -1,16 +1,26 @@
 # -*- coding: UTF-8 -*-
 
-import os
+import os, json
+
+from Utils.db_connections import get_redis
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'Web.settings'
-from concurrent.futures._base import LOGGER
 from urllib import parse as _urlparse
-
-from django.core.exceptions import ValidationError
 from django.http import JsonResponse
-
-from Web import settings
 from Conf import config
+import uuid
+
+
+redis_db = get_redis()
+def get_token():
+    return uuid.uuid1()
+
+def redis_get(key):
+    ret = redis_db.get(key)
+    if ret:
+        return bytes.decode(ret, encoding = "utf8")
+    return ""
+
 
 def parse_put(request):
     payload = request.read()
@@ -40,13 +50,13 @@ def JsonError(msg='',  **kwargs):
     return JsonResponse(ret)
 
 
-def JsonSuccess(msg='',  **kwargs):
+def JsonSuccess(msg='', **kwargs):
     """ msg: 反馈给用户的信息
     kwargs: 会直接作为Json数据返回
     """
     ret = {
         'stat': 'success',
-        'msg': msg,
+        'msg': msg
     }
     ret.update(kwargs)
     return JsonResponse(ret)

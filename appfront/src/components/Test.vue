@@ -29,11 +29,14 @@ export default {
                             emulateJSON:true
                         }).then(res => {
                 let reStat = res.data.stat
-                console.log(reStat)
+                console.log(res.data)
                 if(reStat == 'success') {
                     this.$router.push("/")
                 } else {
-                    alert(res.data.msg)
+                    this.$Notice.error({
+                    title: '账号密码错误',
+                    desc: '注意大小写'
+                })
                 }
             })
     }

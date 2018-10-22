@@ -6,7 +6,8 @@ from django.shortcuts import resolve_url
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic import TemplateView
 
-from Utils.django_utils import parse_put, ArgsMixin, JsonError, JsonSuccess
+from Utils.db_connections import get_redis
+from Utils.django_utils import parse_put, ArgsMixin, JsonError, JsonSuccess, get_token, redis_get, redis_db
 from Web.models import XYUser
 
 
@@ -20,20 +21,13 @@ class Login(TemplateView):
         password = data.get('password',1)
         # next_url = request.GET.get('next') or resolve_url("admin")
         user = authenticate(username=username, password=password)
-        # users = XYUser.objects.all()
-        # ret = []
-        # for st in users:
-        #     ret_dict = {
-        #         "first_name":st.first_name,
-        #         "last_name":st.last_name,
-        #         "phone":st.phone or "",
-        #         "sex":st.sex,
-        #     }
-        #     ret.append(ret_dict)
-        # return JsonSuccess(ret)
         if user and user.is_active:
             if user.has_perm("is_staff"):
-                return JsonSuccess('登录成功')
+                token = redis_get(username)
+                if not token:
+                    token = get_token()
+                    redis_db.setex(username, token, 300)
+                return JsonSuccess('登录成功', token=token)
             # return JsonSuccess('', redirect=next_url)
             return JsonError("权限不够")
         return JsonError('用户名密码不正确')
