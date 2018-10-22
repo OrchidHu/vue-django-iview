@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>iview example</title>
+    <link rel="stylesheet" type="text/css" href="http://unpkg.com/iview/dist/styles/iview.css">
+    <script src="//unpkg.com/vue"></script>
+<script src="//unpkg.com/iview/dist/iview.min.js"></script>
+<script src="//unpkg.com/iview/dist/locale/en-US.js"></script>
+<script src="//unpkg.com/iview/dist/locale/zh-CN.js"></script>
+      <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+</head>
+<body>
+<!--<div id="app">-->
+    <!--<i-button @click="show">Click me!</i-button>-->
+    <!--<Modal v-model="visible" title="Welcome">Welcome to iView</Modal>-->
+<!--</div>-->
+<!--<script>-->
+    <!--new Vue({-->
+        <!--el: '#app',-->
+        <!--data: {-->
+            <!--visible: false-->
+        <!--},-->
+        <!--methods: {-->
+            <!--show: function () {-->
+                <!--this.visible = true;-->
+            <!--}-->
+        <!--}-->
+    <!--})-->
+  <!--</script>-->
+<div id = "app">
+    <i-button type="primary" @click="info">Display info prompt</i-button>
+</div>
+<script>
+    export default {
+        methods: {
+            info () {
+                this.$Message.info('This is a info tip');
+            }
+        }
+    }
+</script>
+</body>
+</html>
