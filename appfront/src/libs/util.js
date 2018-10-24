@@ -6,7 +6,7 @@ import { forEach, hasOneOf, objEqual } from '@/libs/tools'
 export const TOKEN_KEY = 'token'
 
 export const setToken = (token) => {
-  Cookies.set(TOKEN_KEY, token, "0.1MIN")
+  Cookies.set(TOKEN_KEY, token, {expires:0.005})
 }
 
 export const getToken = () => {

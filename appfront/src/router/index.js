@@ -6,25 +6,20 @@ import iView from 'iview'
 import { getToken, setToken } from '@/libs/util'
 Vue.use(Router)
 
-//if (sessionStorage.getItem('token')) {
-//store.commit('set_token', sessionStorage.getItem('token'))
-//}
-
 const router = new Router({
   mode: "history",
   routes
 })
-const LOGIN_PAGE_NAME = 'login'
 
-//const turnTo = (to, access, next) => {
-//  if (canTurnTo(to.name, access, routes)) next() // 有权限，可访问
-//  else next({ replace: true, name: 'error_401' }) // 无权限，重定向到401页面
-//}
+const LOGIN_PAGE_NAME = 'login'
+const turnTo = (to, access, next) => {
+  if (canTurnTo(to.name, access, routes)) next() // 有权限，可访问
+  else next({ replace: true, name: 'error_401' }) // 无权限，重定向到401页面
+}
 
 router.beforeEach((to, from, next) => {
   iView.LoadingBar.start()
   const token = getToken()
-//  alert(token)
   if (!token && to.name !== LOGIN_PAGE_NAME) {
     // 未登录且要跳转的页面不是登录页
     next({
@@ -40,6 +35,7 @@ router.beforeEach((to, from, next) => {
     })
   }
    else {
+    setToken(token) //当用户刷新页面时，重置token的过期时间
     next()
   }
 })

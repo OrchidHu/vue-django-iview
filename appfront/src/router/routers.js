@@ -24,12 +24,21 @@ export default [
     meta: {
       title: 'Login - 登录',
     },
-    component: () => import('@/components/login.vue')
+    component: () => import('@/view/login/login.vue')
   },
   {
     path:'/home',
     name:'home',
-    requiresAuth: true,
-    component: () => import('@/components/HelloWorld.vue')
+    component: () => import('@/view/home/home.vue')
+  },
+  {
+    path:'/good',
+    name:'good',
+    component: () => import('@/view/good/good.vue')
+  },
+  {
+    path:'/401',
+    name:'error_401',
+    component:() => import('@/view/error-page/401.vue')
   }
 ]

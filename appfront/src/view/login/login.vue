@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import LoginForm from '../components/login-form'
+import LoginForm from '../../components/login-form'
 import { mapActions, mapMutations} from 'vuex'
 export default {
   components: {
@@ -37,7 +37,7 @@ export default {
                         }).then(res => {
                 let django_data = res.data
                 if(django_data.stat == 'success') {
-                this.$store.commit('setToken', '234', '1MIN')
+                this.$store.commit('setToken', django_data.token)
                     this.$router.push("/home")
                 } else {
                     this.$Notice.error({
