@@ -36,19 +36,36 @@ def _fixfloat(num, fix_num=2):
         ret = ".".join((ret, part_num[1][:fix_num]))
     return ret or "0"
 
-def JsonError(msg='',  **kwargs):
+def JsonError(msg='', **kwargs):
     """ msg: 反馈给用户的信息
     kwargs: 会直接作为Json数据返回
     """
 
+    ret = {
+        'stat': 'error',
+        'msg': msg
+    }
+    ret.update(kwargs)
+    return JsonResponse(ret)
+def JsonReLogin(msg='', **kwargs):
 
     ret = {
         'stat': 'error',
         'msg': msg,
+        'relogin': 'true'
     }
     ret.update(kwargs)
     return JsonResponse(ret)
 
+def JsonForbid(msg='', **kwargs):
+
+    ret = {
+        'stat': 'error',
+        'msg': msg,
+        'forbid': 'true'
+    }
+    ret.update(kwargs)
+    return JsonResponse(ret)
 
 def JsonSuccess(msg='', **kwargs):
     """ msg: 反馈给用户的信息

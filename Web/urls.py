@@ -20,10 +20,9 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.views.generic import TemplateView
 
-from Web import views
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path(r'', TemplateView.as_view(template_name='index.html')),
-    path(r'shop/',include('Web.apps.shops.urls', namespace='shops'))
+    path(r'account/',include('Web.apps.account.urls', namespace='account')),
+    path(r'shop/',include('Web.apps.shop.urls', namespace='shop'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -40,7 +40,7 @@ INSTALLED_APPS = (
     # 新加的app
     'corsheaders',
     'Web',
-    'Web.apps.shops'
+    'Web.apps.shop'
 )
 
 MIDDLEWARE = [
@@ -59,7 +59,7 @@ ROOT_URLCONF = 'Web.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        #'DIRS': [],
+        # 'DIRS': [],
         'DIRS': ['appfront/src/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -130,6 +130,6 @@ STATICFILES_DIRS = [
 ]
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
-
+MEDIA_ROOT = '/static'
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True

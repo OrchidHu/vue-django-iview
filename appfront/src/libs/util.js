@@ -4,14 +4,27 @@ import config from '@/config'
 import { forEach, hasOneOf, objEqual } from '@/libs/tools'
 
 export const TOKEN_KEY = 'token'
-
+export const USERNAME = 'username'
+export const SESSIONID = 'sessionid'
 export const setToken = (token) => {
   Cookies.set(TOKEN_KEY, token, {expires:0.005})
+}
+export const setUserName = (name) => {
+  Cookies.set(USERNAME, name, 1)
+}
+export const setSessionId = (sessionId) => {
+  Cookies.set(SESSIONID, sessionId)
 }
 
 export const getToken = () => {
   const token = Cookies.get(TOKEN_KEY)
   if (token) return token
+  else return false
+}
+
+export const getUserName = () => {
+  const username = Cookies.get(USERNAME)
+  if (username) return username
   else return false
 }
 

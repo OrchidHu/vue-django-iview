@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { setToken, getToken } from '@/libs/util'
+import { setToken, getToken, setUserName, setSessionId } from '@/libs/util'
 
 Vue.use(Vuex)
 
@@ -11,7 +11,8 @@ export default new Vuex.Store({
     avatorImgPath: '',
     token: getToken(),
     access: '',
-    hasGetInfo: false
+    hasGetInfo: false,
+    sessionId: ''
   },
   mutations: {
     setAvator (state, avatorPath) {
@@ -22,6 +23,7 @@ export default new Vuex.Store({
     },
     setUserName (state, name) {
       state.userName = name
+      setUserName(name)
     },
     setAccess (state, access) {
       state.access = access
@@ -32,6 +34,10 @@ export default new Vuex.Store({
     },
     setHasGetInfo (state, status) {
       state.hasGetInfo = status
+    },
+    setSessionId (state, sessionId){
+      state.sessionId = sessionId
+      setSessionId(sessionId)
     }
   },
 })
