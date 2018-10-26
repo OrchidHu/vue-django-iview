@@ -1,57 +1,15 @@
-from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.core.validators import EmailValidator, MaxLengthValidator
 from django.db import models
-
 from django.contrib.auth.models import (
-    UserManager,
-    Group, Permission, AbstractUser, User)
+    UserManager, AbstractUser)
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
+from Utils.my_validators import UserIDCardValidator, PhoneValidator
 
-from Utils.my_validators import UserIDCardValidator
-
-
-class Goods(models.Model):
-    """商品资料"""
-
-    bar_id = models.IntegerField(
-            verbose_name=u'条码',
-            db_index=True
-    )
-    name = models.CharField(
-            max_length=200,
-            verbose_name=u'名称'
-    )
-    genre= models.CharField(
-            max_length=200,
-            verbose_name=u"类别"
-    )
-    buy_price = models.IntegerField(
-            verbose_name=u"进货价"
-    )
-    sale_price = models.IntegerField(
-            verbose_name=u"销售价"
-    )
-    supplier = models.CharField(
-        max_length=200,
-        null=True,
-        blank=True,
-        verbose_name=u"供货商"
-    )
-
-
-    def __unicode__(self):
-        return self.name
-
-    def __str__(self):
-        return self.__unicode__()
-
-
-    @property
-    def get_name(self):
-        return self.name
-
-class XYUser(models.Model):
+class XYUser(AbstractUser):
     id_card_validator = UserIDCardValidator()
+    phone_validator = PhoneValidator()
+    email_validator = EmailValidator()
 
     POSITION = (
         ('boss', u'老板'),
@@ -60,34 +18,31 @@ class XYUser(models.Model):
         ('waiter', u'服务员'),
         ('pullover', u"送货员")
           )
-    SEX = (
+    GENDER = (
         ('boy', u"男"),
         ('girl', u"女")
     )
-    user = models.OneToOneField(
-        User,
-        related_name='xu_user',
-        verbose_name=u'鑫意客户',
-        on_delete=True,
-        null=True,
-        blank=True,
-    )
 
-    first_name = models.CharField(u'姓', max_length=30)
-    last_name = models.CharField(u'名', max_length=30)
-    sex = models.CharField(
+    first_name = models.CharField(u'姓', max_length=30, validators=[MaxLengthValidator(30)])
+    last_name = models.CharField(u'名', max_length=30, validators=[MaxLengthValidator(30)])
+    gender = models.CharField(
         verbose_name=_('性别'),
         max_length=10,
-        choices=SEX,
+        choices=GENDER,
         default='boy',
     )
-    email = models.EmailField(_('邮箱地址'), db_index=True, unique=True)
+    email = models.EmailField(
+        _('邮箱地址'),
+        max_length=50,
+        db_index=True,
+        unique=True,
+        validators=[email_validator]
+    )
     phone = models.CharField(
         max_length=15,
         verbose_name=u'手机号码',
         db_index=True,
-        null=True,
-        blank=True,
+        validators=[phone_validator]
     )
     id_number = models.CharField(
         max_length=80,
@@ -97,10 +52,12 @@ class XYUser(models.Model):
     )
     avatar = models.ImageField(
         u"头像",
-        max_length=200,
+        max_length=100,
         null=True,
         blank=True,
-        upload_to='driver/%Y/%m/%d'
+        upload_to='driver/%Y/%m/%d',
+        # 防止用户上传的图片太大，前端没做过滤，传到后端报错
+        # validators=[MaxLengthValidator(100)]
     )
     position = models.CharField(
         verbose_name=_('职位'),
@@ -116,13 +73,9 @@ class XYUser(models.Model):
     REQUIRED_FIELDS = ['email']
 
     # 返回此model实例对象名称，如在admin中xyuser可见
-    def __str__(self):
-        if self.first_name or self.last_name:
-            return "%s(%s)" % (self.user.username, self.first_name+self.last_name)
-        return  "%s" % self.user.username
 
     class Meta:
-
+        db_table = 'auth_user'
         ordering = ['-id']
         verbose_name = _('鑫意用户')
         verbose_name_plural = _('用户')

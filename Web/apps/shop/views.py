@@ -1,10 +1,9 @@
 # -*- coding: UTF-8 -*-
 import json
 
-from django.contrib.auth import authenticate
 from django.views.generic import View
 from Utils.django_utils import  JsonError, JsonSuccess, redis_get, JsonReLogin, JsonForbid
-from Web.models import XYUser
+
 
 
 class Good(View):
