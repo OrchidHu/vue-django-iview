@@ -44,8 +44,7 @@ export default {
                     this.$router.push("/home")
                 } else {
                     this.$Notice.error({
-                    title: dict_data.msg,
-                    desc: '注意大小写'
+                    title: dict_data.msg
                 })
                 }
             })
