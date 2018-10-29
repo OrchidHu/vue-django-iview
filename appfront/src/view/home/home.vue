@@ -1,19 +1,21 @@
 <template>
-  <div>
-    <Button size="warning" type="text"  @click="backHome">返回首页</Button>
-    <Button size="warning" type="text"  @click="backPrev">返回上一页</Button>
-    <Button size="error" type="text"  @click="toGood">商品</Button>
-    <p>{{ second }}s</p>
-  </div>
+  <strong class="header">
+    <router-link to="">
+      <Button size="large" type="text"  @click="backHome">
+        <Icon :size="16" type="md-home"></Icon>首页</Button>
+    </router-link>
+    <Button size="large" type="text"  @click="backPrev">返回上一页</Button>
+   <router-link to='/good'> <Button size="large" type="text"  @click="toGood">商品</Button></router-link>
+  </strong>
 </template>
-
 <script>
 export default {
   name: 'backBtnGroup',
   data () {
     return {
       second: 500,
-      timer: null
+      timer: null,
+      message: '2323'
     }
   },
   methods: {
@@ -30,12 +32,6 @@ export default {
         name: 'good'
       })
     }
-  },
-  mounted () {
-    this.timer = setInterval(() => {
-      if (this.second === 0) this.backPrev()
-      else this.second--
-    }, 1000)
   },
   beforeDestroy () {
     clearInterval(this.timer)

@@ -1,3 +1,4 @@
+
 <template>
   <div>
     <Button size="warning" type="text"  @click="backHome">返回首页</Button>
@@ -6,7 +7,6 @@
 </template>
 
 <script>
-import './error.less'
 export default {
   name: 'backBtnGroup',
   data () {

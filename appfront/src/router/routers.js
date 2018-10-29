@@ -1,4 +1,4 @@
-//import Main from '@/components/main'
+import Main from '@/components/main'
 //import parentView from '@/components/parent-view'
 
 /**
@@ -23,13 +23,31 @@ export default [
     name: 'login',
     meta: {
       title: 'Login - 登录',
+      hideInMenu: true
     },
     component: () => import('@/view/login/login.vue')
   },
   {
-    path:'/home',
-    name:'home',
-    component: () => import('@/view/home/home.vue')
+    path: '/',
+    name: '_home',
+    redirect: '/home',
+    component: Main,
+    meta: {
+      hideInMenu: true,
+      notCache: true
+    },
+    children: [
+      {
+        path: '/home',
+        name: 'home',
+        meta: {
+          hideInMenu: true,
+          title: '首页',
+          notCache: true
+        },
+        component: () => import('@/view/home/home.vue')
+      }
+    ]
   },
   {
     path:'/good',

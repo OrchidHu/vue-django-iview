@@ -16,6 +16,7 @@ Vue.use(VueAxios,axios)
 Vue.use(iView)
 import 'iview/dist/styles/iview.css'
 /* eslint-disable no-new */
+
 new Vue({
   el: '#app',
   store,

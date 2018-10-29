@@ -1,4 +1,4 @@
-from django.core.validators import EmailValidator, MaxLengthValidator
+from django.core.validators import EmailValidator, MaxLengthValidator, MinLengthValidator
 from django.db import models
 from django.contrib.auth.models import (
     UserManager, AbstractUser)
@@ -52,12 +52,10 @@ class XYUser(AbstractUser):
     )
     avatar = models.ImageField(
         u"头像",
-        max_length=100,
+        max_length=200,
         null=True,
         blank=True,
-        upload_to='driver/%Y/%m/%d',
-        # 防止用户上传的图片太大，前端没做过滤，传到后端报错
-        # validators=[MaxLengthValidator(100)]
+        upload_to='driver/%Y/%m/%d'
     )
     position = models.CharField(
         verbose_name=_('职位'),

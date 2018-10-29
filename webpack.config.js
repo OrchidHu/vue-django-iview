@@ -1,4 +1,4 @@
-var htmlWebpackPlugin = require('html-webpack-plugin');
+    var htmlWebpackPlugin = require('html-webpack-plugin');
 var path = require('path');
 console.log(__dirname);
 module.exports = {
@@ -22,12 +22,33 @@ module.exports = {
                 }
             }
         ],
+//        rules: [
+//            {
+//                test: /\.worker\.js$/,
+//                use: { loader: 'worker-loader' }
+//            }
+//        ]
         rules: [
             {
-                test: /\.worker\.js$/,
-                use: { loader: 'worker-loader' }
+                test: /\.vue$/,
+                    use: [
+                        {
+                            loader: 'vue-loader',
+                            options: {
+
+                            }
+                        },
+                        {
+                            loader: 'iview-loader',
+                            options: {
+                            prefix: false
+                        }
+                    }
+                ]
             }
         ]
+
+
     },
     plugins: [
         new htmlWebpackPlugin({

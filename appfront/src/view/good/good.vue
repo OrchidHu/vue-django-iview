@@ -1,5 +1,5 @@
 <template>
-    <Input v-model="value" placeholder="Enter something..." style="width: 300px" />
+    <Input v-model="value" v-if="waitingToLoad" placeholder="Enter something..." style="width: 300px" />
 </template>
 <script>
 import { setToken, setUserName, getToken, getUserName } from '@/libs/util'

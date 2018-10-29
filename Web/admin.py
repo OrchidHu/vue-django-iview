@@ -1,6 +1,7 @@
 
 # Register your models here.
 from django.contrib import admin
+from django.contrib.admin import AdminSite
 from django.utils.translation import gettext_lazy as _
 from Web.apps.shop.models import Good
 from Web.models import XYUser
@@ -32,6 +33,8 @@ class GoodAdmin(admin.ModelAdmin):
     list_display = ('bar_id', 'name', 'genre', 'buy_price', 'sale_price', 'supplier')
     search_fields = ['bar_id','name']
     list_filter = ['name']
+
+admin.site.site_header = '鑫意超市后台管理系统'
 
 # django1.7后新增了@admin.register装饰器向admin注册，这里废弃使用原有注册方式 admin.site.register()
 # admin.site.register(XYUser, XYUserAdmin)
