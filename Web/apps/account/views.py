@@ -1,14 +1,15 @@
 # -*- coding: UTF-8 -*-
 import json
 
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.views import LogoutView
 
 from django.views.generic import View
 from Utils.django_utils import  JsonError, JsonSuccess, get_token, redis_get, redis_db
 from Web.models import XYUser
 
 class Login(View):
+    """ 登录 """
 
     def post(self, request):
         data = json.loads(request.body)
@@ -34,3 +35,11 @@ class Login(View):
         if user.is_active is False:
             return JsonError('账号未激活')
         return JsonError('账号密码不正确')
+
+
+class Logout(LogoutView):
+
+    def get(self, request):
+        logout(request)
+        return JsonSuccess("退出成功")
+

@@ -25,29 +25,14 @@ export default {
   },
   methods: {
     ...mapActions([
-      'handleLogin',
-      'getUserInfo'
-    ]),
-    ...mapMutations([
-      'setUser'
+      'handleLogin'
     ]),
     handleSubmit ({ userName, password }) {
-          let that = this.$router;
-          this.$http.post(config.loginUrl, {username:userName, password:password},{
-                            emulateJSON:true
-                        }).then(res => {
-                let dict_data = res.data
-                if(dict_data.stat == 'success') {
-                this.$store.commit('setToken', dict_data.token)
-                this.$store.commit('setUserName', dict_data.username)
-                this.$store.commit('setSessionId', dict_data.session_id)
-                    this.$router.push("/home")
-                } else {
-                    this.$Notice.error({
-                    title: dict_data.msg
-                })
-                }
-            })
+      this.handleLogin({ userName, password }).then(res => {
+        this.$router.push({
+          name: 'home'
+        })
+      })
     }
   }
 }

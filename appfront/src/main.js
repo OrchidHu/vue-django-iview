@@ -6,8 +6,6 @@ import store from './store'
 import router from './router'
 Vue.config.productionTip = false
 import iView from 'iview'
-
-
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
