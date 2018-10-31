@@ -7,7 +7,8 @@ export const TOKEN_KEY = 'token'
 export const USERNAME = 'username'
 export const SESSIONID = 'sessionid'
 export const setToken = (token) => {
-  Cookies.set(TOKEN_KEY, token, {expires:0.005})
+  //Cookies.set(TOKEN_KEY, token, {expires:0.005})
+  Cookies.set(TOKEN_KEY, token)
 }
 export const setUserName = (name) => {
   Cookies.set(USERNAME, name)
