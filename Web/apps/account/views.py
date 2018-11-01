@@ -24,7 +24,7 @@ class Login(View):
             token = redis_get(username)
             if not token:
                 token = get_token()
-                redis_db.setex(username, token, 300)
+                redis_db.setex(username, token, 3000)
             session_id = request.session.session_key
             ret['token'] = token
             ret['session_id'] = session_id

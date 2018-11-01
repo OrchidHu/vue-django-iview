@@ -3,6 +3,8 @@ import json
 
 from django.contrib.auth import logout
 from django.views.generic import View
+
+import Web.apps.shop.models as model
 from Utils.django_utils import  JsonError, JsonSuccess, redis_get, JsonReLogin, JsonForbid
 
 
@@ -16,7 +18,23 @@ class Good(View):
             logout(request)
             return JsonReLogin('需要身份验证')
         if user.is_staff:
-            return JsonSuccess("请求成功")
+            data = self.get_data()
+            return JsonSuccess("请求成功", data=data)
         return JsonForbid('没有权限')
 
+    def get_data(self):
+        query_data =  model.Good.objects.all()
+        ret = []
+        if not query_data:
+            return ret
+        for data in query_data:
+            good_data = {
+                'name': data.name,
+                'age': data.genre,
+                'address': data.buy_price,
+                'date': data.sale_price,
+                'supplier': data.supplier
+            }
+            ret.append(good_data)
+        return ret
 

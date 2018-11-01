@@ -7,28 +7,29 @@
         Display multi choice <i-switch v-model="showCheckbox" style="margin-right: 5px"></i-switch>
         Display header <i-switch v-model="showHeader" style="margin-right: 5px"></i-switch>
         Table scrolling <i-switch v-model="fixedHeader" style="margin-right: 5px"></i-switch>
-        <br>
-        <br>
         Table size
-        <Radio-group v-model="tableSize" type="button">
-            <Radio label="large">large</Radio>
-            <Radio label="default">medium(default)</Radio>
-            <Radio label="small">small</Radio>
+        <Radio-group style="display:inline"  v-model="tableSize" type="button">
+            <Radio label="large">大</Radio>
+            <Radio label="default">中</Radio>
+            <Radio label="small">小</Radio>
         </Radio-group>
     </div>
-    <Table :border="showBorder" :stripe="showStripe" :show-header="showHeader" :height="fixedHeader ? 250 : ''" :size="tableSize" :data="tableData3" :columns="tableColumns3"></Table>
+    <Table @on-row-dblclick="clickRow" :border="showBorder" :stripe="showStripe" :show-header="showHeader" :height="fixedHeader ? 250 : ''" :size="tableSize" :data="tableData3" :columns="tableColumns3"></Table>
     <div style="margin: 10px;overflow: hidden">
         <div style="float: right;">
-            <Page :total="100" :current="1" @on-change="changePage"></Page>
+            <Page :total="1" show-elevator :current="1" @on-change="changePage"></Page>
         </div>
     </div>
+    <createGood v-show='true'/>
 </div>
 </template>
 <script>
 import { setToken, setUserName, getToken, getUserName } from '@/libs/util'
 import config from '@/config'
+import CreateGood from './create-good.vue'
 export default {
   name: 'good_page',
+  components: {CreateGood},
   data () {
     return {
       value: '',
@@ -41,48 +42,6 @@ export default {
                         age: 18,
                         address: 'New York No. 1 Lake Park',
                         date: '2016-10-03'
-                    },
-                    {
-                        name: 'Jim Green',
-                        age: 24,
-                        address: 'London No. 1 Lake Park',
-                        date: '2016-10-01'
-                    },
-                    {
-                        name: 'Joe Black',
-                        age: 30,
-                        address: 'Sydney No. 1 Lake Park',
-                        date: '2016-10-02'
-                    },
-                    {
-                        name: 'Jon Snow',
-                        age: 26,
-                        address: 'Ottawa No. 2 Lake Park',
-                        date: '2016-10-04'
-                    },
-                    {
-                        name: 'John Brown',
-                        age: 18,
-                        address: 'New York No. 1 Lake Park',
-                        date: '2016-10-03'
-                    },
-                    {
-                        name: 'Jim Green',
-                        age: 24,
-                        address: 'London No. 1 Lake Park',
-                        date: '2016-10-01'
-                    },
-                    {
-                        name: 'Joe Black',
-                        age: 30,
-                        address: 'Sydney No. 1 Lake Park',
-                        date: '2016-10-02'
-                    },
-                    {
-                        name: 'Jon Snow',
-                        age: 26,
-                        address: 'Ottawa No. 2 Lake Park',
-                        date: '2016-10-04'
                     }
                 ],
                 showBorder: false,
@@ -169,7 +128,24 @@ export default {
             }
         },
   methods: {
-
+    changePage (curpage) {
+      alert("当前页面页码是：" + curpage);
+      this.pagerData.data.splice(0,this.pagerData.data.length);
+      //alert("当前页面应该显示的数据index是：");  //  10(n-1) ~ 10n
+      for(var i = 10*(curpage - 1) + 1;
+        i<= ((this.pagerData.page.totalCount>10*curpage)?(10*curpage):(this.pagerData.page.totalCount));
+        i++){
+        console.log(" i = " + i + "，item：" + JSON.stringify(this.listdata[i]));
+        this.pagerData.data.push(this.listdata[i-1]);
+      }
+    },
+    clickRow (raw,index) {
+      console.log(this.tableData3[index].name="哈哈")
+    },
+    handleClearCurrentRow () {
+    alert("asdf")
+      this.$refs.currentRowTable.clearCurrentRow();
+    }
   },
   //在渲染商品之前，检查该用户是否有权限，否则返回401页面
   created () {
@@ -180,6 +156,7 @@ export default {
       let dict_data = res.data
       if(dict_data.stat == 'success') {
          this.value = 'isok'
+         this.tableData3 = dict_data.data
       // 后端的token失效或者前端的token和后端的token不匹配，访问权限页面需要再次验证身份
       } else if(dict_data.relogin == 'true'){
         this.$Notice.error({
