@@ -38,11 +38,13 @@ export default new Vuex.Store({
           userName,
           password
         }).then(res => {
-          const data = res.data
+        const data = res.data
+        if (res.data.stat === "success"){
           commit('setToken', data.token)
           commit('setSessionId', data.session_id)
           commit('setUserName', data.username)
-          resolve()
+        }
+        resolve(data)
         }).catch(err => {
           reject(err)
         })

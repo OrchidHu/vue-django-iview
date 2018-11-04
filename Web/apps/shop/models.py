@@ -7,7 +7,7 @@ class Good(models.Model):
     bar_id = models.CharField(
         max_length=100,
         verbose_name=u'条码',
-        db_index=True
+        unique=True
     )
     name = models.CharField(
         max_length=200,

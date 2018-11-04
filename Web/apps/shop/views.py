@@ -29,10 +29,11 @@ class Good(View):
             return ret
         for data in query_data:
             good_data = {
+                'bar_id': data.bar_id,
                 'name': data.name,
-                'age': data.genre,
-                'address': data.buy_price,
-                'date': data.sale_price,
+                'genre': data.genre,
+                'buy_price': data.buy_price,
+                'sale_price': data.sale_price,
                 'supplier': data.supplier
             }
             ret.append(good_data)
