@@ -4,7 +4,7 @@
             <Header class="header-con">
                 <Menu class="menu-con" mode="horizontal" :theme="theme1" active-name="1">
                     <div class="layout-logo">
-                      <img  height="30" width="80":src="Logo" key="logo" />
+                      <img  height="30" width="80" :src="Logo" key="logo" />
                     </div>
                     <div class="layout-nav">
                         <MenuItem name="1" to="/good/good_page">
@@ -44,7 +44,7 @@
                     <BreadcrumbItem>Layout</BreadcrumbItem>
                 </Breadcrumb>
                 <Card>
-                    <div style="min-height: 400px;">
+                    <div style="min-height: 480px; ">
                       <router-view></router-view>
                     </div>
                 </Card>
@@ -54,24 +54,24 @@
     </div>
 </template>
 <script>
-    import LoginOut from '@/components/login-out'
-    import Logo from '@/assets/images/logo.jpg'
-    export default {
-      name: 'Main',
-      data () {
-        return {
-          Logo,
-          theme1: 'light'
-        }
-      },
-      components: {LoginOut},
-      computed: {
-        getImage () {
-          return this.$store.state.avatorImgPath
-        }
-      },
+import LoginOut from '@/components/login-out'
+import Logo from '@/assets/images/logo.jpg'
+export default {
+  name: 'Main',
+  data () {
+    return {
+      Logo,
+      theme1: 'light'
     }
+  },
+  components: {LoginOut},
+  computed: {
+    getImage () {
+      return this.$store.state.avatorImgPath
+    }
+  }
+}
 </script>
 <style>
-  @import './mains.less'
+  @import "./mains.less"
 </style>

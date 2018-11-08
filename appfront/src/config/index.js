@@ -23,5 +23,8 @@ export default {
    */
   loginUrl: djangoUrl + 'account/login/',
   logoutUrl: djangoUrl + 'account/logout',
-  goodUrl: djangoUrl + 'shop/good/'
+  goodUrl: djangoUrl + 'shop/good/',
+  createGoodUrl: djangoUrl + 'shop/create_good',
+  updateGoodUrl: djangoUrl + 'shop/update_good',
+  deleteGoodUrl: djangoUrl + 'shop/delete_good'
 }

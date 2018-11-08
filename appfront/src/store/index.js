@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { setToken, getToken, setUserName, setSessionId } from '@/libs/util'
+import { setToken, setUserName, setSessionId } from '@/libs/util'
 import { login, logout } from '@/api/user'
 
 Vue.use(Vuex)
@@ -24,7 +24,7 @@ export default new Vuex.Store({
       state.token = token
       setToken(token)
     },
-    setSessionId (state, sessionId){
+    setSessionId (state, sessionId) {
       state.sessionId = sessionId
       setSessionId(sessionId)
     }
@@ -38,13 +38,13 @@ export default new Vuex.Store({
           userName,
           password
         }).then(res => {
-        const data = res.data
-        if (res.data.stat === "success"){
-          commit('setToken', data.token)
-          commit('setSessionId', data.session_id)
-          commit('setUserName', data.username)
-        }
-        resolve(data)
+          const data = res.data
+          if (res.data.stat === 'success') {
+            commit('setToken', data.token)
+            commit('setSessionId', data.session_id)
+            commit('setUserName', data.username)
+          }
+          resolve(data)
         }).catch(err => {
           reject(err)
         })
@@ -66,26 +66,26 @@ export default new Vuex.Store({
         // commit('setAccess', [])
         // resolve()
       })
-    },
+    }
     // 获取用户相关信息
-//    getUserInfo ({ state, commit }) {
-//      return new Promise((resolve, reject) => {
-//        try {
-//          getUserInfo(state.token).then(res => {
-//            const data = res.data
-//            commit('setAvator', data.avator)
-//            commit('setUserName', data.user_name)
-//            commit('setUserId', data.user_id)
-//            commit('setAccess', data.access)
-//            commit('setHasGetInfo', true)
-//            resolve(data)
-//          }).catch(err => {
-//            reject(err)
-//          })
-//        } catch (error) {
-//          reject(error)
-//        }
-//      })
-//    }
+    //    getUserInfo ({ state, commit }) {
+    //      return new Promise((resolve, reject) => {
+    //        try {
+    //          getUserInfo(state.token).then(res => {
+    //            const data = res.data
+    //            commit('setAvator', data.avator)
+    //            commit('setUserName', data.user_name)
+    //            commit('setUserId', data.user_id)
+    //            commit('setAccess', data.access)
+    //            commit('setHasGetInfo', true)
+    //            resolve(data)
+    //          }).catch(err => {
+    //            reject(err)
+    //          })
+    //        } catch (error) {
+    //          reject(error)
+    //        }
+    //      })
+    //    }
   }
 })

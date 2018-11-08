@@ -1,86 +1,65 @@
 <template>
-<div style="height:100px">
-  <div style="margin: 10px; font-size: 12px">
+<div >
+  <div style="margin-left: 10px; font-size: 12px; height: 35px">
     多选框 <i-switch v-model="showCheckbox" style="margin-right: 5px"></i-switch>
-    表格滚动 <i-switch v-model="fixedHeader" style="margin-right: 35px"></i-switch>
-
-    <Button @click="createGood" style="float:right">新建</Button>
+    <Button @click="createGood" style="float: right; margin-right: 50px; color: white; background: #2d8cf0">新建</Button>
     </div>
     <Table @on-row-dblclick="editGood"
            @on-sort-change="handleSortChange"
            @on-filter-change="handleFilterChange"
            border stripe show-header
-           :height="fixedHeader ? 250 : ''"
+           :height="fixedHeader ? 390 : ''"
+           :loading="tableLoading"
            size="small"
            :data="dataWithPage"
            :columns="tableColumns"></Table>
     <div style="margin: 10px;overflow: hidden">
-        <div style="text-align:center; margin: 16px 0">
+      <Button @click="deleteGood" style=" background: tomato; color: white; letter-spacing: 2px; margin-left: 50px">删除</Button>
+        <span style="text-align:center; ">
             <Page :total="limitData.length"
                   :current.sync="current"
                   show-sizer
                   @on-page-size-change="handleChangePageSize"
             ></Page>
-        </div>
+        </span>
     </div>
-    <Modal :title="changeType==='create'? '新增商品': '编辑商品'" v-model="openModal" footer-hide>
-      <Form :model="form" :label-width="70">
-        <FormItem label="条码">
-          <Input v-model="form.bar_id"/>
-        </FormItem>
-        <FormItem label="名称">
-          <Input v-model="form.name"/>
-        </FormItem>
-        <FormItem label="类别">
-          <Input v-model="form.genre"/>
-        </FormItem>
-        <FormItem label="进价">
-          <Input v-model="form.buy_price"/>
-        </FormItem>
-        <FormItem label="售价">
-          <Input v-model="form.sale_price"/>
-        </FormItem>
-        <FormItem label="供应商">
-          <Input v-model="form.supplier"/>
-        </FormItem>
-      </Form>
-      <div style="width:480px; height:25px">
-        <Button @click="editSave" v-if="changeType==='edit'" style="float:right">保存</Button>
-        <Button @click="createSave" v-if="changeType==='create'" style="float:right; margin-right: 15px">新建</Button>
-      </div>
-    </Modal>
+  <good-modal v-bind:modalData="modalData" @modal-success-valid="handleSubmit"></good-modal>
 </div>
 </template>
 <script>
 import config from '@/config'
+import {ajaxGet} from '@/api/user'
+import GoodModal from '@/components/good-modal'
+
 const formData = {
+  id: null,
   bar_id: '',
   name: '',
   genre: '',
-  buy_price: '',
-  sale_price: '',
+  buy_price: null,
+  sale_price: null,
   supplier: ''
 }
+
 export default {
   name: 'good_page',
+  components: {
+    GoodModal
+  },
   data () {
     return {
+      modalData: {
+        openModal: false,
+        changeType: '',
+        form: Object.assign({}, formData)
+      },
       total: 0,
       current: 1,
       loading: false,
-      openModal: false,
       changeType: 'create',
       pageSize: 10,
-      sortType: 'asc', // normal || asc || desc
+      sortType: 'normal', // normal || asc || desc
       filterType: 'undefined', // undefined || 1 || 2 || 或者其他
-      form: {
-        bar_id: '',
-        name: '',
-        genre: '',
-        buy_price: '',
-        sale_price: '',
-        supplier: ''
-      },
       tableData: [],
       showCheckbox: false,
       fixedHeader: true,
@@ -110,6 +89,7 @@ export default {
       columns.push({ title: '供货商', key: 'supplier' })
       return columns
     },
+    // 过滤排序筛选数据
     limitData () {
       let data = [...this.tableData]
       if (this.sortType === 'asc') {
@@ -124,53 +104,62 @@ export default {
       }
       return data
     },
+    // 将筛选过滤后的数据进行分页
     dataWithPage () {
       const data = this.limitData
       const start = this.current * this.pageSize - this.pageSize
       const end = start + this.pageSize
-      return [...data].splice(start, end)
+      this.cleanData = [...data].splice(start, end)
+      return this.cleanData
     }
   },
   methods: {
+    // 自定义过滤
     handleFilterChange () {
       this.current = 1
     },
+    // 自定义排序
     handleSortChange ({columns, key, order}) {
       this.sortType = order
       this.current = 1
     },
+    // 处理一页显示多少条数据
     handleChangePageSize (val) {
       this.pageSize = val
     },
-    editGood (raw, index) {
-      this.openModal = true
-      this.editIndex = index
-      this.form = this.tableData[index]
-      this.changeType = 'edit'
-    },
     createGood () {
-      this.form = formData
-      this.openModal = true
-      this.changeType = 'create'
+      this.modalData.changeType = 'create'
+      this.modalData.openModal = true
+      this.modalData.form = Object.assign({}, formData)
     },
-    editSave () {
-      this.tableData[this.editIndex] = this.form
-      this.$Message.info('保存成功')
-      this.openModal = false
+    // 双击修改当前行的值
+    editGood (row, index) {
+      this.editIndex = index
+      this.modalData.openModal = true
+      this.modalData.changeType = 'edit'
+      this.modalData.form = row // 把当前行的数据赋值给管道变量
     },
-    createSave () {
-      this.$Message.info('新建成功')
-      this.tableData.push(this.form)
-      this.openModal = false
+    deleteGood () {
+
     },
-    handleClearCurrentRow () {
-      this.$refs.currentRowTable.clearCurrentRow()
-    }
+    // 处理Modal成功校验后回调的数据
+    handleSubmit (data) {
+      console.log(data)
+      if (this.modalData.changeType === 'create') { // 新建就push数据
+        this.tableData.push(data)
+      } else { // 更新则把新值赋值给当前行
+        for (let key in formData) {
+          this.cleanData[this.editIndex][key] = data.form[key]
+        }
+      }
+    },
   },
   // 在渲染商品之前，检查该用户是否有权限，否则返回401页面
   created () {
     // 利用{withCredentials: true} 闯入COOKIES包含（sessionid）到django后台， 自动识别请求用户 此时params无效
+    this.tableLoading = true
     this.$http.get(config.goodUrl, {withCredentials: true}).then(res => {
+      this.tableLoading = false
       let dictData = res.data
       if (dictData.stat === 'success') {
         this.tableData = dictData.data
@@ -195,9 +184,6 @@ export default {
     })
   },
   mounted () {
-
-  },
-  beforeDestroy () {
 
   }
 }

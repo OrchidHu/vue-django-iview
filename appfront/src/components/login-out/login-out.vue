@@ -13,8 +13,7 @@
 <script>
 import './login-out.less'
 import { mapActions } from 'vuex'
-import config from '@/config'
-//临时使用一张图片
+// 临时使用一张图片
 import minBoy from '@/assets/images/default-avator.jpg'
 export default {
   name: 'LoginOut',
@@ -31,7 +30,7 @@ export default {
     handleClick (name) {
       this.handleLogOut().then(() => {
         this.$router.push({
-              name: 'login'
+          name: 'login'
         })
       })
     }

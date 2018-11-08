@@ -11,4 +11,14 @@ urlpatterns =[
         views.Good.as_view(),
         name='good'
     ),
+    path(
+        r'create_good',
+        views.CreateGood.as_view(),
+        name='create_good'
+    ),
+    path(
+        r'update_good',
+        views.UpdateGood.as_view(),
+        name='update_good'
+    )
 ]
