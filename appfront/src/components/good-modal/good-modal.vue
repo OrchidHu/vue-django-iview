@@ -1,7 +1,8 @@
 <template>
   <Modal :title="modalData.changeType==='create'?'新增商品': '编辑商品'"
          v-model="modalData.openModal">
-    <Form ref="goodForm" :model="modalData.form" :rules="rules" :label-width="50" @keydown.enter.native="createGoodToSave">
+    <Form ref="goodForm" :model="modalData.form" :rules="rules" :label-width="50"
+          @keydown.enter.native="handleSubmitToSave">
       <FormItem label="条码"  label-for="bar-id" prop="bar_id" >
         <Input element-id="bar-id"  v-model="modalData.form.bar_id"/>
       </FormItem>
@@ -124,8 +125,10 @@ export default {
             ajaxGet(config.createGoodUrl, this.modalData.form).then(res => {
               if (res.data.stat === 'success') {
                 this.$Message.info('新建成功')
-                this.$emit('modal-success-valid', this.modalData.form)
+                const copyData = Object.assign({}, this.modalData.form)
+                this.$emit('modal-success-valid', copyData)
                 this.modalData.openModal = false
+                this.$refs.goodForm.resetFields()
               } else {
                 console.log(res.data)
                 this.$Message.error(res.data.msg)
@@ -151,8 +154,9 @@ export default {
           if (this.myValidate()) {
             ajaxGet(config.updateGoodUrl, this.modalData.form).then(res => {
               if (res.data.stat === 'success') {
-                this.$Message.info('新建成功')
+                this.$Message.info('保存成功')
                 this.$emit('modal-success-valid', this.modalData.form)
+                this.$refs.goodForm.resetFields()
                 this.modalData.openModal = false
               } else {
                 console.log(res.data)

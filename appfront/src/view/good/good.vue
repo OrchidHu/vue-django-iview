@@ -60,7 +60,7 @@ export default {
       pageSize: 10,
       sortType: 'normal', // normal || asc || desc
       filterType: 'undefined', // undefined || 1 || 2 || 或者其他
-      tableData: [],
+      fullData: [],
       showCheckbox: false,
       fixedHeader: true,
       columns: []
@@ -91,7 +91,7 @@ export default {
     },
     // 过滤排序筛选数据
     limitData () {
-      let data = [...this.tableData]
+      let data = [...this.fullData]
       if (this.sortType === 'asc') {
         data = data.sort((a, b) => {
           return a.buy_price > b.buy_price ? 1 : -1
@@ -108,8 +108,7 @@ export default {
     dataWithPage () {
       const data = this.limitData
       const start = this.current * this.pageSize - this.pageSize
-      const end = start + this.pageSize
-      this.cleanData = [...data].splice(start, end)
+      this.cleanData = [...data].splice(start, this.pageSize)
       return this.cleanData
     }
   },
@@ -144,12 +143,12 @@ export default {
     },
     // 处理Modal成功校验后回调的数据
     handleSubmit (data) {
-      console.log(data)
       if (this.modalData.changeType === 'create') { // 新建就push数据
-        this.tableData.push(data)
+        // this.fullData.push(data)
+        this.fullData = [data].concat(this.fullData)
       } else { // 更新则把新值赋值给当前行
         for (let key in formData) {
-          this.cleanData[this.editIndex][key] = data.form[key]
+          this.cleanData[this.editIndex][key] = data[key]
         }
       }
     },
@@ -162,7 +161,7 @@ export default {
       this.tableLoading = false
       let dictData = res.data
       if (dictData.stat === 'success') {
-        this.tableData = dictData.data
+        this.fullData = dictData.data
       // 后端的token失效或者前端的token和后端的token不匹配，访问权限页面需要再次验证身份
       } else if (dictData.relogin === 'true') {
         this.$Notice.error({
