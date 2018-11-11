@@ -1,9 +1,7 @@
 # -*- coding: UTF-8 -*-
 import json
-
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import LogoutView
-
 from django.views.generic import View
 from Utils.django_utils import  JsonError, JsonSuccess, get_token, redis_get, redis_db
 from Web.models import XYUser
@@ -12,8 +10,10 @@ class Login(View):
     """ 登录 """
 
     def post(self, request):
-        data = json.loads(request.body)
-        __import__("pdb").set_trace()
+        try:
+            data = json.loads(request.body)
+        except Exception:
+            data = json.loads(request.body).decode("utf-8")
         username = data.get('username')
         password = data.get('password')
         # next_url = request.GET.get('next') or resolve_url("admin")
