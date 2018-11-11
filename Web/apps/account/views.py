@@ -13,7 +13,7 @@ class Login(View):
         try:
             data = json.loads(request.body)
         except Exception:
-            data = json.loads(request.body).decode("utf-8")
+            data = json.loads(request.body.decode("utf-8"))
         username = data.get('username')
         password = data.get('password')
         # next_url = request.GET.get('next') or resolve_url("admin")
