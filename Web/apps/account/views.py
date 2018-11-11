@@ -13,6 +13,7 @@ class Login(View):
 
     def post(self, request):
         data = json.loads(request.body)
+        __import__("pdb").set_trace()
         username = data.get('username')
         password = data.get('password')
         # next_url = request.GET.get('next') or resolve_url("admin")
