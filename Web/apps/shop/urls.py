@@ -20,5 +20,10 @@ urlpatterns =[
         r'update_good',
         views.UpdateGood.as_view(),
         name='update_good'
+    ),
+    path(
+        r'delete_good',
+        views.Delete.as_view(),
+        name='delete_good'
     )
 ]

@@ -1,12 +1,14 @@
 <template>
 <div >
-  <div style="margin-left: 10px; font-size: 12px; height: 35px">
+  <div style="margin-left: 10px; font-size: 12px; height: 40px">
     多选框 <i-switch v-model="showCheckbox" style="margin-right: 5px"></i-switch>
+    <Input @on-search="search" v-model="searchValue" search placeholder="条码"  style="width: auto" />
     <Button @click="createGood" style="float: right; margin-right: 50px; color: white; background: #2d8cf0">新建</Button>
     </div>
     <Table @on-row-dblclick="editGood"
            @on-sort-change="handleSortChange"
            @on-filter-change="handleFilterChange"
+           @on-select="handleSelect"
            border stripe show-header
            :height="fixedHeader ? 390 : ''"
            :loading="tableLoading"
@@ -14,7 +16,10 @@
            :data="dataWithPage"
            :columns="tableColumns"></Table>
     <div style="margin: 10px;overflow: hidden">
-      <Button @click="deleteGood" style=" background: tomato; color: white; letter-spacing: 2px; margin-left: 50px">删除</Button>
+      <Button @click="deleteGood"
+              :loading="deleteLoading"
+              :disabled="this.selected ? false : true"
+              style=" background: tomato; color: white; letter-spacing: 2px; margin-left: 50px">删除</Button>
         <span style="text-align:center; ">
             <Page :total="limitData.length"
                   :current.sync="current"
@@ -28,7 +33,7 @@
 </template>
 <script>
 import config from '@/config'
-import {ajaxGet} from '@/api/user'
+import {ajaxGet} from '../../api/user'
 import GoodModal from '@/components/good-modal'
 
 const formData = {
@@ -55,7 +60,7 @@ export default {
       },
       total: 0,
       current: 1,
-      loading: false,
+      deleteLoading: false,
       changeType: 'create',
       pageSize: 10,
       sortType: 'normal', // normal || asc || desc
@@ -63,7 +68,9 @@ export default {
       fullData: [],
       showCheckbox: false,
       fixedHeader: true,
-      columns: []
+      columns: [],
+      selected: null,
+      searchValue: null
     }
   },
 
@@ -113,6 +120,16 @@ export default {
     }
   },
   methods: {
+    search () {
+      let result = []
+      for (let index in this.fullData) {
+        if (this.fullData[index].name === this.searchValue) {
+          result.push(this.fullData[index])
+        }
+      }
+      this.fullData = result
+      return this.fullData
+    },
     // 自定义过滤
     handleFilterChange () {
       this.current = 1
@@ -139,7 +156,23 @@ export default {
       this.modalData.form = row // 把当前行的数据赋值给管道变量
     },
     deleteGood () {
-
+      if (this.deleteLoading) return
+      this.deleteLoading = true
+      const list = {'del_list': this.selected}
+      ajaxGet(config.deleteGoodUrl, list).then((res) => {
+        this.selected = null
+        if (res.data.stat === 'success') {
+          this.$Message.success(res.data.msg)
+        } else {
+          this.$Message.error(res.data.msg)
+        }
+        this.fullData = res.data.data
+        this.deleteLoading = false
+      })
+    },
+    handleSelect (selection, row) {
+      this.fullData.indexOf(row)
+      this.selected = selection
     },
     // 处理Modal成功校验后回调的数据
     handleSubmit (data) {
@@ -152,6 +185,15 @@ export default {
         }
       }
     },
+    getData () {
+      this.$http.get(config.goodUrl, {withCredentials: true}).then(res => {
+        if (res.data.stat === 'success') {
+          this.fullData = res.data.data
+        } else {
+          this.$Message.error(res.data.msg)
+        }
+      })
+    }
   },
   // 在渲染商品之前，检查该用户是否有权限，否则返回401页面
   created () {
@@ -162,7 +204,7 @@ export default {
       let dictData = res.data
       if (dictData.stat === 'success') {
         this.fullData = dictData.data
-      // 后端的token失效或者前端的token和后端的token不匹配，访问权限页面需要再次验证身份
+        // 后端的token失效或者前端的token和后端的token不匹配，访问权限页面需要再次验证身份
       } else if (dictData.relogin === 'true') {
         this.$Notice.error({
           title: dictData.msg,
@@ -174,7 +216,7 @@ export default {
         this.$router.push({
           name: 'login'
         })
-      // 后端发现带有此token的用户，不具备访问此页面的权限
+        // 后端发现带有此token的用户，不具备访问此页面的权限
       } else {
         this.$router.replace({
           name: 'error_401'

@@ -27,7 +27,7 @@
                             <Icon type="ios-settings-outline"/>
                             设置
                         </MenuItem>
-                        <MenuItem name="6">
+                        <MenuItem name="6" style="float: right">
                             <loginOut/>
                         </MenuItem>
                     </div>

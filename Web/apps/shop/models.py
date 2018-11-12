@@ -5,7 +5,7 @@ class Good(models.Model):
     """商品资料"""
 
     bar_id = models.CharField(
-        max_length=100,
+        max_length=30,
         verbose_name=u'条码',
         unique=True
     )
@@ -27,6 +27,7 @@ class Good(models.Model):
         max_length=200,
         null=True,
         blank=True,
+        default=u"临时供应商",
         verbose_name=u"供货商"
     )
 

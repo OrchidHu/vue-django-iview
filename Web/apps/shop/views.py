@@ -56,7 +56,11 @@ class CreateGood(View):
         form = CreateGoodForm(data)
         if form.is_valid():
            form.save()
-           return JsonSuccess("创建成功")
+           good_id = form.instance.id
+           return JsonSuccess("创建成功", id=good_id)
+        else:
+            for key in form.errors:
+               return JsonError(form.errors[key][0])
         return JsonError("提交数据有误")
 
 
@@ -81,3 +85,25 @@ class UpdateGood(View):
             form.save()
             return JsonSuccess("创建成功")
         return JsonError("提交数据有误")
+
+
+class Delete(View):
+    """删除商品"""
+
+    def get(self, request):
+        import time
+        time.sleep(0.5)
+        json_data = request.GET.get('data')
+        data = json.loads(json_data)
+        if data['del_list']:
+            for good in data.get('del_list'):
+                try:
+                    model.Good.objects.filter(id=good['id']).delete()
+                except Exception:
+                    return JsonError("删除失败", data=self.full_data())
+            return JsonSuccess("删除成功", data=self.full_data())
+        return JsonError("请选择需要删除的商品")
+
+    def full_data(self):
+        return Good.get_data(self)
+

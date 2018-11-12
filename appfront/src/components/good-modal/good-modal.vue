@@ -4,7 +4,7 @@
     <Form ref="goodForm" :model="modalData.form" :rules="rules" :label-width="50"
           @keydown.enter.native="handleSubmitToSave">
       <FormItem label="条码"  label-for="bar-id" prop="bar_id" >
-        <Input element-id="bar-id"  v-model="modalData.form.bar_id"/>
+        <Input element-id="bar-id" v-model="modalData.form.bar_id"/>
       </FormItem>
       <FormItem label="名称" label-for="name" prop="name" >
         <Input element-id="name" v-model="modalData.form.name"/>
@@ -49,7 +49,14 @@ export default {
       type: Array,
       default: () => {
         return [
-          {required: true, message: '条码不能为空', trigger: 'change'}
+          {required: true, message: '条码不能为空'},
+          {validator (rule, value, callback) {
+            var errors = []
+            if (!/^[0-9]+$/.test(value)) {
+              callback('条码必须为数字值')
+            }
+            callback(errors)
+          }}
         ]
       }
     },
@@ -125,6 +132,7 @@ export default {
             ajaxGet(config.createGoodUrl, this.modalData.form).then(res => {
               if (res.data.stat === 'success') {
                 this.$Message.info('新建成功')
+                this.modalData.form.id = res.data.id // 把新建的商品的id传到前端
                 const copyData = Object.assign({}, this.modalData.form)
                 this.$emit('modal-success-valid', copyData)
                 this.modalData.openModal = false
