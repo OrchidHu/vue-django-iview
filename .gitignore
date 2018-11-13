@@ -11,6 +11,7 @@ driver
 # local env files
 .env.local
 .env.*.local
+Web.local
 
 # Log files
 npm-debug.log*
