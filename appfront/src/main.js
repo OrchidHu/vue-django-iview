@@ -4,15 +4,15 @@ import Vue from 'vue'
 import App from './App'
 import store from './store'
 import router from './router'
-Vue.config.productionTip = false
 import iView from 'iview'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
+import 'iview/dist/styles/iview.css'
+Vue.config.productionTip = false
 
-Vue.use(VueAxios,axios)
+Vue.use(VueAxios, axios)
 
 Vue.use(iView)
-import 'iview/dist/styles/iview.css'
 /* eslint-disable no-new */
 
 new Vue({

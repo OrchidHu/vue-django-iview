@@ -13,20 +13,20 @@
   </div>
 </template>
 <script>
-    export default {
-        name: "CreateGood",
-        data () {
-            return {
-                modal1: false
-            }
-        },
-        methods: {
-            ok () {
-                this.$Message.info('Clicked ok');
-            },
-            cancel () {
-                this.$Message.info('Clicked cancel');
-            }
-        }
+export default {
+  name: "CreateGood",
+  data () {
+    return {
+      modal1: false
     }
+  },
+  methods: {
+    ok () {
+      this.$Message.info('Clicked ok');
+    },
+    cancel () {
+      this.$Message.info('Clicked cancel');
+    }
+  }
+}
 </script>

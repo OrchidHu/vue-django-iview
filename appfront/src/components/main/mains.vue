@@ -27,7 +27,10 @@
                             <Icon type="ios-settings-outline"/>
                             设置
                         </MenuItem>
-                        <MenuItem name="6" style="float: right">
+                        <MenuItem name="6">
+                          <fullScreen v-model="isFullscreen"/>
+                        </MenuItem>
+                        <MenuItem name="7">
                             <loginOut/>
                         </MenuItem>
                     </div>
@@ -54,17 +57,19 @@
     </div>
 </template>
 <script>
+import FullScreen from '@/components/fullScreen'
 import LoginOut from '@/components/login-out'
 import Logo from '@/assets/images/logo.jpg'
 export default {
   name: 'Main',
   data () {
     return {
+      isFullscreen: false,
       Logo,
       theme1: 'light'
     }
   },
-  components: {LoginOut},
+  components: {LoginOut, FullScreen},
   computed: {
     getImage () {
       return this.$store.state.avatorImgPath

@@ -1,5 +1,5 @@
 <template>
-  <span class="user-avator-dropdown">
+  <div style="display: inline" class="user-avator-dropdown">
     <Dropdown @on-click="handleClick">
       <Avatar :src="userAvator"/>
         <Icon :size="25" type="ios-arrow-down"></Icon>
@@ -7,7 +7,7 @@
         <DropdownItem name="logout">退出登录</DropdownItem>
       </DropdownMenu>
     </Dropdown>
-  </span>
+  </div>
 </template>
 
 <script>

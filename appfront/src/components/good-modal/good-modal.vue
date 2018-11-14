@@ -2,7 +2,7 @@
   <Modal :title="modalData.changeType==='create'?'新增商品': '编辑商品'"
          v-model="modalData.openModal">
     <Form ref="goodForm" :model="modalData.form" :rules="rules" :label-width="50"
-          @keydown.enter.native="handleSubmitToSave">
+          @keydown.enter.native="handleSubmitToCreate">
       <FormItem label="条码"  label-for="bar-id" prop="bar_id" >
         <Input element-id="bar-id" v-model="modalData.form.bar_id"/>
       </FormItem>
@@ -13,10 +13,10 @@
         <Input v-model="modalData.form.genre"/>
       </FormItem>
       <FormItem label="进价" prop="buy_price">
-        <Input v-model="modalData.form.buy_price" number/>
+        <InputNumber style="width: auto" v-model="modalData.form.buy_price" number/>
       </FormItem>
       <FormItem label="售价" prop="sale_price">
-        <Input v-model="modalData.form.sale_price" number/>
+        <InputNumber style="width: auto" v-model="modalData.form.sale_price" number/>
       </FormItem>
       <FormItem label="供应商" prop="supplier">
         <Input v-model="modalData.form.supplier"/>
@@ -49,7 +49,7 @@ export default {
       type: Array,
       default: () => {
         return [
-          {required: true, message: '条码不能为空'},
+          {required: true, message: '请输入条码'},
           {validator (rule, value, callback) {
             var errors = []
             if (!/^[0-9]+$/.test(value)) {
@@ -64,7 +64,7 @@ export default {
       type: Array,
       default: () => {
         return [
-          {required: true, message: '名称不能为空', trigger: 'change'}
+          {required: true, message: '请输入名称', trigger: 'change'}
         ]
       }
     },
@@ -72,7 +72,7 @@ export default {
       type: Array,
       default: () => {
         return [
-          {required: true, message: '类型不能为空', trigger: 'change'}
+          {required: true, message: '请输入类别', trigger: 'change'}
         ]
       }
     },
@@ -80,7 +80,7 @@ export default {
       type: Array,
       default: () => {
         return [
-          {required: true, message: '进价不能为空'},
+          {required: true, message: '请输入进价'},
           {type: 'number', message: '输入正确的数字', trigger: 'change'}
         ]
       }
@@ -89,7 +89,7 @@ export default {
       type: Array,
       default: () => {
         return [
-          {required: true, message: '售价不能为空'},
+          {required: true, message: '请输入售价'},
           {type: 'number', message: '请输入正确的数字', trigger: 'change'}
         ]
       }
@@ -98,7 +98,7 @@ export default {
       type: Array,
       default: () => {
         return [
-          {required: true, message: '供应商不能为空', trigger: 'change'}
+          {required: true, message: '请输入供应商', trigger: 'change'}
         ]
       }
     }
@@ -131,7 +131,7 @@ export default {
           if (this.myValidate()) {
             ajaxGet(config.createGoodUrl, this.modalData.form).then(res => {
               if (res.data.stat === 'success') {
-                this.$Message.info('新建成功')
+                this.$Message.success('新建成功')
                 this.modalData.form.id = res.data.id // 把新建的商品的id传到前端
                 const copyData = Object.assign({}, this.modalData.form)
                 this.$emit('modal-success-valid', copyData)
@@ -162,7 +162,7 @@ export default {
           if (this.myValidate()) {
             ajaxGet(config.updateGoodUrl, this.modalData.form).then(res => {
               if (res.data.stat === 'success') {
-                this.$Message.info('保存成功')
+                this.$Message.success('保存成功')
                 this.$emit('modal-success-valid', this.modalData.form)
                 this.$refs.goodForm.resetFields()
                 this.modalData.openModal = false

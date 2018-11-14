@@ -2,8 +2,10 @@
 <div >
   <div style="margin-left: 10px; font-size: 12px; height: 40px">
     多选框 <i-switch v-model="showCheckbox" style="margin-right: 5px"></i-switch>
-    <Input @on-search="searchBarId" v-model="searchValue" search placeholder="条码"  style="width: auto" />
-    <Button text @click="reSetData"> 重置</Button>
+    <Input @on-search="searchBarId" v-model="barIdValue" search placeholder="条码"  style="width: auto" />
+    <Input @on-search="searchName" v-model="nameValue" search placeholder="名称"  style="width: auto" />
+    <Button @click="searchSubmit" style="background: #2d8cf0; color: white">联合搜索</Button>
+    <a style="padding-left: 20px" @click="reSetData"> 重置</a>
     <Button @click="createGood" style="float: right; margin-right: 50px; color: white; background: #2d8cf0">新建</Button>
     </div>
     <Table @on-row-dblclick="editGood"
@@ -73,7 +75,8 @@ export default {
       copyFullData: [], // 全量数据，用作筛选，搜索，排序的操作
       columns: [],
       selected: null,
-      searchValue: null
+      barIdValue: null,
+      nameValue: null
     }
   },
 
@@ -125,13 +128,41 @@ export default {
   methods: {
     reSetData () {
       this.copyFullData = this.fullData
+      this.nameValue = null
+      this.barIdValue = null
     },
     searchBarId () {
       let result = []
+      this.nameValue = null
       this.copyFullData = [...this.fullData]
-      if (!this.searchValue) return
+      if (!this.barIdValue) return
       for (let index in this.copyFullData) {
-        if (this.copyFullData[index].bar_id === this.searchValue) {
+        if (this.copyFullData[index].bar_id.indexOf(this.barIdValue) >= 0) {
+          result.push(this.copyFullData[index])
+        }
+      }
+      this.copyFullData = result
+    },
+    searchName () {
+      let result = []
+      this.barIdValue = null
+      this.copyFullData = [...this.fullData]
+      if (!this.nameValue) return
+      for (let index in this.copyFullData) {
+        if (this.copyFullData[index].name.indexOf(this.nameValue) >= 0) {
+          result.push(this.copyFullData[index])
+        }
+      }
+      this.copyFullData = result
+    },
+    searchSubmit () {
+      let result = []
+      this.copyFullData = [...this.fullData]
+      if (!this.nameValue) return this.searchBarId()
+      if (!this.barIdValue) return this.searchName()
+      for (let index in this.copyFullData) {
+        if (this.copyFullData[index].name.indexOf(this.nameValue) >= 0 &&
+          this.copyFullData[index].bar_id.indexOf(this.barIdValue) >= 0) {
           result.push(this.copyFullData[index])
         }
       }
