@@ -4,7 +4,7 @@
     多选框 <i-switch v-model="showCheckbox" style="margin-right: 5px"></i-switch>
     <Input @on-search="searchBarId" v-model="barIdValue" search placeholder="条码"  style="width: auto" />
     <Input @on-search="searchName" v-model="nameValue" search placeholder="名称"  style="width: auto" />
-    <Button @click="searchSubmit" style="background: #2d8cf0; color: white">联合搜索</Button>
+    <Button @click="searchSubmit" style="background: #2d8cf0; color: white">搜 索</Button>
     <a style="padding-left: 20px" @click="reSetData"> 重置</a>
     <a v-if="selected" style="margin-left: 20px; color: chartreuse;">已选择 {{selectCount}} 项</a>
     <Button @click="createGood" style="float: right; margin-right: 50px; color: white; background: #2d8cf0">新建</Button>
@@ -123,8 +123,11 @@ export default {
       return data
     },
     // 将筛选过滤后的数据进行分页
+    // 由于iview在表格<Table>操作(如:排序,搜索等)后会刷新所选项的样式展示，但是selection不会改变
+    // 因此操作表格都对selected重置为空
     dataWithPage () {
       const data = this.limitData
+      this.selected = null // 这里是防止已有选中项，并对表格进行删除以外的操作，导致表格没勾，实际却是已选
       const start = this.current * this.pageSize - this.pageSize
       this.cleanData = [...data].splice(start, this.pageSize)
       return this.cleanData

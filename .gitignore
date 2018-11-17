@@ -9,6 +9,7 @@ driver
 /tests/e2e/screenshots/
 
 # local env files
+appfront/src/assets/images/2018
 .env.local
 .env.*.local
 .Web.local

@@ -65,9 +65,7 @@ export default {
         return [
           {required: true, message: '请输入条码'},
           {validator (rule, value, callback) {
-            var errors = []
             if (!/^[0-9]+$/.test(value)) { callback('条码必须为数字值') }
-            callback(errors)
           }}
         ]
       }
@@ -85,13 +83,20 @@ export default {
     buyPriceRules: {type: Array,
       default: () => {
         return [{required: true, message: '请输入进价'},
-          {type: 'number', message: '输入正确的数字', trigger: 'change'}]
+          {type: 'number', message: '输入正确的数字', trigger: 'change'},
+          { validator (rule, value, callback) {
+            if (value < 0) { callback('进价不能小于零')}}
+          }
+        ]
       }
     },
     salePriceRules: {type: Array,
       default: () => {
         return [{required: true, message: '请输入售价'},
-          {type: 'number', message: '请输入正确的数字', trigger: 'change'}
+          {type: 'number', message: '请输入正确的数字', trigger: 'change'},
+          {validator (rule, value, callback) {
+            if (value < 0) { callback('售价不能小于零')}}
+          }
         ]
       }
     },
