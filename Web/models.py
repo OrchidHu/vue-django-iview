@@ -3,8 +3,11 @@ from django.db import models
 from django.contrib.auth.models import (
     UserManager, AbstractUser)
 from django.utils import timezone
+from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 from Utils.my_validators import UserIDCardValidator, PhoneValidator
+from django.contrib import admin
+
 
 class XYUser(AbstractUser):
     id_card_validator = UserIDCardValidator()
@@ -55,7 +58,7 @@ class XYUser(AbstractUser):
         max_length=200,
         null=True,
         blank=True,
-        upload_to='driver/%Y/%m/%d'
+        upload_to='images/%Y/%m/%d'
     )
     position = models.CharField(
         verbose_name=_('职位'),
@@ -90,4 +93,10 @@ class XYUser(AbstractUser):
             ('setting_manage',u'设置管理')
         )
 
-
+    def display_name(self):
+        return format_html(
+            '<span style="color: #2d8cf0;">{} {}</span>',
+            self.first_name,
+            self.last_name,
+        )
+    display_name.short_description = u"姓 名"

@@ -28,10 +28,10 @@
                             设置
                         </MenuItem>
                         <MenuItem name="6">
-                          <fullScreen v-model="isFullscreen"/>
+                            <fullScreen v-model="isFullscreen"/>
                         </MenuItem>
                         <MenuItem name="7">
-                            <loginOut/>
+                            <loginOut :user-avator="userAvator"/>
                         </MenuItem>
                     </div>
                 </Menu>
@@ -60,6 +60,7 @@
 import FullScreen from '@/components/fullScreen'
 import LoginOut from '@/components/login-out'
 import Logo from '@/assets/images/logo.jpg'
+
 export default {
   name: 'Main',
   data () {
@@ -71,8 +72,14 @@ export default {
   },
   components: {LoginOut, FullScreen},
   computed: {
-    getImage () {
-      return this.$store.state.avatorImgPath
+    userAvator () {
+      // let aa = 'images/2018/11/16/VXR5LLL18U_LNVNKCZECK.png'
+      let avator = this.$store.state.avator
+      if (!avator) {
+        // return '' //如果后台没有传avator参数, 则使用的iview默认图片
+        return // 直接return使用的是props默认值
+      }
+      return require('@/assets/' + avator)
     }
   }
 }

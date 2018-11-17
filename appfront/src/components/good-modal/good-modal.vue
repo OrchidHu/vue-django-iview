@@ -12,14 +12,28 @@
       <FormItem label="类别" prop="genre">
         <Input v-model="modalData.form.genre"/>
       </FormItem>
-      <FormItem label="进价" prop="buy_price">
+      <FormItem label="单位" prop="quantify_id">
+        <Select v-model="modalData.form.quantify_id" filterable label-in-value
+                @on-change="onChangeQuantify" clearable style="width:200px">
+          <Option v-for="item in quantifyList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+        </Select>
+      </FormItem>
+      <Row>
+      <Col span="12">
+      <FormItem style="width: 200px" label="进价" prop="buy_price">
         <InputNumber style="width: auto" v-model="modalData.form.buy_price" number/>
       </FormItem>
-      <FormItem label="售价" prop="sale_price">
+      </Col>
+      <Col span="12">
+      <FormItem style="width: 200px; " label="售价" prop="sale_price">
         <InputNumber style="width: auto" v-model="modalData.form.sale_price" number/>
       </FormItem>
-      <FormItem label="供应商" prop="supplier">
-        <Input v-model="modalData.form.supplier"/>
+      </Col></Row>
+      <FormItem label="供应商" prop="supplier_id">
+        <Select v-model="modalData.form.supplier_id" filterable label-in-value
+                @on-change="onChageSupplier" clearable style="width:200px">
+          <Option v-for="item in supplierList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+        </Select>
       </FormItem>
     </Form>
     <div slot="close" @click="closeTheModal"><Icon type="ios-close" /></div>
@@ -52,60 +66,46 @@ export default {
           {required: true, message: '请输入条码'},
           {validator (rule, value, callback) {
             var errors = []
-            if (!/^[0-9]+$/.test(value)) {
-              callback('条码必须为数字值')
-            }
+            if (!/^[0-9]+$/.test(value)) { callback('条码必须为数字值') }
             callback(errors)
           }}
         ]
       }
     },
-    nameRules: {
-      type: Array,
+    nameRules: {type: Array,
       default: () => {
-        return [
-          {required: true, message: '请输入名称', trigger: 'change'}
-        ]
+        return [{required: true, message: '请输入名称', trigger: 'change'}]
       }
     },
-    genreRules: {
-      type: Array,
+    genreRules: {type: Array,
       default: () => {
-        return [
-          {required: true, message: '请输入类别', trigger: 'change'}
-        ]
+        return [{required: true, message: '请输入类别', trigger: 'change'}]
       }
     },
-    buyPriceRules: {
-      type: Array,
+    buyPriceRules: {type: Array,
       default: () => {
-        return [
-          {required: true, message: '请输入进价'},
-          {type: 'number', message: '输入正确的数字', trigger: 'change'}
-        ]
+        return [{required: true, message: '请输入进价'},
+          {type: 'number', message: '输入正确的数字', trigger: 'change'}]
       }
     },
-    salePriceRules: {
-      type: Array,
+    salePriceRules: {type: Array,
       default: () => {
-        return [
-          {required: true, message: '请输入售价'},
+        return [{required: true, message: '请输入售价'},
           {type: 'number', message: '请输入正确的数字', trigger: 'change'}
         ]
       }
     },
-    supplierRules: {
-      type: Array,
-      default: () => {
-        return [
-          {required: true, message: '请输入供应商', trigger: 'change'}
-        ]
+    supplierIdRules: {type: Array,
+      default: () => { // 此处value为id是数字，所以type为number，不然被视为没选
+        return [{required: true, message: '请输入供应商'},
+          {type: 'number', message: '请输入正确的数字', trigger: 'change'}]
       }
     }
   },
   data () {
     return {
-
+      quantifyList: [],
+      supplierList: []
     }
   },
   computed: {
@@ -116,11 +116,21 @@ export default {
         genre: this.genreRules,
         buy_price: this.buyPriceRules,
         sale_price: this.salePriceRules,
-        supplier: this.supplierRules
+        supplier_id: this.supplierIdRules
       }
     }
   },
   methods: {
+    onChangeQuantify (data) {
+      if (data) {
+        this.modalData.form.quantify = data.label
+      }
+    },
+    onChageSupplier (data) {
+      if (data) {
+        this.modalData.form.supplier = data.label
+      }
+    },
     closeTheModal () { // 为了避免新建和更新共用Modal在校验上存在缓存问题 如:(如关闭更新Modal后打开新建Modal出现"校验红字")
       this.$refs.goodForm.resetFields()
       this.modalData.openModal = false
@@ -133,12 +143,12 @@ export default {
               if (res.data.stat === 'success') {
                 this.$Message.success('新建成功')
                 this.modalData.form.id = res.data.id // 把新建的商品的id传到前端
+                this.modalData.supplier = this.supplierList
                 const copyData = Object.assign({}, this.modalData.form)
                 this.$emit('modal-success-valid', copyData)
                 this.modalData.openModal = false
                 this.$refs.goodForm.resetFields()
               } else {
-                console.log(res.data)
                 this.$Message.error(res.data.msg)
               }
             })
@@ -167,7 +177,6 @@ export default {
                 this.$refs.goodForm.resetFields()
                 this.modalData.openModal = false
               } else {
-                console.log(res.data)
                 this.$Message.error(res.data.msg)
               }
             })
@@ -177,6 +186,12 @@ export default {
     }
   },
   mounted () {
+    ajaxGet(config.getQuantifyUrl).then(res => {
+      this.quantifyList = res.data.data
+    })
+    ajaxGet(config.getSupplierUrl).then(res => {
+      this.supplierList = res.data.data
+    })
   }
 }
 </script>

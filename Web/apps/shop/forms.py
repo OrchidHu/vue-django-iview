@@ -24,8 +24,7 @@ class CreateGoodForm(forms.ModelForm):
             'name',
             'genre',
             'buy_price',
-            'sale_price',
-            'supplier'
+            'sale_price'
         )
         error_messages = {
             "bar_id": {

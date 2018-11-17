@@ -34,9 +34,12 @@ class Good(View):
                 'bar_id': data.bar_id,
                 'name': data.name,
                 'genre': data.genre,
+                'quantify': data.quantify.name if data.quantify else '-',
+                'quantify_id': data.quantify.id if data.quantify else None,
                 'buy_price': data.buy_price,
                 'sale_price': data.sale_price,
-                'supplier': data.supplier
+                'supplier': data.supplier.name if data.supplier else '-',
+                'supplier_id': data.supplier.id if data.supplier else None
             }
             ret.append(good_data)
         return ret
@@ -55,7 +58,10 @@ class CreateGood(View):
             return JsonError("商品已存在")
         form = CreateGoodForm(data)
         if form.is_valid():
-           form.save()
+           good = form.save(commit=False)
+           good.supplier_id = data['supplier_id']
+           good.quantify_id = data['quantify_id']
+           good.save()
            good_id = form.instance.id
            return JsonSuccess("创建成功", id=good_id)
         else:
@@ -82,8 +88,11 @@ class UpdateGood(View):
         else:
             form = CreateGoodForm(data)
         if form.is_valid():
-            form.save()
-            return JsonSuccess("创建成功")
+            good = form.save(commit=False)
+            good.supplier_id = data['supplier_id']
+            good.quantify_id = data['quantify_id']
+            good.save()
+            return JsonSuccess("保存成功")
         return JsonError("提交数据有误")
 
 

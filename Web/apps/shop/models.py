@@ -13,9 +13,17 @@ class Good(models.Model):
         max_length=200,
         verbose_name=u'名称'
     )
-    genre= models.CharField(
+    genre = models.CharField(
         max_length=100,
         verbose_name=u"类别"
+    )
+    quantify = models.ForeignKey(
+        'common.Quantify',
+        verbose_name=u'单位',
+        related_name="q_goods",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
     )
     buy_price = models.FloatField(
         verbose_name=u"进货价"
@@ -23,12 +31,13 @@ class Good(models.Model):
     sale_price = models.FloatField(
         verbose_name=u"销售价"
     )
-    supplier = models.CharField(
-        max_length=200,
+    supplier = models.ForeignKey(
+        'common.Supplier',
+        on_delete=models.PROTECT, # 设为删除保护
+        related_name="to_shops",
+        verbose_name=u"供货商",
         null=True,
-        blank=True,
-        default=u"临时供应商",
-        verbose_name=u"供货商"
+        blank=True
     )
 
     class Meta:

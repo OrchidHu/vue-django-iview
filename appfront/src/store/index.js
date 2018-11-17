@@ -9,13 +9,13 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     userName: '',
-    avatorImgPath: '',
+    avator: '',
     token: '',
     sessionId: ''
   },
   mutations: {
     setAvator (state, avatorPath) {
-      state.avatorImgPath = avatorPath
+      state.avator = avatorPath
     },
     setUserName (state, name) {
       state.userName = name
@@ -44,6 +44,8 @@ export default new Vuex.Store({
             commit('setToken', data.token)
             commit('setSessionId', data.session_id)
             commit('setUserName', data.username)
+            commit('setAvator', data.avator)
+            console.log(data.avatar)
           }
           resolve(data)
         }).catch(err => {

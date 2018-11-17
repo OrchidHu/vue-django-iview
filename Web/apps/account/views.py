@@ -1,5 +1,7 @@
 # -*- coding: UTF-8 -*-
 import json
+import re
+
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import LogoutView
 from django.views.generic import View
@@ -29,6 +31,7 @@ class Login(View):
             session_id = request.session.session_key
             ret['token'] = token
             ret['session_id'] = session_id
+            ret['avator'] = user.avatar.name if user.avatar else None
             return JsonSuccess('登录成功', **ret)
         user = XYUser.objects.filter(username=username).first()
         if not user:

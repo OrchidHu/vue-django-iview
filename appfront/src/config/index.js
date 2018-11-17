@@ -26,5 +26,7 @@ export default {
   goodUrl: djangoUrl + 'shop/good/',
   createGoodUrl: djangoUrl + 'shop/create_good',
   updateGoodUrl: djangoUrl + 'shop/update_good',
-  deleteGoodUrl: djangoUrl + 'shop/delete_good'
+  deleteGoodUrl: djangoUrl + 'shop/delete_good',
+  getQuantifyUrl: djangoUrl + 'common/quantify_list',
+  getSupplierUrl: djangoUrl + 'common/supplier_list'
 }

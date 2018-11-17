@@ -40,7 +40,8 @@ INSTALLED_APPS = (
     # 新加的app
     'corsheaders',
     'Web',
-    'Web.apps.shop'
+    'Web.apps.shop',
+    'Web.apps.common'
 )
 
 AUTH_USER_MODEL = 'Web.XYUser'
@@ -89,6 +90,7 @@ DATABASES = {
         'PASSWORD':'123456',
         'HOST':'127.0.0.1',
         'PORT':'3306',
+        'charset': 'utf8'
     }
 }
 
@@ -135,8 +137,8 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "iviewpage/dist/static" )
 ]
 STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
-MEDIA_ROOT = '/static'
+MEDIA_URL = '/appfront/src/assets/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'appfront/src/assets/').replace('\\', '/')
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 

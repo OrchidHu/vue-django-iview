@@ -6,13 +6,13 @@
     <Input @on-search="searchName" v-model="nameValue" search placeholder="名称"  style="width: auto" />
     <Button @click="searchSubmit" style="background: #2d8cf0; color: white">联合搜索</Button>
     <a style="padding-left: 20px" @click="reSetData"> 重置</a>
+    <a v-if="selected" style="margin-left: 20px; color: chartreuse;">已选择 {{selectCount}} 项</a>
     <Button @click="createGood" style="float: right; margin-right: 50px; color: white; background: #2d8cf0">新建</Button>
     </div>
     <Table @on-row-dblclick="editGood"
            @on-sort-change="handleSortChange"
            @on-filter-change="handleFilterChange"
-           @on-select="handleSelect"
-           @on-select-cancel="handleSelectCancle"
+           @on-selection-change="handleSelect"
            border stripe show-header
            :height="fixedHeader ? 390 : ''"
            :loading="tableLoading"
@@ -32,7 +32,7 @@
             ></Page>
         </span>
     </div>
-  <good-modal v-bind:modalData="modalData" @modal-success-valid="handleSubmit"></good-modal>
+  <good-modal :modal-data="modalData" @modal-success-valid="handleSubmit"></good-modal>
 </div>
 </template>
 <script>
@@ -45,9 +45,12 @@ const formData = {
   bar_id: '',
   name: '',
   genre: '',
+  quantify: '',
+  quantify_id: null,
   buy_price: null,
   sale_price: null,
-  supplier: ''
+  supplier: '',
+  supplier_id: null
 }
 
 export default {
@@ -76,7 +79,8 @@ export default {
       columns: [],
       selected: null,
       barIdValue: null,
-      nameValue: null
+      nameValue: null,
+      selectCount: 0
     }
   },
 
@@ -97,9 +101,10 @@ export default {
       columns.push({ title: '条码', key: 'bar_id' })
       columns.push({ title: '名称', key: 'name' })
       columns.push({ title: '类别', key: 'genre' })
+      columns.push({ title: '单位', key: 'quantify' })
       columns.push({ title: '进价', key: 'buy_price', sortable: 'custom' })
       columns.push({ title: '售价', key: 'sale_price' })
-      columns.push({ title: '供货商', key: 'supplier' })
+      columns.push({ title: '供应商', key: 'supplier' })
       return columns
     },
     // 过滤排序筛选数据
@@ -210,11 +215,9 @@ export default {
       })
     },
     // 当多选框开启的时候，选择某项触发
-    handleSelect (selection, row) {
+    handleSelect (selection) {
       this.selected = selection
-    },
-    handleSelectCancle (selection, row) {
-      this.selected = selection
+      this.selectCount = selection.length
       if (selection.length === 0) {
         this.selected = null
       }
