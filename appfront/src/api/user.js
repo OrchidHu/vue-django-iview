@@ -29,5 +29,5 @@ export const ajaxGet = (url, data) => {
       data
     },
     method: 'get'
-  })
+  }, 1000)
 }

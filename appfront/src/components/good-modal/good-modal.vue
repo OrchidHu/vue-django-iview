@@ -39,8 +39,10 @@
     <div slot="close" @click="closeTheModal"><Icon type="ios-close" /></div>
     <div slot="footer">
       <Button type="text" size="large" @click="closeTheModal">取消</Button>
-      <Button v-if="modalData.changeType==='create'" type="primary" size="large" @click="handleSubmitToCreate">确定</Button>
-      <Button v-if="modalData.changeType==='edit'" type="primary" size="large" @click="handleSubmitToSave">保存</Button>
+      <Button v-if="modalData.changeType==='create'" type="primary" size="large"
+              @click="handleSubmitToCreate" :loading="createLoading">确定</Button>
+      <Button v-if="modalData.changeType==='edit'" type="primary" size="large"
+              @click="handleSubmitToSave" :loading="saveLoading">保存</Button>
     </div>
   </Modal>
 </template>
@@ -65,7 +67,9 @@ export default {
         return [
           {required: true, message: '请输入条码'},
           {validator (rule, value, callback) {
+            let errors = []
             if (!/^[0-9]+$/.test(value)) { callback('条码必须为数字值') }
+            callback(errors)
           }}
         ]
       }
@@ -84,9 +88,10 @@ export default {
       default: () => {
         return [{required: true, message: '请输入进价'},
           {type: 'number', message: '输入正确的数字', trigger: 'change'},
-          { validator (rule, value, callback) {
-            if (value < 0) { callback('进价不能小于零')}}
-          }
+          { validator (rule, value, callback) {let errors = []
+            if (value < 0) { callback('进价不能小于零')}
+            callback(errors)
+          }}
         ]
       }
     },
@@ -94,9 +99,10 @@ export default {
       default: () => {
         return [{required: true, message: '请输入售价'},
           {type: 'number', message: '请输入正确的数字', trigger: 'change'},
-          {validator (rule, value, callback) {
-            if (value < 0) { callback('售价不能小于零')}}
-          }
+          {validator (rule, value, callback) { let errors = []
+            if (value < 0) { callback('售价不能小于零')}
+            callback(errors)
+          }}
         ]
       }
     },
@@ -109,6 +115,8 @@ export default {
   },
   data () {
     return {
+      saveLoading: false,
+      createLoading: false,
       quantifyList: [],
       supplierList: []
     }
@@ -141,6 +149,8 @@ export default {
       this.modalData.openModal = false
     },
     handleSubmitToCreate () {
+      // if (this.createLoading) return
+      this.createLoading = true
       this.$refs.goodForm.validate((valid) => {
         if (valid) {
           if (this.myValidate()) {
@@ -160,6 +170,7 @@ export default {
           }
         }
       })
+      this.createLoading = false
     },
     myValidate () {
       let buySprice = this.modalData.form.buy_price
@@ -172,6 +183,8 @@ export default {
       }
     },
     handleSubmitToSave () {
+      // if (this.saveLoading) return
+      this.saveLoading = true
       this.$refs.goodForm.validate((valid) => {
         if (valid) {
           if (this.myValidate()) {
@@ -184,7 +197,8 @@ export default {
               } else {
                 this.$Message.error(res.data.msg)
               }
-            })
+              this.saveLoading = false
+            }, 20)
           }
         }
       })
