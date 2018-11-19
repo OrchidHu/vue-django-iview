@@ -22,7 +22,6 @@ class CreateGoodForm(forms.ModelForm):
         fields = (
             'bar_id',
             'name',
-            'genre',
             'buy_price',
             'sale_price'
         )

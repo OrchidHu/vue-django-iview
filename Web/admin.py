@@ -2,7 +2,7 @@
 # Register your models here.
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
-from Web.apps.common.models import Quantify, Supplier
+from Web.apps.common.models import Quantify, Supplier, Genre
 from Web.apps.shop.models import Good
 from Web.models import XYUser
 from django.contrib.auth.admin import UserAdmin
@@ -40,5 +40,9 @@ admin.site.site_header = '鑫意超市后台管理系统'
 
 # django1.7后新增了@admin.register装饰器向admin注册，这里废弃使用原有注册方式 admin.site.register()
 # admin.site.register(XYUser, XYUserAdmin)
+class GenreAdmin(admin.ModelAdmin):
+    list_display = ('title', 'parent', 'display_level')
+
+admin.site.register(Genre, GenreAdmin)
 admin.site.register(Quantify)
 admin.site.register(Supplier)

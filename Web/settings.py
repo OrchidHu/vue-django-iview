@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 新加的app
+    'mptt',
     'corsheaders',
     'Web',
     'Web.apps.shop',

@@ -13,9 +13,13 @@ class Good(models.Model):
         max_length=200,
         verbose_name=u'名称'
     )
-    genre = models.CharField(
-        max_length=100,
-        verbose_name=u"类别"
+    genre = models.ForeignKey(
+        'common.Genre',
+        verbose_name=u"类别",
+        related_name="genre_goods",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True
     )
     quantify = models.ForeignKey(
         'common.Quantify',

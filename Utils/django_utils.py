@@ -21,6 +21,28 @@ def redis_get(key):
         return bytes.decode(ret, encoding = "utf8")
     return ""
 
+def get_genre_parent_id(child_data):
+    if not child_data:
+        return []
+    ret = [child_data.id]
+    while child_data.parent:
+        ret.append(child_data.parent_id)
+        child_data = child_data.parent
+    return ret[::-1]
+
+def genre_display(query_data):
+    display_list= []
+    for genre in query_data:
+        parent_dist = {
+            'value': genre.id,
+            'label': genre.title
+        }
+        display_list.append(parent_dist)
+
+        children= genre.children.all()
+        if len(children) > 0:
+            parent_dist['children'] = genre_display(children)
+    return display_list
 
 def parse_put(request):
     payload = request.read()

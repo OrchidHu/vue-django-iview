@@ -15,5 +15,10 @@ urlpatterns =[
         r'supplier_list',
         views.SupplierList.as_view(),
         name='supplier_list'
+    ),
+    path(
+        r'genre_list',
+        views.GenreList.as_view(),
+        name='genre_list'
     )
 ]

@@ -45,6 +45,7 @@ const formData = {
   bar_id: '',
   name: '',
   genre: '',
+  genre_id: [],
   quantify: '',
   quantify_id: null,
   buy_price: null,

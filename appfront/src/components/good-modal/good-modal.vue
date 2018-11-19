@@ -9,8 +9,8 @@
       <FormItem label="名称" label-for="name" prop="name" >
         <Input element-id="name" v-model="modalData.form.name"/>
       </FormItem>
-      <FormItem label="类别" prop="genre">
-        <Input v-model="modalData.form.genre"/>
+      <FormItem label="类别" prop="genre_id">
+        <Cascader :data="genreList" v-model="modalData.form.genre_id" @on-change="onChangeGenre"></Cascader>
       </FormItem>
       <FormItem label="单位" prop="quantify_id">
         <Select v-model="modalData.form.quantify_id" filterable label-in-value
@@ -88,8 +88,9 @@ export default {
       default: () => {
         return [{required: true, message: '请输入进价'},
           {type: 'number', message: '输入正确的数字', trigger: 'change'},
-          { validator (rule, value, callback) {let errors = []
-            if (value < 0) { callback('进价不能小于零')}
+          { validator (rule, value, callback) {
+            let errors = []
+            if (value < 0) { callback('进价不能小于零') }
             callback(errors)
           }}
         ]
@@ -99,8 +100,9 @@ export default {
       default: () => {
         return [{required: true, message: '请输入售价'},
           {type: 'number', message: '请输入正确的数字', trigger: 'change'},
-          {validator (rule, value, callback) { let errors = []
-            if (value < 0) { callback('售价不能小于零')}
+          {validator (rule, value, callback) {
+            let errors = []
+            if (value < 0) { callback('售价不能小于零') }
             callback(errors)
           }}
         ]
@@ -108,8 +110,7 @@ export default {
     },
     supplierIdRules: {type: Array,
       default: () => { // 此处value为id是数字，所以type为number，不然被视为没选
-        return [{required: true, message: '请输入供应商'},
-          {type: 'number', message: '请输入正确的数字', trigger: 'change'}]
+        return [{ type: 'number', required: true, message: '请选择供应商', trigger: 'change'}]
       }
     }
   },
@@ -118,7 +119,8 @@ export default {
       saveLoading: false,
       createLoading: false,
       quantifyList: [],
-      supplierList: []
+      supplierList: [],
+      genreList: []
     }
   },
   computed: {
@@ -144,12 +146,17 @@ export default {
         this.modalData.form.supplier = data.label
       }
     },
+    onChangeGenre (value, selectedData) {
+      if (selectedData.length > 0) {
+        this.modalData.form.genre = selectedData[selectedData.length - 1].label
+      }
+    },
     closeTheModal () { // 为了避免新建和更新共用Modal在校验上存在缓存问题 如:(如关闭更新Modal后打开新建Modal出现"校验红字")
       this.$refs.goodForm.resetFields()
       this.modalData.openModal = false
     },
     handleSubmitToCreate () {
-      // if (this.createLoading) return
+      if (this.createLoading) return
       this.createLoading = true
       this.$refs.goodForm.validate((valid) => {
         if (valid) {
@@ -159,6 +166,9 @@ export default {
                 this.$Message.success('新建成功')
                 this.modalData.form.id = res.data.id // 把新建的商品的id传到前端
                 this.modalData.supplier = this.supplierList
+                if (this.modalData.form.genre_id.length === 0) {
+                  this.modalData.form.genre = null
+                }
                 const copyData = Object.assign({}, this.modalData.form)
                 this.$emit('modal-success-valid', copyData)
                 this.modalData.openModal = false
@@ -191,6 +201,9 @@ export default {
             ajaxGet(config.updateGoodUrl, this.modalData.form).then(res => {
               if (res.data.stat === 'success') {
                 this.$Message.success('保存成功')
+                if (this.modalData.form.genre_id.length === 0) {
+                  this.modalData.form.genre = '-'
+                }
                 this.$emit('modal-success-valid', this.modalData.form)
                 this.$refs.goodForm.resetFields()
                 this.modalData.openModal = false
@@ -210,6 +223,9 @@ export default {
     })
     ajaxGet(config.getSupplierUrl).then(res => {
       this.supplierList = res.data.data
+    })
+    ajaxGet(config.getGenreUrl).then(res => {
+      this.genreList = res.data.data
     })
   }
 }

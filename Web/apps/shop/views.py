@@ -5,7 +5,7 @@ from django.contrib.auth import logout
 from django.views.generic import View
 
 import Web.apps.shop.models as model
-from Utils.django_utils import  JsonError, JsonSuccess, redis_get, JsonReLogin, JsonForbid
+from Utils.django_utils import  JsonError, JsonSuccess, redis_get, JsonReLogin, JsonForbid, get_genre_parent_id
 from Web.apps.shop.forms import CreateGoodForm
 
 
@@ -33,7 +33,8 @@ class Good(View):
                 'id': data.id,
                 'bar_id': data.bar_id,
                 'name': data.name,
-                'genre': data.genre,
+                'genre': data.genre.title if data.genre else '-',
+                'genre_id': get_genre_parent_id(data.genre),
                 'quantify': data.quantify.name if data.quantify else '-',
                 'quantify_id': data.quantify.id if data.quantify else None,
                 'buy_price': data.buy_price,
@@ -61,6 +62,7 @@ class CreateGood(View):
            good = form.save(commit=False)
            good.supplier_id = data['supplier_id']
            good.quantify_id = data['quantify_id']
+           good.genre_id = data['genre_id'][-1] if data['genre_id'] else None
            good.save()
            good_id = form.instance.id
            return JsonSuccess("创建成功", id=good_id)
@@ -91,6 +93,7 @@ class UpdateGood(View):
             good = form.save(commit=False)
             good.supplier_id = data['supplier_id']
             good.quantify_id = data['quantify_id']
+            good.genre_id = data['genre_id'][-1] if data['genre_id'] else None
             good.save()
             return JsonSuccess("保存成功")
         return JsonError("提交数据有误")

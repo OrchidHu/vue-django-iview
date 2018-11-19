@@ -6,7 +6,6 @@ from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 from Utils.my_validators import UserIDCardValidator, PhoneValidator
-from django.contrib import admin
 
 
 class XYUser(AbstractUser):
