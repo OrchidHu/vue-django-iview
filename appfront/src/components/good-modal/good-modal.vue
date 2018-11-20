@@ -4,13 +4,13 @@
     <Form ref="goodForm" :model="modalData.form" :rules="rules" :label-width="50"
           @keydown.enter.native="handleSubmitToCreate">
       <FormItem label="条码"  label-for="bar-id" prop="bar_id" >
-        <Input element-id="bar-id" v-model="modalData.form.bar_id"/>
+        <Input element-id="bar-id" v-model="modalData.form.bar_id" autofocus/>
       </FormItem>
       <FormItem label="名称" label-for="name" prop="name" >
         <Input element-id="name" v-model="modalData.form.name"/>
       </FormItem>
       <FormItem label="类别" prop="genre_id">
-        <Cascader :data="genreList" v-model="modalData.form.genre_id" @on-change="onChangeGenre"></Cascader>
+        <Cascader :data="genreList" v-model="modalData.form.genre_id" filterable @on-change="onChangeGenre"></Cascader>
       </FormItem>
       <FormItem label="单位" prop="quantify_id">
         <Select v-model="modalData.form.quantify_id" filterable label-in-value
@@ -120,7 +120,9 @@ export default {
       createLoading: false,
       quantifyList: [],
       supplierList: [],
-      genreList: []
+      genreList: [],
+      v1: false,
+      v2: true
     }
   },
   computed: {
@@ -193,7 +195,7 @@ export default {
       }
     },
     handleSubmitToSave () {
-      // if (this.saveLoading) return
+      if (this.saveLoading) return
       this.saveLoading = true
       this.$refs.goodForm.validate((valid) => {
         if (valid) {

@@ -59,13 +59,16 @@ class CreateGood(View):
             return JsonError("商品已存在")
         form = CreateGoodForm(data)
         if form.is_valid():
-           good = form.save(commit=False)
-           good.supplier_id = data['supplier_id']
-           good.quantify_id = data['quantify_id']
-           good.genre_id = data['genre_id'][-1] if data['genre_id'] else None
-           good.save()
-           good_id = form.instance.id
-           return JsonSuccess("创建成功", id=good_id)
+            good = form.save(commit=False)
+            good.supplier_id = data['supplier_id']
+            good.quantify_id = data['quantify_id']
+            good.genre_id = data['genre_id'][-1] if data['genre_id'] else None
+            try:
+                good.save()
+            except Exception:
+                return JsonError("新建失败")
+            good_id = form.instance.id
+            return JsonSuccess("创建成功", id=good_id)
         else:
             for key in form.errors:
                return JsonError(form.errors[key][0])

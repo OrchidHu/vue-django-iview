@@ -1,14 +1,28 @@
 <template>
 <div >
-  <div style="margin-left: 10px; font-size: 12px; height: 40px">
-    多选框 <i-switch v-model="showCheckbox" style="margin-right: 5px"></i-switch>
-    <Input @on-search="searchBarId" v-model="barIdValue" search placeholder="条码"  style="width: auto" />
-    <Input @on-search="searchName" v-model="nameValue" search placeholder="名称"  style="width: auto" />
-    <Button @click="searchSubmit" style="background: #2d8cf0; color: white">搜 索</Button>
-    <a style="padding-left: 20px" @click="reSetData"> 重置</a>
-    <a v-if="selected" style="margin-left: 20px; color: chartreuse;">已选择 {{selectCount}} 项</a>
-    <Button @click="createGood" style="float: right; margin-right: 50px; color: white; background: #2d8cf0">新建</Button>
-    </div>
+  <div style=" font-size: 12px; height: 40px">
+    <Row type="flex" justify="center" align="middle" :gutter="4">
+        <Col span="2">
+          多选框 <i-switch v-model="showCheckbox"></i-switch>
+        </Col>
+      <Col span="4">
+        <Cascader :data="genreList" filterable v-model="genreSelected" @on-change="onChangeGenre" placeholder="选择类别"></Cascader>
+      </Col>
+      <Col span="5">
+        <Input v-model="searchValue"  @keydown.enter.native="searchSubmit" search placeholder="条码 / 名称"/>
+      </Col>
+      <Col span="2">
+        <Button @click="searchSubmit" style="background: #2d8cf0; color: white">搜 索</Button>
+      </Col>
+      <Col span="8">
+        <a @click="reSetData"> 重置</a>
+
+        <a v-if="selected" style="margin-left: 20px; color: chartreuse;">已选择 {{selectCount}} 项</a>
+      </Col>
+      <Col span="3">
+      <Button @click="createGood" style="margin-right: 50px; color: white; background: #2d8cf0">新建</Button>
+    </Col></Row>
+  </div>
     <Table @on-row-dblclick="editGood"
            @on-sort-change="handleSortChange"
            @on-filter-change="handleFilterChange"
@@ -79,9 +93,11 @@ export default {
       copyFullData: [], // 全量数据，用作筛选，搜索，排序的操作
       columns: [],
       selected: null,
-      barIdValue: null,
-      nameValue: null,
-      selectCount: 0
+      searchValue: null,
+      selectCount: 0,
+      genreList: [],
+      genreSelected: [],
+      genreFilterFullData: []
     }
   },
 
@@ -137,41 +153,38 @@ export default {
   methods: {
     reSetData () {
       this.copyFullData = this.fullData
-      this.nameValue = null
-      this.barIdValue = null
+      this.searchValue = null
+      this.genreSelected = []
+      this.genreFilterFullData = []
     },
-    searchBarId () {
-      let result = []
-      this.nameValue = null
+    onChangeGenre (value, selectedData) {
+      if (selectedData.length < 1) return
+      this.genreFilterFullData = []
+      this.searchValue = []
       this.copyFullData = [...this.fullData]
-      if (!this.barIdValue) return
+      let label = selectedData[selectedData.length - 1].label
       for (let index in this.copyFullData) {
-        if (this.copyFullData[index].bar_id.indexOf(this.barIdValue) >= 0) {
-          result.push(this.copyFullData[index])
+        if (this.copyFullData[index].genre.indexOf(label) >= 0) {
+          this.genreFilterFullData.push(this.copyFullData[index])
         }
       }
-      this.copyFullData = result
-    },
-    searchName () {
-      let result = []
-      this.barIdValue = null
-      this.copyFullData = [...this.fullData]
-      if (!this.nameValue) return
-      for (let index in this.copyFullData) {
-        if (this.copyFullData[index].name.indexOf(this.nameValue) >= 0) {
-          result.push(this.copyFullData[index])
-        }
-      }
-      this.copyFullData = result
+      this.copyFullData = this.genreFilterFullData
     },
     searchSubmit () {
+      if (!this.searchValue && this.genreSelected < 1) {
+        this.copyFullData = [...this.fullData]
+        return
+      }
+      if (this.genreSelected.length < 1) {
+        this.copyFullData = [...this.fullData]
+      } else {
+        this.copyFullData = this.genreFilterFullData
+      }
+      if (!this.searchValue) return
       let result = []
-      this.copyFullData = [...this.fullData]
-      if (!this.nameValue) return this.searchBarId()
-      if (!this.barIdValue) return this.searchName()
       for (let index in this.copyFullData) {
-        if (this.copyFullData[index].name.indexOf(this.nameValue) >= 0 &&
-          this.copyFullData[index].bar_id.indexOf(this.barIdValue) >= 0) {
+        if (this.copyFullData[index].name.indexOf(this.searchValue) >= 0 ||
+          this.copyFullData[index].bar_id.indexOf(this.searchValue) >= 0) {
           result.push(this.copyFullData[index])
         }
       }
@@ -237,6 +250,7 @@ export default {
           this.cleanData[this.editIndex][key] = data[key] // 索引更改值，所有包括copyFullData，fullData都会被改变
         }
       }
+      this.reSetData()
     }
     // getData () {
     //   this.$http.get(config.goodUrl, {withCredentials: true}).then(res => {
@@ -279,7 +293,9 @@ export default {
     })
   },
   mounted () {
-
+    ajaxGet(config.getGenreUrl).then(res => {
+      this.genreList = res.data.data
+    })
   }
 }
 </script>

@@ -3,9 +3,13 @@
         <Layout>
             <Header class="header-con">
                 <Menu class="menu-con" mode="horizontal" :theme="theme1" active-name="1">
+                  <Row>
+                    <Col span="8">
                     <div class="layout-logo">
                       <img  height="30" width="80" :src="Logo" key="logo" />
                     </div>
+                    </Col>
+                    <Col span="16">
                     <div class="layout-nav">
                         <MenuItem name="1" to="/good/good_page">
                             <Icon type="ios-navigate"></Icon>
@@ -34,8 +38,9 @@
                             <loginOut :user-avator="userAvator"/>
                         </MenuItem>
                     </div>
+                    </Col>
+                  </Row>
                 </Menu>
-
             </Header>
             <Content :style="{padding: '0 50px'}">
                 <Breadcrumb :style="{margin: '15px 0'}">
