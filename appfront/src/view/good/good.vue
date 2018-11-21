@@ -157,10 +157,10 @@ export default {
       this.genreSelected = []
       this.genreFilterFullData = []
     },
-    onChangeGenre (value, selectedData) {
+    onChangeGenre (a, selectedData) {
       if (selectedData.length < 1) return
       this.genreFilterFullData = []
-      this.searchValue = []
+      this.searchValue = null
       this.copyFullData = [...this.fullData]
       let label = selectedData[selectedData.length - 1].label
       for (let index in this.copyFullData) {
@@ -171,7 +171,7 @@ export default {
       this.copyFullData = this.genreFilterFullData
     },
     searchSubmit () {
-      if (!this.searchValue && this.genreSelected < 1) {
+      if (!this.searchValue && this.genreSelected.length < 1) {
         this.copyFullData = [...this.fullData]
         return
       }

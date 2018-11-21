@@ -4,7 +4,7 @@
     <Form ref="goodForm" :model="modalData.form" :rules="rules" :label-width="50"
           @keydown.enter.native="handleSubmitToCreate">
       <FormItem label="条码"  label-for="bar-id" prop="bar_id" >
-        <Input element-id="bar-id" v-model="modalData.form.bar_id" autofocus/>
+        <Input element-id="bar-id" v-model="modalData.form.bar_id"/>
       </FormItem>
       <FormItem label="名称" label-for="name" prop="name" >
         <Input element-id="name" v-model="modalData.form.name"/>
@@ -17,6 +17,15 @@
                 @on-change="onChangeQuantify" clearable style="width:200px">
           <Option v-for="item in quantifyList" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>
+        <Poptip title="添加单位" v-model="openPopitp" placement="top-start" width=200 height=400>
+          <Icon style="margin-left: 20px; color: chartreuse;" size="18" type="md-add" /> 添加单位
+          <div slot="content" style="height: 80px">
+            <Input v-model="addQuantifyValue" />
+            <div>
+              <Button v-if=this.addQuantifyValue style="float: right; margin-top: 10px" @click="addQuantifySubmit">确定</Button>
+            </div>
+          </div>
+        </Poptip>
       </FormItem>
       <Row>
       <Col span="12">
@@ -121,8 +130,8 @@ export default {
       quantifyList: [],
       supplierList: [],
       genreList: [],
-      v1: false,
-      v2: true
+      addQuantifyValue: null,
+      openPopitp: false
     }
   },
   computed: {
@@ -142,6 +151,24 @@ export default {
       if (data) {
         this.modalData.form.quantify = data.label
       }
+    },
+    addQuantifySubmit () {
+      if (!this.addQuantifyValue.trim()) {
+        this.$Message.error('不能为空')
+        return
+      }
+      ajaxGet(config.addQuantifyUrl, this.addQuantifyValue).then(res => {
+        if (res.data.stat === 'success') {
+          this.modalData.form.quantify_id = res.data.data.current_id
+          this.quantifyList = res.data.data.quantify_list
+          this.modalData.form.quantify = this.addQuantifyValue
+          this.addQuantifyValue = null
+          this.$Message.success(res.data.msg)
+          this.openPopitp = false
+        } else {
+          this.$Message.error(res.data.msg)
+        }
+      })
     },
     onChageSupplier (data) {
       if (data) {
@@ -213,7 +240,7 @@ export default {
                 this.$Message.error(res.data.msg)
               }
               this.saveLoading = false
-            }, 20)
+            })
           }
         }
       })

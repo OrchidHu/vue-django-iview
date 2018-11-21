@@ -20,5 +20,10 @@ urlpatterns =[
         r'genre_list',
         views.GenreList.as_view(),
         name='genre_list'
-    )
+    ),
+    path(
+        r'add_quantify',
+        views.AddQuantify.as_view(),
+        name='add_quantify'
+    ),
 ]
