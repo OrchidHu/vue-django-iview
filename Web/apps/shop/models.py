@@ -1,6 +1,7 @@
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 
+
 class Good(models.Model):
     """商品资料"""
 
@@ -24,7 +25,7 @@ class Good(models.Model):
     quantify = models.ForeignKey(
         'common.Quantify',
         verbose_name=u'单位',
-        related_name="q_goods",
+        related_name="quantify_goods",
         on_delete=models.SET_NULL,
         null=True,
         blank=True
@@ -38,7 +39,7 @@ class Good(models.Model):
     supplier = models.ForeignKey(
         'common.Supplier',
         on_delete=models.PROTECT, # 设为删除保护
-        related_name="to_shops",
+        related_name="supplier_shops",
         verbose_name=u"供货商",
         null=True,
         blank=True
@@ -61,3 +62,49 @@ class Good(models.Model):
     @property
     def get_name(self):
         return self.name
+
+
+class GoodPackage(models.Model):
+    """商品其他包装"""
+
+    bar_id = models.CharField(
+        max_length=30,
+        verbose_name=u'包装条码',
+        unique=True
+    )
+    name = models.CharField(
+        max_length=200,
+        verbose_name=u'包装名称',
+        unique=True
+    )
+    quantify = models.ForeignKey(
+        'common.Quantify',
+        verbose_name=u"包装单位",
+        related_name="quantify_packages",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True
+    )
+    one_package = models.ForeignKey(
+        Good,
+        on_delete=models.CASCADE,
+        related_name="other_packages",
+        verbose_name=u"单个包装"
+    )
+    number = models.IntegerField(
+        verbose_name='包装数量'
+    )
+    package_price = models.FloatField(
+        verbose_name='包装售价'
+    )
+
+    class Meta:
+        ordering = ['-id']
+        verbose_name = _('其他包装')
+        verbose_name_plural = _('商品多包装')
+
+    def __unicode__(self):
+        return self.name
+
+    def __str__(self):
+        return self.__unicode__()

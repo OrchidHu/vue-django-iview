@@ -25,5 +25,15 @@ urlpatterns =[
         r'delete_good',
         views.Delete.as_view(),
         name='delete_good'
+    ),
+    path(
+        r'other_package_list',
+        views.OtherPackageList.as_view(),
+        name='other_package_list'
+    ),
+    path(
+        r'other_package',
+        views.OtherPackage.as_view(),
+        name='other_package'
     )
 ]

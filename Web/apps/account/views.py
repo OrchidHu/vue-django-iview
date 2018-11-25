@@ -8,6 +8,7 @@ from django.views.generic import View
 from Utils.django_utils import  JsonError, JsonSuccess, get_token, redis_get, redis_db
 from Web.models import XYUser
 
+
 class Login(View):
     """ 登录 """
 

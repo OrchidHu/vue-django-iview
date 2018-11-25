@@ -3,7 +3,7 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 from Web.apps.common.models import Quantify, Supplier, Genre
-from Web.apps.shop.models import Good
+from Web.apps.shop.models import Good, GoodPackage
 from Web.models import XYUser
 from django.contrib.auth.admin import UserAdmin
 
@@ -46,3 +46,4 @@ class GenreAdmin(admin.ModelAdmin):
 admin.site.register(Genre, GenreAdmin)
 admin.site.register(Quantify)
 admin.site.register(Supplier)
+admin.site.register(GoodPackage)

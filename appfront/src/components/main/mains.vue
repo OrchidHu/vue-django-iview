@@ -4,14 +4,15 @@
             <Header class="header-con">
                 <Menu class="menu-con" mode="horizontal" :theme="theme1" active-name="1">
                   <Row>
-                    <Col span="8">
+                    <Col span="4">
                     <div class="layout-logo">
                       <img  height="30" width="80" :src="Logo" key="logo" />
                     </div>
                     </Col>
-                    <Col span="16">
-                    <div class="layout-nav">
-                        <MenuItem name="1" to="/good/good_page">
+                    <!--<Col span="6"><div width="100%"></div></Col>-->
+                    <Col span="14" offset="6">
+                      <div class="layout-nav">
+                        <MenuItem name="8" to="/good/good_page">
                             <Icon type="ios-navigate"></Icon>
                             商品管理
                         </MenuItem>
@@ -37,7 +38,7 @@
                         <MenuItem name="7">
                             <loginOut :user-avator="userAvator"/>
                         </MenuItem>
-                    </div>
+                      </div>
                     </Col>
                   </Row>
                 </Menu>

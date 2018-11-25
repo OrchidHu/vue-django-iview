@@ -46,7 +46,7 @@
             ></Page>
         </span>
     </div>
-  <good-modal :modal-data="modalData" @modal-success-valid="handleSubmit"></good-modal>
+  <good-modal ref="child" :modal-data="modalData" @modal-success-valid="handleSubmit"></good-modal>
 </div>
 </template>
 <script>
@@ -207,6 +207,7 @@ export default {
       this.modalData.changeType = 'create'
       this.modalData.openModal = true
       this.modalData.form = Object.assign({}, formData)
+      this.$refs.child.modalChangeNotice()
     },
     // 双击修改当前行的值
     editGood (row, index) {
@@ -214,6 +215,7 @@ export default {
       this.modalData.openModal = true
       this.modalData.changeType = 'edit'
       this.modalData.form = Object.assign({}, row) // 把当前行的数据赋值给管道变量
+      this.$refs.child.modalChangeNotice() // 访问子组件方法，告知编辑点击事件
     },
     deleteGood () {
       if (this.deleteLoading) return

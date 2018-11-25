@@ -1,5 +1,6 @@
 from django import forms
-from Web.apps.shop.models import Good
+from Web.apps.shop.models import Good, GoodPackage
+
 
 class CreateGoodForm(forms.ModelForm):
 
@@ -10,6 +11,7 @@ class CreateGoodForm(forms.ModelForm):
         except ValueError:
             raise forms.ValidationError("请输入正确的条码")
         return bar_id
+
     def clean(self):
         buy_price = self.cleaned_data['buy_price']
         sale_price = self.cleaned_data['sale_price']
@@ -47,5 +49,40 @@ class CreateGoodForm(forms.ModelForm):
             "supplier": {
                 "max_length": u"供应商名称过长",
                 "required": u"供应商是必填项"
+            }
+        }
+
+
+class CreateOtherPackageForm(forms.ModelForm):
+
+    def clean_number(self):
+        number = self.cleaned_data['number']
+        if number <= 0:
+            raise forms.ValidationError("请正确输入包装数量")
+        return number
+
+    class Meta:
+        model = GoodPackage
+        fields = (
+            'bar_id',
+            'name',
+            'number',
+            'package_price'
+        )
+        error_messages = {
+            "bar_id": {
+                "max_length": u"包装条码过长",
+                "required": u"包装条码是必填项",
+                "unique": u"该包装条码已存在"
+            },
+            "name": {
+                "max_length": u"包装名称过长",
+                "required": u"包装名称是必填项"
+            },
+            "number": {
+                "required": u"包装数量是必填项"
+            },
+            "package_price": {
+                "required": u"包装售价是必填项"
             }
         }

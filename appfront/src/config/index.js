@@ -30,5 +30,7 @@ export default {
   getQuantifyUrl: djangoUrl + 'common/quantify_list',
   getSupplierUrl: djangoUrl + 'common/supplier_list',
   getGenreUrl: djangoUrl + 'common/genre_list',
-  addQuantifyUrl: djangoUrl + 'common/add_quantify'
+  addQuantifyUrl: djangoUrl + 'common/add_quantify',
+  getPackageData: djangoUrl + 'shop/other_package_list',
+  otherPackage: djangoUrl + 'shop/other_package'
 }

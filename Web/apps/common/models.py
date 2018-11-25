@@ -44,7 +44,9 @@ class Quantify(models.Model):
     name = models.CharField(
         max_length=30,
         verbose_name=u'单位',
-        unique=True
+        unique=True,
+        null=True,
+        blank=True
     )
 
     def __unicode__(self):

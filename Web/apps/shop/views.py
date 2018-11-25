@@ -5,8 +5,8 @@ from django.contrib.auth import logout
 from django.views.generic import View
 
 import Web.apps.shop.models as model
-from Utils.django_utils import  JsonError, JsonSuccess, redis_get, JsonReLogin, JsonForbid, get_genre_parent_id
-from Web.apps.shop.forms import CreateGoodForm
+from Utils.django_utils import JsonError, JsonSuccess, redis_get, JsonReLogin, JsonForbid, get_genre_parent_id
+from Web.apps.shop.forms import CreateGoodForm, CreateOtherPackageForm
 
 
 class Good(View):
@@ -24,7 +24,7 @@ class Good(View):
         return JsonForbid('没有权限')
 
     def get_data(self):
-        query_data =  model.Good.objects.all()
+        query_data = model.Good.objects.all()
         ret = []
         if not query_data:
             return ret
@@ -45,6 +45,7 @@ class Good(View):
             ret.append(good_data)
         return ret
 
+
 class CreateGood(View):
     """
     新建商品
@@ -53,25 +54,38 @@ class CreateGood(View):
     def get(self, request):
         json_data = request.GET.get('data')
         data = json.loads(json_data)
-        bar_id = data.get('bar_id')
+        form_data = data['form']
+        package_data = data['package_data']
+        bar_id = form_data.get('bar_id')
         obj = model.Good.objects.filter(bar_id=bar_id).first()
         if obj:
             return JsonError("商品已存在")
-        form = CreateGoodForm(data)
+        form = CreateGoodForm(form_data)
         if form.is_valid():
             good = form.save(commit=False)
-            good.supplier_id = data['supplier_id']
-            good.quantify_id = data['quantify_id']
-            good.genre_id = data['genre_id'][-1] if data['genre_id'] else None
+            good.supplier_id = form_data['supplier_id']
+            good.quantify_id = form_data['quantify_id']
+            good.genre_id = form_data['genre_id'][-1] if form_data['genre_id'] else None
             try:
                 good.save()
             except Exception:
                 return JsonError("新建失败")
             good_id = form.instance.id
+            for em in package_data:
+                package_form = CreateOtherPackageForm(em)
+                if not package_form.is_valid():
+                    return JsonError(package_form.errors)
+                if not valid_package(good, em):
+                    good.delete()
+                    return JsonError("包装价格不能低于成本价")
+                other_package = package_form.save(commit=False)
+                other_package.one_package_id = good_id
+                other_package.quantify_id = em['quantify_id']
+                other_package.save()
             return JsonSuccess("创建成功", id=good_id)
         else:
             for key in form.errors:
-               return JsonError(form.errors[key][0])
+                return JsonError(form.errors[key][0])
         return JsonError("提交数据有误")
 
 
@@ -107,7 +121,7 @@ class Delete(View):
 
     def get(self, request):
         import time
-        time.sleep(0.5)
+        time.sleep(0.8)
         json_data = request.GET.get('data')
         data = json.loads(json_data)
         if data['del_list']:
@@ -122,3 +136,69 @@ class Delete(View):
     def full_data(self):
         return Good.get_data(self)
 
+
+class OtherPackageList(View):
+    """商品其他包装数据"""
+
+    def get(self, request):
+        try:
+            json_data = request.GET.get('data')
+            data = json.loads(json_data)
+        except Exception:
+            return JsonError("解析失败")
+        query_set = model.GoodPackage.objects.filter(one_package_id=data).all()
+        if not query_set:
+            return JsonSuccess("没有数据")
+        ret = []
+        for data in query_set:
+            ret.append({
+                'id': data.id,
+                'bar_id': data.bar_id,
+                'name': data.name,
+                'quantify': data.quantify.name if data.quantify else "-",
+                'quantify_id': data.quantify.id if data.quantify else None,
+                'number': data.number,
+                'package_price': data.package_price
+            })
+        return JsonSuccess("成功", data=ret)
+
+
+class OtherPackage(View):
+    """"添加其他包装"""
+
+    def get(self, request):
+        try:
+            json_data = request.GET.get('data')
+            data = json.loads(json_data)
+        except Exception:
+            return JsonError("解析失败")
+        print(data)
+        if data:
+            if data.get("delete_id"):
+                model.GoodPackage.objects.filter(id=data['delete_id']).delete()
+                return JsonSuccess("删除成功")
+            instance = model.Good.objects.filter(id=data['good_id']).first()
+            if not instance:
+                return JsonError("未知商品")
+            form = CreateOtherPackageForm(data)
+            if form.is_valid():
+                if valid_package(instance, data):
+                    package = form.save(commit=False)
+                    package.one_package_id = data['good_id']
+                    package.quantify_id = data['quantify_id']
+                    package.save()
+                    ret = {"package_id": package.id}
+                    return JsonSuccess("添加成功", data=ret)
+                else:
+                    return JsonError("包装价格不能低于成本价")
+            else:
+                for key in form.errors:
+                    return JsonError(form.errors[key][0])
+            return JsonError("提交数据有误")
+
+
+def valid_package(instance, data):
+    cost_price = instance.buy_price * int(data['number'])
+    if float(cost_price) > float(data['package_price']):
+        return False
+    return True

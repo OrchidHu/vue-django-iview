@@ -1,8 +1,7 @@
 <template>
   <Modal :title="modalData.changeType==='create'?'新增商品': '编辑商品'"
-         v-model="modalData.openModal">
-    <Form ref="goodForm" :model="modalData.form" :rules="rules" :label-width="50"
-          @keydown.enter.native="handleSubmitToCreate">
+         v-model="modalData.openModal" :mask-closable="false">
+    <Form ref="goodForm" :model="modalData.form" :rules="rules" :label-width="50">
       <FormItem label="条码"  label-for="bar-id" prop="bar_id" >
         <Input element-id="bar-id" v-model="modalData.form.bar_id"/>
       </FormItem>
@@ -17,14 +16,19 @@
                 @on-change="onChangeQuantify" clearable style="width:200px">
           <Option v-for="item in quantifyList" :value="item.value" :key="item.value">{{ item.label }}</Option>
         </Select>
-        <Poptip title="添加单位" v-model="openPopitp" placement="top-start" width=200 height=400>
+        <Poptip title="添加单位" v-model="openQuantifyPoptip" placement="top-start" width=200 height=400>
           <Icon style="margin-left: 20px; color: chartreuse;" size="18" type="md-add" /> 添加单位
           <div slot="content" style="height: 80px">
             <Input v-model="addQuantifyValue" />
             <div>
-              <Button v-if=this.addQuantifyValue style="float: right; margin-top: 10px" @click="addQuantifySubmit">确定</Button>
+              <Button style="float: right; margin-top: 10px" @click="addQuantifySubmit">确定</Button>
             </div>
           </div>
+        </Poptip>
+        <Poptip title="商品多包装" v-model="childData.openPackagePoptip" placement="top" @on-popper-show="onPopperShow">
+          <Icon style="margin-left: 20px; color: chartreuse;" size="18" type="md-add" /> 添加多包装
+          <OtherPackage ref="child" slot="content" :quantifyList="quantifyList" :childData="childData"
+                        :changeType="modalData.changeType" @other-package-created="otherPackageCreated"></OtherPackage>
         </Poptip>
       </FormItem>
       <Row>
@@ -59,8 +63,12 @@
 
 import config from '@/config'
 import {ajaxGet} from '@/api/user'
+import OtherPackage from './other-package'
 export default {
   name: 'GoodModal',
+  components: {
+    OtherPackage
+  },
   props: {
     modalData: {
       type: Object,
@@ -129,9 +137,11 @@ export default {
       createLoading: false,
       quantifyList: [],
       supplierList: [],
+      packageDataList: [],
       genreList: [],
       addQuantifyValue: null,
-      openPopitp: false
+      openQuantifyPoptip: false,
+      childData: {openPackagePoptip: false}
     }
   },
   computed: {
@@ -164,11 +174,15 @@ export default {
           this.modalData.form.quantify = this.addQuantifyValue
           this.addQuantifyValue = null
           this.$Message.success(res.data.msg)
-          this.openPopitp = false
+          this.openQuantifyPoptip = false
         } else {
           this.$Message.error(res.data.msg)
         }
       })
+    },
+    // 调用子组件获取其他包装数据
+    onPopperShow () {
+      this.$refs.child.getPackageData(this.modalData.form.id)
     },
     onChageSupplier (data) {
       if (data) {
@@ -190,7 +204,8 @@ export default {
       this.$refs.goodForm.validate((valid) => {
         if (valid) {
           if (this.myValidate()) {
-            ajaxGet(config.createGoodUrl, this.modalData.form).then(res => {
+            let commitData = {form: this.modalData.form, package_data: this.packageDataList}
+            ajaxGet(config.createGoodUrl, commitData).then(res => {
               if (res.data.stat === 'success') {
                 this.$Message.success('新建成功')
                 this.modalData.form.id = res.data.id // 把新建的商品的id传到前端
@@ -203,6 +218,7 @@ export default {
                 this.modalData.openModal = false
                 this.$refs.goodForm.resetFields()
               } else {
+                this.$refs.child.modalChangeNotice()
                 this.$Message.error(res.data.msg)
               }
             })
@@ -244,6 +260,13 @@ export default {
           }
         }
       })
+    },
+    // 后面是子组件相关方法
+    modalChangeNotice () {
+      this.$refs.child.modalChangeNotice()
+    },
+    otherPackageCreated (data) {
+      this.packageDataList = data
     }
   },
   mounted () {
