@@ -32,5 +32,6 @@ export default {
   getGenreUrl: djangoUrl + 'common/genre_list',
   addQuantifyUrl: djangoUrl + 'common/add_quantify',
   getPackageData: djangoUrl + 'shop/other_package_list',
-  otherPackage: djangoUrl + 'shop/other_package'
+  otherPackage: djangoUrl + 'shop/other_package',
+  scanSearch: djangoUrl + 'shop/scan_search'
 }

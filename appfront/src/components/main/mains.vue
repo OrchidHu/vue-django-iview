@@ -9,7 +9,6 @@
                       <img  height="30" width="80" :src="Logo" key="logo" />
                     </div>
                     </Col>
-                    <!--<Col span="6"><div width="100%"></div></Col>-->
                     <Col span="14" offset="6">
                       <div class="layout-nav">
                         <MenuItem name="8" to="/good/good_page">
@@ -21,8 +20,16 @@
                             商品销售
                         </MenuItem>
                         <MenuItem name="3">
-                            <Icon type="ios-settings-outline"/>
-                            库存管理
+                          <Dropdown trigger="hover" @on-click="clickStock">
+                            <div href="javascript:void(0)">
+                              <Icon type="ios-settings-outline"/>
+                              库存管理
+                            </div>
+                            <DropdownMenu slot="list">
+                              <DropdownItem name="stockIn">快速入库</DropdownItem>
+                              <DropdownItem name="stockOut">快速出库</DropdownItem>
+                            </DropdownMenu>
+                          </Dropdown>
                         </MenuItem>
                         <MenuItem name="4">
                             <Icon type="ios-settings-outline"/>
@@ -45,7 +52,7 @@
             </Header>
             <Content :style="{padding: '0 50px'}">
                 <Breadcrumb :style="{margin: '15px 0'}">
-                    <BreadcrumbItem to="/401">
+                    <BreadcrumbItem to="/home">
                         <Icon :size="16" type="md-home">
                         </Icon>首页
                     </BreadcrumbItem>
@@ -53,7 +60,7 @@
                     <BreadcrumbItem>Layout</BreadcrumbItem>
                 </Breadcrumb>
                 <Card>
-                    <div style="min-height: 480px; ">
+                    <div style="min-height: 560px; ">
                       <router-view></router-view>
                     </div>
                 </Card>
@@ -86,6 +93,15 @@ export default {
         return // 直接return使用的是props默认值
       }
       return require('@/assets/' + avator)
+    }
+  },
+  methods: {
+    clickStock (name) {
+      if (name === 'stockIn') {
+        this.$router.push({
+          name: 'stock_in'
+        })
+      }
     }
   }
 }

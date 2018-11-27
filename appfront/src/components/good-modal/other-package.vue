@@ -33,7 +33,7 @@
             <Input v-model="form.package_price"></Input>
           </FormItem>
         </Col>
-        <Col span="8" type="flex" justify="center" align="right">
+        <Col span="8" type="flex" justify="center" align="middle">
           <Button type="primary" @click="handleSubmit">添加</Button>
         </Col>
         <Button  @click="finished">完成</Button>

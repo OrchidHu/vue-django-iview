@@ -50,8 +50,8 @@ export default [
     ]
   },
   {
-    path:'/good',
-    name:'good',
+    path: '/good',
+    name: 'good',
     meta: {
       hide: true
     },
@@ -60,16 +60,28 @@ export default [
       {
         path: 'good_page',
         name: 'good_page',
-        meta: {
-          title: 'QQ群'
-        },
         component: () => import('@/view/good/good.vue')
       }
     ]
   },
   {
-    path:'/401',
-    name:'error_401',
-    component:() => import('@/view/error-page/401.vue')
+    path: '/401',
+    name: 'error_401',
+    component: () => import('@/view/error-page/401.vue')
+  },
+  {
+    path: '/stock',
+    name: 'stock',
+    meta: {
+      hide: true
+    },
+    component: Main,
+    children: [
+      {
+        path: 'stock_in',
+        name: 'stock_in',
+        component: () => import('@/view/stock/stock-in.vue')
+      }
+    ]
   }
 ]

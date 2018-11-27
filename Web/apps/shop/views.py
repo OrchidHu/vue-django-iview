@@ -202,3 +202,48 @@ def valid_package(instance, data):
     if float(cost_price) > float(data['package_price']):
         return False
     return True
+
+
+class ScanSearch(View):
+    """扫码搜索"""
+
+    def get(self, request):
+        bar_id = request.GET.get('data')
+        instance = model.Good.objects.filter(bar_id=bar_id).first()
+        if not instance:
+            instance = model.GoodPackage.objects.filter(bar_id=bar_id).first()
+            if not instance:
+                return JsonError("商品不存在，是否创建商品")
+            number = instance.number
+            buy_price = instance.one_package.buy_price * number
+        else:
+            number = 1
+            buy_price = instance.buy_price
+        data = {
+            "bar_id": bar_id,
+            "name": instance.name,
+            "quantify": instance.quantify.name if instance.quantify else "-",
+            "number": number,
+            "buy_price": buy_price
+        }
+        return JsonSuccess("获取商品成功", data=data)
+        if instance:
+            data = {
+                "bar_id": bar_id,
+                "name": instance.name,
+                "quantify": instance.quantify.name if instance.quantify else "-",
+                "number": 1,
+                "buy_price": instance.buy_price
+            }
+            return JsonSuccess("成功一", data=data)
+
+        if instance:
+            data = {
+                "bar_id": bar_id,
+                "name": instance.name,
+                "quantify": instance.quantify.name if instance.quantify else "-",
+                "number": instance.number,
+                "buy_price": instance.buy_price
+            }
+            return JsonSuccess("成功二")
+        return JsonError("失败")

@@ -35,5 +35,10 @@ urlpatterns =[
         r'other_package',
         views.OtherPackage.as_view(),
         name='other_package'
+    ),
+    path(
+        r'scan_search',
+        views.ScanSearch.as_view(),
+        name='scan_search'
     )
 ]
