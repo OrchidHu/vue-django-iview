@@ -213,3 +213,19 @@ export const objEqual = (obj1, obj2) => {
   /* eslint-disable-next-line */
   else return !keysArr1.some(key => obj1[key] != obj2[key])
 }
+
+/**
+ * @param {*} val 需要验证的数(string)
+ * @description 判断字符串val是否是一个数字
+ */
+export const isNumber = (val) => {
+  var regPos = /^\d+(\.\d+)?$/; // 非负浮点数
+  var regNeg = /^(-(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*)))$/; //负浮点数
+  if(regPos.test(val) || regNeg.test(val)) {
+    return true;
+  } else {
+    console.log(typeof parseFloat(val) === 'number')
+    if (typeof parseFloat(val) === 'number') return true;
+    return false;
+  }
+}

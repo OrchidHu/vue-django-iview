@@ -1,9 +1,9 @@
 <template>
   <Modal :title="modalData.changeType==='create'?'新增商品': '编辑商品'"
-         v-model="modalData.openModal" :mask-closable="false">
+         v-model="modalData.openModal" @on-visible-change="onVisibleChange" :mask-closable="false">
     <Form ref="goodForm" :model="modalData.form" :rules="rules" :label-width="50">
       <FormItem label="条码"  label-for="bar-id" prop="bar_id" >
-        <Input element-id="bar-id" v-model="modalData.form.bar_id"/>
+        <Input element-id="bar_id" v-model="modalData.form.bar_id"/>
       </FormItem>
       <FormItem label="名称" label-for="name" prop="name" >
         <Input element-id="name" v-model="modalData.form.name"/>
@@ -82,10 +82,10 @@ export default {
       type: Array,
       default: () => {
         return [
-          {required: true, message: '请输入条码'},
+          {required: true, message: '请输入条码', trigger: 'change'},
           {validator (rule, value, callback) {
             let errors = []
-            if (!/^[0-9]+$/.test(value)) { callback('条码必须为数字值') }
+            if (value && !/^[0-9]+$/.test(value)) { callback('条码必须为数字值') }
             callback(errors)
           }}
         ]
@@ -195,8 +195,18 @@ export default {
       }
     },
     closeTheModal () { // 为了避免新建和更新共用Modal在校验上存在缓存问题 如:(如关闭更新Modal后打开新建Modal出现"校验红字")
-      this.$refs.goodForm.resetFields()
-      this.modalData.openModal = false
+      this.$nextTick(() => {
+        this.$refs.goodForm.resetFields()
+        this.modalData.openModal = false
+      })
+    },
+    onVisibleChange (value) {
+      if (value) {
+        this.$nextTick(() => {
+          var elInput = document.getElementById('bar_id')
+          elInput.focus()
+        })
+      }
     },
     handleSubmitToCreate () {
       if (this.createLoading) return

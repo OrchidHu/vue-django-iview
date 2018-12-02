@@ -13,6 +13,7 @@ Vue.config.productionTip = false
 Vue.use(VueAxios, axios)
 
 Vue.use(iView)
+
 /* eslint-disable no-new */
 
 new Vue({
