@@ -123,14 +123,14 @@ export default {
           {type: 'number', message: '输入正确的数字', trigger: 'change'},
           {validator (rule, value, callback) {
             let errors = []
-            if (value < 1 || String(value).indexOf('.') !== -1) { callback('数量输入有误') }
+            if (value < 1 || String(value).indexOf('.') !== -1 || value > 99999999) { callback('数量输入有误') }
             callback(errors)
           }}
         ],
         buy_price: [{required: true, message: '请输入价格'},
           {validator (rule, value, callback) {
             let errors = []
-            if ((parseInt(value) < 0) || isNaN(value) === true) { callback('价格输入有误') }
+            if ((parseInt(value) < 0) || isNaN(value) === true || parseInt(value) > 9999999999) { callback('价格输入有误') }
             callback(errors)
           }}
         ]
@@ -245,11 +245,10 @@ export default {
     handleSubmit () {
       this.$refs.stockInForm.validate((valid) => {
         if (valid) {
-          console.log('继续做验证')
+          this.tableData.push(this.form)
         }
         this.openModal = false
       })
-      this.openModal = true
     }
   },
   mounted () {

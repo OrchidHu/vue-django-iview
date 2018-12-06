@@ -229,3 +229,4 @@ class ScanSearch(View):
             "number": 1
         }
         return JsonSuccess("获取商品成功", data=data)
+
