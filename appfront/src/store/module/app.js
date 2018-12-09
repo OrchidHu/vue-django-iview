@@ -23,7 +23,7 @@ const closePage = (state, route) => {
 
 export default {
   state: {
-    breadCrumbList: [],
+    breadCrumbList: [getHomeRoute(routers)],
     tagNavList: [],
     homeRoute: getHomeRoute(routers),
     local: ''

@@ -36,7 +36,7 @@
         <Col span="8" type="flex" justify="center" align="middle">
           <Button type="primary" @click="handleSubmit">添加</Button>
         </Col>
-        <Button  @click="finished">完成</Button>
+        <Button  @click="finished">返回</Button>
       </Row>
     </Form>
     <br>
@@ -122,7 +122,7 @@ export default {
                     this.remove(params.index)
                   }
                 }
-              }, 'Delete')
+              }, '删除')
             ])
           }
         }

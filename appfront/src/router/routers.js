@@ -34,6 +34,7 @@ export default [
     component: Main,
     meta: {
       hideInMenu: true,
+      icon: 'md-home',
       notCache: true
     },
     children: [
@@ -42,6 +43,7 @@ export default [
         name: 'home',
         meta: {
           hideInMenu: true,
+          icon: 'md-home',
           title: '首页',
           notCache: true
         },
@@ -53,13 +55,18 @@ export default [
     path: '/good',
     name: 'good',
     meta: {
-      hide: true
+      hide: true,
     },
     component: Main,
     children: [
       {
         path: 'good_page',
         name: 'good_page',
+        meta: {
+          icon: 'logo-buffer',
+          title: '商品管理',
+          notCache: true
+        },
         component: () => import('@/view/good/good.vue')
       }
     ]
@@ -80,6 +87,10 @@ export default [
       {
         path: 'stock_in',
         name: 'stock_in',
+        meta: {
+          icon: 'ios-calendar',
+          title: '快速入库'
+        },
         component: () => import('@/view/stock/stock-in.vue')
       }
     ]

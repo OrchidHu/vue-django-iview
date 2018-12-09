@@ -1,6 +1,6 @@
 <template>
     <div class="layout">
-        <Layout>
+        <Layout :style="{minHeight: '100vh'}">
             <Header class="header-con">
                 <Menu class="menu-con" mode="horizontal" :theme="theme1" active-name="1">
                   <Row>
@@ -50,22 +50,21 @@
                   </Row>
                 </Menu>
             </Header>
-            <Content :style="{padding: '0 50px'}">
-                <Breadcrumb :style="{margin: '15px 0'}">
-                    <BreadcrumbItem to="/home">
-                        <Icon :size="16" type="md-home">
-                        </Icon>首页
-                    </BreadcrumbItem>
-                    <BreadcrumbItem>Components</BreadcrumbItem>
-                    <BreadcrumbItem>Layout</BreadcrumbItem>
-                </Breadcrumb>
+            <Content :style="{padding: '0 48px'}">
+              <Breadcrumb :style="{margin: '12px 0'}">
+                <Icon size="16" type="md-home" />
+                <BreadcrumbItem v-for="item in breadCrumbList" :to="item.to" :key="`bread-crumb-${item.name}`">
+                  <common-icon  style="margin-right: 4px;" :size="12"  :type="item.icon || ''"/>
+                  {{ item.meta.title }}
+                </BreadcrumbItem>
+              </Breadcrumb>
                 <Card>
-                    <div style="min-height: 560px; ">
+                    <div style="min-height: 640px; ">
                       <router-view></router-view>
                     </div>
                 </Card>
             </Content>
-            <Footer class="layout-footer-center">2018-2019 &copy; iView</Footer>
+            <!--<Footer class="layout-footer-center">2018-2019 &copy; iView</Footer>-->
         </Layout>
     </div>
 </template>
@@ -73,6 +72,8 @@
 import FullScreen from '@/components/fullScreen'
 import LoginOut from '@/components/login-out'
 import Logo from '@/assets/images/logo.jpg'
+import { mapMutations } from 'vuex'
+import CommonIcon from '@/components/common-icon'
 
 export default {
   name: 'Main',
@@ -83,7 +84,7 @@ export default {
       theme1: 'light'
     }
   },
-  components: {LoginOut, FullScreen},
+  components: {LoginOut, FullScreen, CommonIcon},
   computed: {
     userAvator () {
       // let aa = 'images/2018/11/16/VXR5LLL18U_LNVNKCZECK.png'
@@ -93,15 +94,36 @@ export default {
         return // 直接return使用的是props默认值
       }
       return require('@/assets/' + avator)
+    },
+    breadCrumbList () {
+      return this.$store.state.app.breadCrumbList
     }
   },
   methods: {
+    ...mapMutations([
+      'setBreadCrumb'
+    ]),
     clickStock (name) {
       if (name === 'stockIn') {
         this.$router.push({
           name: 'stock_in'
         })
       }
+    },
+    getCustomIconName (iconName) {
+      return iconName.slice(1)
+    }
+  },
+  watch: {
+    '$route' (newRoute) {
+      // const { name, query, params, meta } = newRoute
+      // this.addTag({
+      //   route: { name, query, params, meta },
+      //   type: 'push'
+      // })
+      this.setBreadCrumb(newRoute)
+      // this.setTagNavList(getNewTagList(this.tagNavList, newRoute))
+      // this.$refs.sideMenu.updateOpenName(newRoute.name)
     }
   }
 }

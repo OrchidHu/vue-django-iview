@@ -5,14 +5,42 @@
         <Icon type="md-barcode" size="24"/>
       </Col>
       <Col span="6">
-        <Input element-id="scan" v-model="bar_id"  @keydown.enter.native ="scanSubmit" />
+        <Input ref="scan" element-id="scan" v-model="scanBarId"  @keydown.enter.native ="scanSubmit"/>
       </Col>
       <Col span="1" type="flex" justify="center" align="middle">
         扫码
       </Col>
     </Row>
-    <Divider dashed />
-    <Table :data="tableData" :columns="columns" height="360"></Table>
+    <br>
+    <!--<Divider dashed />-->
+    <Table :data="tableData" :columns="columns" border height="360"></Table>
+    <br/>
+    <Row :gutter="8" type="flex" justify="start" align="middle">
+      <Col span="2" type="flex"  justify="center" align="middle">
+        <div>{{goodCount}}</div>
+        <div>款数</div>
+      </Col>
+      <Col span="2" type="flex"  justify="center" align="middle">
+        <div>{{totalNumber}}</div>
+        <div>数量合计</div>
+      </Col>
+      <Col span="2" type="flex"  justify="center" align="middle">
+        <div><Icon type="logo-yen" size="12" slot="prefix" />  {{totalPrice}}</div>
+        <div>价格合计</div>
+      </Col>
+      <Col span="1" offset="14">
+        <Poptip
+          confirm
+          title="确定删除所有吗？"
+          @on-ok="clearTableData"
+          @on-cancel="cancel">
+        <Button :disabled="this.tableData.length !== 0 ? false : true">清空</Button>
+        </Poptip>
+      </Col>
+      <Col span="1" offset="1">
+        <Button type="success" :disabled="this.tableData.length !== 0 ? false : true" :loading="loading">提交</Button>
+      </Col>
+    </Row>
     <Modal v-model="openModal" :title="form.name" @on-ok="handleSubmit">
       <Row>
         <Col span="10">
@@ -36,55 +64,13 @@
         <Col span="1" style="height: 240px">
           <Divider type="vertical" style="height: 240px"/></Col>
         <Col span="13">
-          <Row style="height: 60px" >
-            <Col span="8"  type="flex" justify="center"  align="middle" >
-              <Button style="height: 60px; width: 100%" @click="clickOnNumber('1')">1</Button>
-            </Col>
-            <Col span="8" type="flex" justify="center"  align="middle" >
-              <Button style="height: 60px; width: 100%" @click="clickOnNumber('2')">2</Button>
-            </Col>
-            <Col span="8"type="flex" justify="center"  align="middle" >
-              <Button style="height: 60px; width: 100%" @click="clickOnNumber('3')">3</Button>
-            </Col>
-          </Row>
-          <Row style="height: 60px;" >
-            <Col span="8"  type="flex" justify="center"  align="middle" >
-              <Button style="height: 60px; width: 100%" @click="clickOnNumber('4')">4</Button>
-            </Col>
-            <Col span="8" type="flex" justify="center"  align="middle" >
-              <Button style="height: 60px; width: 100%" @click="clickOnNumber('5')">5</Button>
-            </Col>
-            <Col span="8"type="flex" justify="center"  align="middle" >
-              <Button style="height: 60px; width: 100%" @click="clickOnNumber('6')">6</Button>
-            </Col>
-          </Row>
-          <Row style="height: 60px;" >
-            <Col span="8"  type="flex" justify="center"  align="middle" >
-              <Button style="height: 60px; width: 100%" @click="clickOnNumber('7')">7</Button>
-            </Col>
-            <Col span="8" type="flex" justify="center"  align="middle" >
-              <Button style="height: 60px; width: 100%" @click="clickOnNumber('8')">8</Button>
-            </Col>
-            <Col span="8"type="flex" justify="center"  align="middle" >
-              <Button style="height: 60px; width: 100%" @click="clickOnNumber('9')">9</Button>
-            </Col>
-          </Row>
-          <Row style="height: 60px;" >
-            <Col span="8"  type="flex" justify="center"  align="middle" >
-              <Button style="height: 60px; width: 100%" @click="clickOnNumber('.')">.</Button>
-            </Col>
-            <Col span="8" type="flex" justify="center"  align="middle" >
-              <Button style="height: 60px; width: 100%" @click="clickOnNumber('0')">0</Button>
-            </Col>
-            <Col span="8"type="flex" justify="center"  align="middle" >
-              <Button style="height: 60px; width: 100%" @click="clickOnNumber('')"><Icon type="md-arrow-back" /></Button>
-            </Col>
-          </Row>
+          <numberKeyBoard @on-click="clickOnNumber"></numberKeyBoard>
         </Col>
       </Row>
+      <div slot="close" @click="closeTheModal"><Icon type="ios-close" /></div>
       <div slot="footer">
         <Button type="text" size="large" @click="closeTheModal">取消</Button>
-        <Button type="primary" size="large"
+        <Button type="primary" size="large" @keydown.enter.native="handleSubmit"
                 @click="handleSubmit" :loading="loading">确定</Button>
       </div>
     </Modal>
@@ -93,25 +79,150 @@
 <script>
 import {ajaxGet} from '../../api/user'
 import config from '../../config'
-import {isNumber} from '../../libs/tools'
+import NumberKeyBoard from '@/components/number-key-board'
 
 export default {
+  components: {
+    NumberKeyBoard
+  },
   data () {
+    const storeTableData = localStorage.getItem('table-data')
+    let tableData
+    if (storeTableData) {
+      tableData = JSON.parse(storeTableData)
+    } else {
+      tableData = []
+    }
     return {
+      editIndex: -1,
       openModal: false,
-      bar_id: null,
+      scanBarId: null,
       loading: false,
-      tableData: [],
+      tableData: tableData,
+      copyData: [],
       currentInputId: 'number',
       blurOnClickNumber: false,
       value: null,
+      editBuyPrice: null,
+      editNumber: null,
       columns: [
+        {type: 'index', width: 60},
         {title: '名称', key: 'name'},
         {title: '条码', key: 'bar_id'},
         {title: '单位', key: 'quantify'},
-        {title: '进价', key: 'buy_price'},
-        {title: '数量', key: 'number'},
-        {title: '小计', key: 'subtotal'}
+        {
+          title: '进价',
+          key: 'buy_price',
+          render: (h, {row, index}) => {
+            let edit
+            if (this.editIndex === index) {
+              edit = [h('InputNumber', {
+                props: {
+                  value: row.buy_price
+                },
+                on: {
+                  input: (val) => {
+                    this.editBuyPrice = val
+                  }
+                }
+              })]
+            } else {
+              edit = row.buy_price
+            }
+            return h('div', [edit])
+          }
+        },
+        {
+          title: '数量',
+          key: 'number',
+          render: (h, {row, index}) => {
+            let edit
+            if (this.editIndex === index) {
+              edit = [h('InputNumber', {
+                props: {
+                  value: row.number
+                },
+                on: {
+                  input: (val) => {
+                    this.editNumber = val
+                  }
+                }
+              })]
+            } else {
+              edit = row.number
+            }
+            return h('div', [edit])
+          }
+        },
+        {
+          title: '小计',
+          key: 'subtotal',
+          render: (h, {row, index}) => {
+            let edit
+            edit = row.number * row.buy_price
+            return h('div', [edit])
+          }
+        },
+        {
+          title: '操作',
+          render: (h, {row, index}) => {
+            if (this.editIndex === index) {
+              return [
+                h('Button', {
+                  props: {
+                    type: 'success'
+                  },
+                  on: {
+                    click: () => {
+                      if (this.editNumber < 1) {
+                        this.$Message.error('数量不能小于1')
+                      } else if (this.editBuyPrice < 0) {
+                        this.$Message.error('价格不能小于0')
+                      } else {
+                        this.tableData[index].buy_price = this.editBuyPrice
+                        this.tableData[index].number = parseInt(this.editNumber)
+                        this.editIndex = -1
+                      }
+                    }
+                  }
+                }, '保存'),
+                h('Button', {
+                  style: {
+                    marginLeft: '6px'
+                  },
+                  on: {
+                    click: () => {
+                      this.editIndex = -1
+                    }
+                  }
+                }, '取消')
+              ]
+            } else {
+              return [h('Button', {
+                on: {
+                  click: () => {
+                    this.editBuyPrice = row.buy_price
+                    this.editNumber = row.number
+                    this.editIndex = index
+                  }
+                }
+              }, '修改'),
+              h('Button', {
+                style: {
+                  marginLeft: '6px',
+                  background: 'tomato',
+                  color: 'white'
+                },
+                on: {
+                  click: () => {
+                    this.remove(index)
+                  }
+                }
+              }, '删除')
+              ]
+            }
+          }
+        }
       ],
       form: {
         number: 0,
@@ -137,9 +248,41 @@ export default {
       }
     }
   },
+  computed: {
+    goodCount () {
+      return this.tableData.length
+    },
+    totalNumber () {
+      let totalNumber = 0
+      this.tableData.forEach(function (value, index, array) {
+        totalNumber += value.number
+      })
+      return totalNumber
+    },
+    totalPrice () {
+      let totalPrice = 0
+      this.tableData.forEach(function (value, index, array) {
+        totalPrice += value.buy_price * value.number
+      })
+      return totalPrice
+    }
+  },
   methods: {
     closeTheModal () {
       this.openModal = false
+      this.scanBarId = null
+      this.$refs.scan.focus()
+    },
+    clearTableData () {
+      this.tableData = []
+      localStorage.setItem('table-data', JSON.stringify(this.tableData))
+    },
+    cancel () {
+      // this.$Message.info('取消删除')
+    },
+    remove (index) {
+      this.tableData.splice(index, 1)
+      localStorage.setItem('table-data', JSON.stringify(this.tableData))
     },
     numberOnFocus () {
       this.currentInputId = 'number'
@@ -149,14 +292,14 @@ export default {
     },
     onBlurNumber () {
       setTimeout(() => { // 如何失焦不是因为点击了价格输入框, 那就继续聚焦自身
-        if (this.currentInputId !== 'buy_price') {
+        if (this.currentInputId !== 'buy_price' && this.openModal === true) {
           this.$refs.number.focus()
         }
       })
     },
     onBlurBuyPrice () {
       setTimeout(() => { // 如果失焦不是因为点击了数量输入框, 那就继续聚焦到自身
-        if (this.currentInputId !== 'number') {
+        if (this.currentInputId !== 'number' && this.openModal === true) {
           this.$refs.buy_price.focus()
         }
       })
@@ -228,7 +371,7 @@ export default {
       })
     },
     scanSubmit () {
-      ajaxGet(config.scanSearch, this.bar_id).then(res => {
+      ajaxGet(config.scanSearch, this.scanBarId).then(res => {
         if (res.data.stat === 'success') {
           this.openModal = true
           this.form = Object.assign({}, res.data.data)
@@ -245,7 +388,10 @@ export default {
     handleSubmit () {
       this.$refs.stockInForm.validate((valid) => {
         if (valid) {
-          this.tableData.push(this.form)
+          this.tableData.push(Object.assign({}, this.form))
+          localStorage.setItem('table-data', JSON.stringify(this.tableData))
+          this.scanBarId = null
+          this.$refs.scan.focus()
         }
         this.openModal = false
       })
@@ -256,6 +402,9 @@ export default {
       var elInput = document.getElementById('scan')
       elInput.focus()
     })
+  },
+  beforeDestroy () {
+    localStorage.setItem('table-data', JSON.stringify(this.tableData))
   }
 }
 </script>

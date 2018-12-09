@@ -1,5 +1,6 @@
 .idea/
 *__pycache__/       
 _xxx*
-node_modules/       
+node_modules/
+virenv/
 appfront/src/assets/images/2018/                                                                                                                                                                                                                                                                                                                            

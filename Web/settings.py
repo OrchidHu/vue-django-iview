@@ -27,8 +27,17 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
+ASGI_APPLICATION = "Web.routing.application"
 # Application definition
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        },
+    },
+}
 
 INSTALLED_APPS = (
     'django.contrib.admin',
@@ -38,6 +47,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # 新加的app
+    'channels',
     'mptt',
     'corsheaders',
     'Web',

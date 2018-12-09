@@ -18,7 +18,7 @@ def get_token():
 def redis_get(key):
     ret = redis_db.get(key)
     if ret:
-        return bytes.decode(ret, encoding = "utf8")
+        return bytes.decode(ret, encoding="utf8")
     return ""
 
 def get_genre_parent_id(child_data):

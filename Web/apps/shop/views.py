@@ -5,6 +5,7 @@ from django.contrib.auth import logout
 from django.views.generic import View
 
 import Web.apps.shop.models as model
+from Utils.db_connections import get_redis
 from Utils.django_utils import JsonError, JsonSuccess, redis_get, JsonReLogin, JsonForbid, get_genre_parent_id
 from Web.apps.shop.forms import CreateGoodForm, CreateOtherPackageForm
 
@@ -20,6 +21,13 @@ class Good(View):
             return JsonReLogin('需要身份验证')
         if user.is_staff:
             data = self.get_data()
+
+            from channels.layers import get_channel_layer
+            channel_layer = get_channel_layer()
+            from asgiref.sync import async_to_sync
+            c_name = redis_get("sock" + user.username)
+            print(c_name, "shangxin")
+            async_to_sync(channel_layer.send)(c_name, {"type": "send.message", "text": "你好啊"})
             return JsonSuccess("请求成功", data=data)
         return JsonForbid('没有权限')
 
