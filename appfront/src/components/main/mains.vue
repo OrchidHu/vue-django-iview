@@ -4,12 +4,12 @@
             <Header class="header-con">
                 <Menu class="menu-con" mode="horizontal" :theme="theme1" active-name="1">
                   <Row>
-                    <Col span="4">
+                    <Col :sm="2" :md="8">
                     <div class="layout-logo">
                       <img  height="30" width="80" :src="Logo" key="logo" />
                     </div>
                     </Col>
-                    <Col span="14" offset="6">
+                    <Col :sm="22" :md="16">
                       <div class="layout-nav">
                         <MenuItem name="8" to="/good/good_page">
                             <Icon type="ios-navigate"></Icon>
@@ -107,6 +107,10 @@ export default {
       if (name === 'stockIn') {
         this.$router.push({
           name: 'stock_in'
+        })
+      } else if (name === 'stockOut') {
+        this.$router.push({
+          name: 'stock_out'
         })
       }
     },

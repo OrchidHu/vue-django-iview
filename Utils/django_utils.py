@@ -1,25 +1,31 @@
 # -*- coding: UTF-8 -*-
 
 import os, json
+import time
+import uuid
 
 from Utils.db_connections import get_redis
-
 os.environ['DJANGO_SETTINGS_MODULE'] = 'Web.settings'
 from urllib import parse as _urlparse
 from django.http import JsonResponse
 from Conf import config
-import uuid
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 
 redis_db = get_redis()
+
+
 def get_token():
     return uuid.uuid1()
+
 
 def redis_get(key):
     ret = redis_db.get(key)
     if ret:
         return bytes.decode(ret, encoding="utf8")
     return ""
+
 
 def get_genre_parent_id(child_data):
     if not child_data:
@@ -29,6 +35,7 @@ def get_genre_parent_id(child_data):
         ret.append(child_data.parent_id)
         child_data = child_data.parent
     return ret[::-1]
+
 
 def genre_display(query_data):
     display_list= []
@@ -44,9 +51,12 @@ def genre_display(query_data):
             parent_dist['children'] = genre_display(children)
     return display_list
 
+
 def parse_put(request):
     payload = request.read()
     return dict(_urlparse.parse_qsl(payload))
+
+
 def _fixfloat(num, fix_num=2):
     # 格式化浮点
     if not num:
@@ -57,6 +67,24 @@ def _fixfloat(num, fix_num=2):
     if len(part_num) > 1:
         ret = ".".join((ret, part_num[1][:fix_num]))
     return ret or "0"
+
+
+def batch_number():
+    percent_time = time.strftime('%y%m%d%H', time.localtime(time.time()))
+    uuid_number = str(int(uuid.uuid1()))[30:-1]
+    return percent_time + uuid_number
+
+
+def notice_manager(room_name, text_data):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        room_name,
+        {
+            "type": "chat.message",
+            "text": text_data
+        }
+    )
+
 
 def JsonError(msg='', **kwargs):
     """ msg: 反馈给用户的信息

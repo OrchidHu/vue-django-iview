@@ -24,6 +24,14 @@ class XYUser(AbstractUser):
         ('boy', u"男"),
         ('girl', u"女")
     )
+    shop = models.ForeignKey(
+        'shop.Shop',
+        on_delete=models.PROTECT,  # 设为删除保护
+        related_name="set_employee",
+        verbose_name=u"所属门店",
+        blank=True,
+        null=True
+    )
 
     first_name = models.CharField(u'姓', max_length=30, validators=[MaxLengthValidator(30)])
     last_name = models.CharField(u'名', max_length=30, validators=[MaxLengthValidator(30)])
@@ -38,19 +46,25 @@ class XYUser(AbstractUser):
         max_length=50,
         db_index=True,
         unique=True,
-        validators=[email_validator]
+        validators=[email_validator],
+        blank=True,
+        null=True
     )
     phone = models.CharField(
         max_length=15,
         verbose_name=u'手机号码',
         db_index=True,
-        validators=[phone_validator]
+        validators=[phone_validator],
+        blank=True,
+        null=True
     )
     id_number = models.CharField(
         max_length=80,
         help_text=_('请输入18位有效身份证号码'),
         validators=[id_card_validator],
         verbose_name=u'身份证号',
+        blank=True,
+        null=True
     )
     avatar = models.ImageField(
         u"头像",

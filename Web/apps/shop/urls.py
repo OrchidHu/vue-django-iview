@@ -40,5 +40,10 @@ urlpatterns =[
         r'scan_search',
         views.ScanSearch.as_view(),
         name='scan_search'
+    ),
+    path(
+        r'create_stock_in_record',
+        views.GoodStockRecord.as_view(),
+        name='create_stock_in_record'
     )
 ]

@@ -33,5 +33,6 @@ export default {
   addQuantifyUrl: djangoUrl + 'common/add_quantify',
   getPackageData: djangoUrl + 'shop/other_package_list',
   otherPackage: djangoUrl + 'shop/other_package',
-  scanSearch: djangoUrl + 'shop/scan_search'
+  scanSearch: djangoUrl + 'shop/scan_search',
+  saveStockGood: djangoUrl + 'shop/create_stock_in_record'
 }

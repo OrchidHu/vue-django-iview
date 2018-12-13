@@ -33,6 +33,8 @@ export default {
           name: 'login'
         })
       })
+      var storage = window.localStorage
+      storage.clear()
     }
   }
 }

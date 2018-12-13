@@ -3,8 +3,7 @@
 from channels.generic.websocket import AsyncWebsocketConsumer, WebsocketConsumer
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-
-from Utils.db_connections import get_redis
+from Web.models import XYUser
 
 channel_layer = get_channel_layer()
 
@@ -41,9 +40,12 @@ class MyConsumer(AsyncWebsocketConsumer):
         from asgiref.sync import async_to_sync
         channel_layer = get_channel_layer()
         username = self.scope['user'].username
-        redis = get_redis()
-        redis.set("sock" + username, self.channel_name)
+        user = XYUser.objects.filter(username=username).first()
         # __import__("pdb").set_trace()
+        if user and user.has_perm('boss') or user.has_perm('manager'):
+            print("添加进来了")
+            await self.channel_layer.group_add("sys_message", self.channel_name)
+        await self.channel_layer.group_add("chat", self.channel_name)
         # await channel_layer.send(c_name, {"type": "send.message", "text": "Hello there!"})
         # time.sleep(5)
         # await channel_layer.send(self.channel_name, {"type": "chat.message", "text": "Hello there!"})
@@ -59,9 +61,10 @@ class MyConsumer(AsyncWebsocketConsumer):
         # await self.channel_layer.group_add("chat", self.channel_name)
 
     async def send_message(self, data):
-        print(self.channel_name)
+        print(data['channel_name'])
         channel_layer = get_channel_layer()
-        await channel_layer.send(self.channel_name, {"type": "chat.message", "text": "Hello there!"})
+
+        # await channel_layer.send(data['channel_name'], {"type": "chat.system_message", "text": data["text"]})
         # await channel_layer.send(text_data=data)
 
     async def receive(self, text_data=None, bytes_data=None):
@@ -74,7 +77,7 @@ class MyConsumer(AsyncWebsocketConsumer):
             "chat",
             {
                 "type": "chat.message",
-                "text": "Hello world!",
+                "text": "来自receive",
             },
         )
 

@@ -6,8 +6,9 @@ from django.views.generic import View
 
 import Web.apps.shop.models as model
 from Utils.db_connections import get_redis
-from Utils.django_utils import JsonError, JsonSuccess, redis_get, JsonReLogin, JsonForbid, get_genre_parent_id
-from Web.apps.shop.forms import CreateGoodForm, CreateOtherPackageForm
+from Utils.django_utils import JsonError, JsonSuccess, redis_get, JsonReLogin, \
+    JsonForbid, get_genre_parent_id, batch_number, notice_manager
+from Web.apps.shop.forms import CreateGoodForm, CreateOtherPackageForm, CreateStockRecordForm
 
 
 class Good(View):
@@ -21,13 +22,6 @@ class Good(View):
             return JsonReLogin('需要身份验证')
         if user.is_staff:
             data = self.get_data()
-
-            from channels.layers import get_channel_layer
-            channel_layer = get_channel_layer()
-            from asgiref.sync import async_to_sync
-            c_name = redis_get("sock" + user.username)
-            print(c_name, "shangxin")
-            async_to_sync(channel_layer.send)(c_name, {"type": "send.message", "text": "你好啊"})
             return JsonSuccess("请求成功", data=data)
         return JsonForbid('没有权限')
 
@@ -180,7 +174,6 @@ class OtherPackage(View):
             data = json.loads(json_data)
         except Exception:
             return JsonError("解析失败")
-        print(data)
         if data:
             if data.get("delete_id"):
                 model.GoodPackage.objects.filter(id=data['delete_id']).delete()
@@ -228,7 +221,7 @@ class ScanSearch(View):
             package_number = 1
             buy_price = instance.buy_price
         data = {
-            "id": instance.id,
+            "good_id": instance.get_good_id if hasattr(instance, 'one_package') else instance.id,
             "bar_id": bar_id,
             "name": instance.name,
             "quantify": instance.quantify.name if instance.quantify else "-",
@@ -237,4 +230,34 @@ class ScanSearch(View):
             "number": 1
         }
         return JsonSuccess("获取商品成功", data=data)
+
+
+class GoodStockRecord(View):
+    """"添加入库记录"""
+
+    def post(self, request):
+        try:
+            json_data = request.body
+            data = json.loads(json_data)
+        except Exception:
+            return JsonError("解析失败")
+        if not data:
+            return JsonError("无效数据")
+        batch_num = batch_number()
+        user = request.user
+        for item in data:
+            form = CreateStockRecordForm(item)
+            if form.is_valid():
+                stock_record = form.save(commit=False)
+                stock_record.batch_number = batch_num
+                stock_record.operator = user.username
+                stock_record.shop_id = user.shop.id
+                stock_record.save()
+        model.ExamineStockRecord.objects.create(
+            batch_number=batch_num,
+            stock_genre=data[0]['stock_genre'] if data else 1,
+            operator=user.username
+        )
+        notice_manager("sys_message", "你有新任务啦")
+        return JsonSuccess("入库提交成功")
 

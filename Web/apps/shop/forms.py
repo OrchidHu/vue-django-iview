@@ -1,5 +1,5 @@
 from django import forms
-from Web.apps.shop.models import Good, GoodPackage
+from Web.apps.shop.models import Good, GoodPackage, StockRecord
 
 
 class CreateGoodForm(forms.ModelForm):
@@ -86,3 +86,20 @@ class CreateOtherPackageForm(forms.ModelForm):
                 "required": u"包装售价是必填项"
             }
         }
+
+
+class CreateStockRecordForm(forms.ModelForm):
+
+    class Meta:
+        model = StockRecord
+        fields = (
+            'stock_genre',
+            'good_id',
+            'bar_id',
+            'name',
+            'quantify',
+            'number',
+            'package_number',
+            'buy_price'
+        )
+

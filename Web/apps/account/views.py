@@ -31,6 +31,7 @@ class Login(View):
                 redis_db.setex(username, token, 30000)
             session_id = request.session.session_key
             ret['token'] = token
+            print(token)
             ret['session_id'] = session_id
             ret['avator'] = user.avatar.name if user.avatar else None
             return JsonSuccess('登录成功', **ret)

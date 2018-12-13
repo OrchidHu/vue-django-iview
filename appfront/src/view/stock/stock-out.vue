@@ -1,5 +1,5 @@
 <template>
-<stock :stock-genre="1" stock-name="stock-in"></stock>
+<stock :stock-genre="-1" stock-name="stock-out"></stock>
 </template>
 
 <script>

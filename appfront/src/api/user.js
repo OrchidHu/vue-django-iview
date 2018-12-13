@@ -31,3 +31,13 @@ export const ajaxGet = (url, data) => {
     method: 'get'
   }, 1000)
 }
+
+export const ajaxPost = (url, params) => {
+  const data = JSON.stringify(params)
+  return axios.request({
+    url: url,
+    data,
+    method: 'post',
+    withCredentials: true
+  })
+}

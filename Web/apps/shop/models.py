@@ -1,3 +1,4 @@
+from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 from django.db import models
 
@@ -51,13 +52,11 @@ class Good(models.Model):
         verbose_name = _('商品')
         verbose_name_plural = _('商品')
 
-
     def __unicode__(self):
         return self.name
 
     def __str__(self):
         return self.__unicode__()
-
 
     @property
     def get_name(self):
@@ -98,6 +97,10 @@ class GoodPackage(models.Model):
         verbose_name='包装售价'
     )
 
+    @property
+    def get_good_id(self):
+        return self.one_package.id
+
     class Meta:
         ordering = ['-id']
         verbose_name = _('其他包装')
@@ -108,3 +111,241 @@ class GoodPackage(models.Model):
 
     def __str__(self):
         return self.__unicode__()
+
+
+class Shop(models.Model):
+    """门店"""
+    name = models.CharField(
+        max_length=200,
+        verbose_name=u'门店名称',
+        unique=True
+    )
+    address = models.CharField(
+        max_length=200,
+        verbose_name=u'门店地址',
+        null=True,
+        blank=True
+    )
+    manager = models.ForeignKey(
+        'Web.XYUser',
+        on_delete=models.CASCADE,
+        related_name="set_shops",
+        verbose_name=u"门店负责人",
+        blank=True,
+        null=True
+    )
+    phone = models.CharField(
+        max_length=50,
+        verbose_name=u'门店电话',
+        null=True,
+        blank=True
+    )
+    create_time = models.DateTimeField(
+        u'创建时间',
+        auto_now_add=True,
+        db_index=True,
+    )
+
+    @property
+    def manager_phone(self):
+        manager = self.manager
+        if manager:
+            return manager.phone
+        return None
+
+    class Meta:
+        ordering = ['-id']
+        verbose_name = _('门店')
+        verbose_name_plural = _('门店')
+
+    def __unicode__(self):
+        return self.name
+
+    def __str__(self):
+        return self.__unicode__()
+
+
+class GoodStock(models.Model):
+    """商品库存"""
+
+    good = models.ForeignKey(
+        Good,
+        on_delete=models.CASCADE,
+        related_name="set_stocks",
+        verbose_name=u"商品",
+        db_index=True
+    )
+    shop = models.ForeignKey(
+        Shop,
+        on_delete=models.PROTECT,  # 设为删除保护
+        related_name="set_stock_goods",
+        verbose_name=u"所属门店"
+    )
+    number = models.IntegerField(
+        verbose_name='门店库存'
+    )
+    stock_buy_price = models.FloatField(
+        verbose_name='门店进价'
+    )
+    stock_sale_price = models.FloatField(
+        verbose_name='门店售价'
+    )
+
+    class Meta:
+        ordering = ['-id']
+        verbose_name = _('商品库存')
+        verbose_name_plural = _('商品库存')
+
+    def __unicode__(self):
+        return self.good.name
+
+    def __str__(self):
+        return self.__unicode__()
+
+
+class StockRecord(models.Model):
+    """出/入库记录"""
+
+    STOCK_GENRE = (
+        (1, u"入库"),
+        (-1, u"出库")
+    )
+    batch_number = models.CharField(
+        "批次号",
+        max_length=30
+    )
+    stock_genre = models.IntegerField(
+        "操作类型",
+        choices=STOCK_GENRE,
+        default=1
+    )
+    good_id = models.CharField(
+        "商品",
+        max_length=30
+    )
+    bar_id = models.CharField(
+        max_length=30,
+        verbose_name=u'条码'
+    )
+    name = models.CharField(
+        max_length=200,
+        verbose_name=u'名称'
+    )
+    quantify = models.CharField(
+        max_length=30,
+        verbose_name=u"单位",
+        null=True,
+        blank=True
+    )
+    number = models.IntegerField(
+        verbose_name='数量'
+    )
+    package_number = models.IntegerField(
+        verbose_name='包装绑定数量'
+    )
+    buy_price = models.FloatField(
+        verbose_name='价格'
+    )
+    operator = models.CharField(
+        max_length=30,
+        verbose_name=u"操作人"
+    )
+    shop_id = models.IntegerField(
+        verbose_name='所属门店'
+    )
+    create_time = models.DateTimeField(
+        u'操作时间',
+        auto_now_add=True,
+        db_index=True,
+    )
+
+    def shop_name(self):
+        shop = Shop.objects.filter(id=self.shop_id).first()
+        return format_html(
+            '<span style="color: #2d8cf0;">{}</span>',
+            shop.name if shop else "-"
+        )
+    shop_name.short_description = u"所属门店"
+
+    @property
+    def total_number(self):
+        return self.number * self.package_number
+
+    class Meta:
+        ordering = ['-id']
+        verbose_name = _('出/入库记录')
+        verbose_name_plural = _('出/入库记录')
+
+    def __unicode__(self):
+        return self.name
+
+    def __str__(self):
+        return self.__unicode__()
+
+
+class ExamineStockRecord(models.Model):
+    """出入库审核"""
+
+    EXAMINE_STATUS = (
+        (0, u"待审核"),
+        (-1, u"未通过"),
+        (1, u"已通过")
+    )
+    STOCK_STATUS = (
+        (0, u"未出/入库"),
+        (1, u"已出/入库")
+    )
+    STOCK_GENRE = (
+        (1, u"入库"),
+        (-1, u"出库")
+    )
+    batch_number = models.CharField(
+        "批次号",
+        max_length=30
+    )
+    stock_genre = models.IntegerField(
+        "操作类型",
+        choices=STOCK_GENRE,
+        default=1
+    )
+    operator = models.CharField(
+        max_length=30,
+        verbose_name=u"操作人"
+    )
+    examine_status = models.IntegerField(
+        "审核状态",
+        choices=EXAMINE_STATUS,
+        default=0
+    )
+    examine_person = models.CharField(
+        "审核人",
+        max_length=30,
+        default='-'
+    )
+    examine_time = models.DateTimeField(
+        "审核日期",
+        blank=True,
+        null=True
+    )
+    stock_status = models.IntegerField(
+        "出/入库状态",
+        choices=STOCK_STATUS,
+        default=0
+    )
+    stock_time = models.DateTimeField(
+        "出/入库日期",
+        blank=True,
+        null=True
+    )
+
+    def __unicode__(self):
+        return self.batch_number
+
+    def __str__(self):
+        return self.__unicode__()
+
+    class Meta:
+        ordering = ['-id']
+        verbose_name = _('审核记录')
+        verbose_name_plural = _('审核记录')
+

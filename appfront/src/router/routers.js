@@ -92,6 +92,15 @@ export default [
           title: '快速入库'
         },
         component: () => import('@/view/stock/stock-in.vue')
+      },
+      {
+        path: 'stock_out',
+        name: 'stock_out',
+        meta: {
+          icon: 'ios-calendar',
+          title: '快速出库'
+        },
+        component: () => import('@/view/stock/stock-out.vue')
       }
     ]
   }
