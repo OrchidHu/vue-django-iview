@@ -13,19 +13,27 @@ class Supplier(models.Model):
         verbose_name='名称'
     )
     describe = models.TextField(
-        verbose_name='描述'
+        verbose_name='描述',
+        blank=True,
+        null=True
     )
     phone1 = models.CharField(
         max_length=20,
-        verbose_name='电话'
+        verbose_name='电话',
+        blank=True,
+        null=True
     )
     phone2 = models.CharField(
         max_length=20,
-        verbose_name='备用电话'
+        verbose_name='备用电话',
+        blank=True,
+        null=True
     )
     address = models.CharField(
         max_length=200,
-        verbose_name='地址'
+        verbose_name='地址',
+        blank=True,
+        null=True
     )
     class Meta:
         verbose_name = _('供应商')

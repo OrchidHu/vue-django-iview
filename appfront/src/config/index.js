@@ -34,5 +34,7 @@ export default {
   getPackageData: djangoUrl + 'shop/other_package_list',
   otherPackage: djangoUrl + 'shop/other_package',
   scanSearch: djangoUrl + 'shop/scan_search',
-  saveStockGood: djangoUrl + 'shop/create_stock_in_record'
+  saveStockGood: djangoUrl + 'shop/create_stock_in_record',
+  getExamTask: djangoUrl + 'shop/get_exam_task',
+  commitExamTask: djangoUrl + 'shop/commit_exam_task'
 }

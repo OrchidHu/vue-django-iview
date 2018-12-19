@@ -94,7 +94,6 @@ class CreateStockRecordForm(forms.ModelForm):
         model = StockRecord
         fields = (
             'stock_genre',
-            'good_id',
             'bar_id',
             'name',
             'quantify',

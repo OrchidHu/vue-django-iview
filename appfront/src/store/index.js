@@ -11,7 +11,8 @@ export default new Vuex.Store({
     userName: '',
     avator: '',
     token: '',
-    sessionId: ''
+    sessionId: '',
+    task: []
   },
   mutations: {
     setAvator (state, avatorPath) {
@@ -28,6 +29,12 @@ export default new Vuex.Store({
     setSessionId (state, sessionId) {
       state.sessionId = sessionId
       setSessionId(sessionId)
+    },
+    setTask (state, message) {
+      state.task.push(message)
+    },
+    clearTask (state, message) {
+      state.task = message
     }
   },
   actions: {
@@ -55,11 +62,13 @@ export default new Vuex.Store({
     },
     // 退出登录
     handleLogOut ({ state, commit }) {
+      console.log('index')
       return new Promise((resolve, reject) => {
         logout(state.token).then(() => {
           commit('setToken', '')
           commit('setSessionId', '')
           commit('setUserName', '')
+          commit('clearTask', [])
           resolve()
         }).catch(err => {
           reject(err)

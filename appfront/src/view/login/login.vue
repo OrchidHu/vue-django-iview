@@ -37,6 +37,10 @@ export default {
         }
       })
     }
+  },
+  mounted: function () { // 登录清除上次的localStorage
+    var storage = window.localStorage
+    storage.clear()
   }
 }
 </script>

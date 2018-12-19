@@ -27,7 +27,6 @@ pycparser==2.19
 PyHamcrest==1.9.0
 PyMySQL==0.9.2
 pytz==2018.5
-pywin32==221
 redis==2.10.6
 six==1.11.0
 tornado==5.1.1

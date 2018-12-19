@@ -4,7 +4,16 @@
       <Avatar :src="userAvator"/>
         <Icon :size="25" type="ios-arrow-down"></Icon>
           <DropdownMenu slot="list">
-        <DropdownItem name="logout">退出登录</DropdownItem>
+        <DropdownItem name="1">
+          <Icon size="16" type="md-person" />
+          个人中心</DropdownItem>
+        <DropdownItem name="2">
+          <Icon size="16" type="ios-settings" />
+          设置
+          <Badge status="error"></Badge></DropdownItem>
+        <DropdownItem divided name="logout">
+          <Icon size="16" type="md-log-out" />
+          退出登录</DropdownItem>
       </DropdownMenu>
     </Dropdown>
   </div>
@@ -12,7 +21,7 @@
 
 <script>
 import './login-out.less'
-import { mapActions } from 'vuex'
+import { mapActions, mapMutations } from 'vuex'
 // 临时使用一张图片
 import minBoy from '@/assets/images/default-avator.jpg'
 export default {
@@ -24,17 +33,25 @@ export default {
     }
   },
   methods: {
+    ...mapMutations([
+      'clearTask'
+    ]),
     ...mapActions([
       'handleLogOut'
     ]),
     handleClick (name) {
-      this.handleLogOut().then(() => {
-        this.$router.push({
-          name: 'login'
+      if (name === 'logout') {
+        this.handleLogOut().then(() => {
+          this.$router.push({
+            name: 'login'
+          })
         })
-      })
-      var storage = window.localStorage
-      storage.clear()
+        setTimeout(() => {
+          // this.clearTask()
+          this.$store.commit('clearTask', [])
+        })
+      }
+      if (name === '1') {}
     }
   }
 }

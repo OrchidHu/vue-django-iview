@@ -45,5 +45,15 @@ urlpatterns =[
         r'create_stock_in_record',
         views.GoodStockRecord.as_view(),
         name='create_stock_in_record'
+    ),
+    path(
+        r'get_exam_task',
+        views.ExamTaskList.as_view(),
+        name='get_exam_task'
+    ),
+    path(
+        r'commit_exam_task',
+        views.CommitExamTask.as_view(),
+        name='commit_exam_task'
     )
 ]

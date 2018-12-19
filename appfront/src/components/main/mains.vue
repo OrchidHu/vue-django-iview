@@ -1,55 +1,7 @@
 <template>
     <div class="layout">
         <Layout :style="{minHeight: '100vh'}">
-            <Header class="header-con">
-                <Menu class="menu-con" mode="horizontal" :theme="theme1" active-name="1">
-                  <Row>
-                    <Col :sm="2" :md="8">
-                    <div class="layout-logo">
-                      <img  height="30" width="80" :src="Logo" key="logo" />
-                    </div>
-                    </Col>
-                    <Col :sm="22" :md="16">
-                      <div class="layout-nav">
-                        <MenuItem name="8" to="/good/good_page">
-                            <Icon type="ios-navigate"></Icon>
-                            商品管理
-                        </MenuItem>
-                        <MenuItem name="2">
-                            <Icon type="ios-keypad"></Icon>
-                            商品销售
-                        </MenuItem>
-                        <MenuItem name="3">
-                          <Dropdown trigger="hover" @on-click="clickStock">
-                            <div href="javascript:void(0)">
-                              <Icon type="ios-settings-outline"/>
-                              库存管理
-                            </div>
-                            <DropdownMenu slot="list">
-                              <DropdownItem name="stockIn">快速入库</DropdownItem>
-                              <DropdownItem name="stockOut">快速出库</DropdownItem>
-                            </DropdownMenu>
-                          </Dropdown>
-                        </MenuItem>
-                        <MenuItem name="4">
-                            <Icon type="ios-settings-outline"/>
-                            报表查询
-                        </MenuItem>
-                        <MenuItem name="5">
-                            <Icon type="ios-settings-outline"/>
-                            设置
-                        </MenuItem>
-                        <MenuItem name="6">
-                            <fullScreen v-model="isFullscreen"/>
-                        </MenuItem>
-                        <MenuItem name="7">
-                            <loginOut :user-avator="userAvator"/>
-                        </MenuItem>
-                      </div>
-                    </Col>
-                  </Row>
-                </Menu>
-            </Header>
+          <hearder-bar></hearder-bar>
             <Content :style="{padding: '0 48px'}">
               <Breadcrumb :style="{margin: '12px 0'}">
                 <Icon size="16" type="md-home" />
@@ -69,22 +21,28 @@
     </div>
 </template>
 <script>
-import FullScreen from '@/components/fullScreen'
-import LoginOut from '@/components/login-out'
-import Logo from '@/assets/images/logo.jpg'
 import { mapMutations } from 'vuex'
 import CommonIcon from '@/components/common-icon'
-
+import HearderBar from './header-bar'
 export default {
   name: 'Main',
   data () {
     return {
-      isFullscreen: false,
-      Logo,
-      theme1: 'light'
+      theme1: 'light',
+      notification: this.$store.state.app.task,
+      noticeLabel: (h) => {
+        return h('div', [
+          h('span', '通知信息'),
+          h('Badge', {
+            props: {
+              count: 3
+            }
+          })
+        ])
+      }
     }
   },
-  components: {LoginOut, FullScreen, CommonIcon},
+  components: {HearderBar, CommonIcon},
   computed: {
     userAvator () {
       // let aa = 'images/2018/11/16/VXR5LLL18U_LNVNKCZECK.png'
@@ -97,21 +55,19 @@ export default {
     },
     breadCrumbList () {
       return this.$store.state.app.breadCrumbList
+    },
+    count () {
+      return this.$store.state.app.task.length
     }
   },
   methods: {
     ...mapMutations([
       'setBreadCrumb'
     ]),
-    clickStock (name) {
-      if (name === 'stockIn') {
-        this.$router.push({
-          name: 'stock_in'
-        })
-      } else if (name === 'stockOut') {
-        this.$router.push({
-          name: 'stock_out'
-        })
+    ok (name) {
+      if (name === 'notification') {
+        console.log('we')
+        this.clearTask()
       }
     },
     getCustomIconName (iconName) {

@@ -1,5 +1,7 @@
 # -*- coding: UTF-8 -*-
+import datetime
 import json
+import django.utils.timezone as timezone
 
 from django.contrib.auth import logout
 from django.views.generic import View
@@ -7,7 +9,7 @@ from django.views.generic import View
 import Web.apps.shop.models as model
 from Utils.db_connections import get_redis
 from Utils.django_utils import JsonError, JsonSuccess, redis_get, JsonReLogin, \
-    JsonForbid, get_genre_parent_id, batch_number, notice_manager
+    JsonForbid, get_genre_parent_id, batch_number, notice_manager, safe_compute
 from Web.apps.shop.forms import CreateGoodForm, CreateOtherPackageForm, CreateStockRecordForm
 
 
@@ -221,7 +223,7 @@ class ScanSearch(View):
             package_number = 1
             buy_price = instance.buy_price
         data = {
-            "good_id": instance.get_good_id if hasattr(instance, 'one_package') else instance.id,
+            "good_id": instance.good_id if hasattr(instance, 'one_package') else instance.id,
             "bar_id": bar_id,
             "name": instance.name,
             "quantify": instance.quantify.name if instance.quantify else "-",
@@ -245,6 +247,9 @@ class GoodStockRecord(View):
             return JsonError("无效数据")
         batch_num = batch_number()
         user = request.user
+        # 权限判断
+        if not user or not user.shop:
+            return JsonError("没有入库权限")
         for item in data:
             form = CreateStockRecordForm(item)
             if form.is_valid():
@@ -252,12 +257,129 @@ class GoodStockRecord(View):
                 stock_record.batch_number = batch_num
                 stock_record.operator = user.username
                 stock_record.shop_id = user.shop.id
+                stock_record.good_id = item.get('good_id')
                 stock_record.save()
+            else:
+                print(form.errors)
+
         model.ExamineStockRecord.objects.create(
             batch_number=batch_num,
+            shop_id=user.shop.id,
             stock_genre=data[0]['stock_genre'] if data else 1,
             operator=user.username
         )
-        notice_manager("sys_message", "你有新任务啦")
+        notice_manager("sys_message", "你有审批任务啦")
         return JsonSuccess("入库提交成功")
 
+
+class ExamTaskList(View):
+    """审核任务列表"""
+
+    def get(self, request):
+        user = request.user
+        if user:
+            if user.has_perm('boss'):
+                tasks = model.ExamineStockRecord.objects.filter(examine_status=-1)
+            elif user.has_perm('manager'):
+                tasks = model.ExamineStockRecord.objects.filter(examine_status=-1, shop=user.shop)
+            else:
+                return JsonError("无权操作")
+            ret = []
+            for task in tasks:
+                result = {
+                    'batch_number': task.batch_number,
+                    'shop': task.shop_name,
+                    'examine_status': task.examine_status
+                }
+                ret.append(result)
+            return JsonSuccess("获取成功", data=ret)
+        return JsonError("无权操作")
+
+
+class CommitExamTask(View):
+    """审批任务提交"""
+
+    def get(self, request):
+        try:
+            json_data = request.body
+            data = json.loads(json_data)
+        except Exception:
+            return JsonError("解析失败")
+        if not data:
+            return JsonError("无效数据")
+        user = request.user
+
+        return JsonSuccess("")
+
+    def get_data(self, batch_number):
+        query_set = model.StockRecord.objects.filter(batch_number=batch_number)
+        ret = []
+        for data in query_set:
+            ret.append({
+                'stock_genre': data.stock_genre,
+                'good_name': data.good_name,
+                'quantify': data.quantify,
+                'number': data.number,
+                'package_number': data.package_number,
+                'buy_price': data.buy_price,
+                'operator': data.operator,
+                'shop_name': data.shop_name,
+                'create_time': data.create_time
+            })
+        return ret
+
+    def post(self, request):
+        try:
+            json_data = request.body
+            data = json.loads(json_data)
+        except Exception:
+            return JsonError("解析失败")
+        if not data:
+            return JsonError("无效数据")
+        exam_batch = data
+        user = request.user
+        # 权限判断
+        if not user or not user.shop:
+            return JsonError("没有入库权限")
+        examine_status = exam_batch['examine_status']
+        if examine_status == -1:
+            result = self.get_data(exam_batch['batch_number'])
+            return JsonSuccess("", data=result)
+        if examine_status == 1:
+            self.update_stock_data(exam_batch)
+        exam_query_set = model.ExamineStockRecord.objects.filter(batch_number=exam_batch['batch_number']).first()
+        exam_query_set.examine_status = examine_status
+        exam_query_set.examine_person = user.username
+        exam_query_set.examine_time = timezone.now()
+        exam_query_set.stock_status = 1 if examine_status else 0
+        exam_query_set.stock_time = timezone.now()
+        exam_query_set.save()
+        return JsonSuccess("操作成功")
+
+    @staticmethod
+    def update_stock_data(exam_batch):
+        query_set = model.StockRecord.objects.filter(batch_number=exam_batch['batch_number'])
+        for data in query_set:
+            good_stock = model.GoodStock.objects.filter(good_id=data.good_id, shop_id=data.shop_id).first()
+            if not good_stock:
+                model.GoodStock.objects.create(
+                    good_id=data.good_id,
+                    shop_id=data.shop_id,
+                    number=data.number,
+                    stock_buy_price=data.buy_price
+                )
+            else:
+                stock_total_price = good_stock.number * good_stock.stock_buy_price
+                record_total_price = data.number * data.buy_price
+                # 如果是入库记录
+                if data.stock_genre == 1:
+                    number = good_stock.number + data.total_number
+                    total_price = stock_total_price + record_total_price
+                    buy_price = safe_compute(total_price, number, data.good.buy_price)
+                else:
+                    number = good_stock.number - data.total_number
+                    total_price = stock_total_price - record_total_price
+                    buy_price = safe_compute(total_price, number, data.good.buy_price)
+                good_stock.number = number
+                good_stock.stock_buy_price = buy_price
+                good_stock.save()

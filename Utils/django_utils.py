@@ -75,6 +75,12 @@ def batch_number():
     return percent_time + uuid_number
 
 
+def safe_compute(price, number, buy_price):
+    if number > 0:
+        return price/number
+    else:
+        return buy_price
+
 def notice_manager(room_name, text_data):
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
@@ -117,6 +123,7 @@ def JsonForbid(msg='', **kwargs):
     ret.update(kwargs)
     return JsonResponse(ret)
 
+
 def JsonSuccess(msg='', **kwargs):
     """ msg: 反馈给用户的信息
     kwargs: 会直接作为Json数据返回
@@ -127,6 +134,7 @@ def JsonSuccess(msg='', **kwargs):
     }
     ret.update(kwargs)
     return JsonResponse(ret)
+
 
 class ArgsMixin(object):
 

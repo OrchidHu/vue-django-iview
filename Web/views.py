@@ -4,7 +4,6 @@ from channels.generic.websocket import AsyncWebsocketConsumer, WebsocketConsumer
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 from Web.models import XYUser
-
 channel_layer = get_channel_layer()
 
 # class MyConsumer(WebsocketConsumer):
@@ -31,7 +30,7 @@ channel_layer = get_channel_layer()
 
 # 自定义websocket处理类
 class MyConsumer(AsyncWebsocketConsumer):
-
+    user = ''
     async def connect(self):
         # 创建连接时调用
         await self.accept()
@@ -41,6 +40,7 @@ class MyConsumer(AsyncWebsocketConsumer):
         channel_layer = get_channel_layer()
         username = self.scope['user'].username
         user = XYUser.objects.filter(username=username).first()
+        self.user = user
         # __import__("pdb").set_trace()
         if user and user.has_perm('boss') or user.has_perm('manager'):
             print("添加进来了")
@@ -77,7 +77,7 @@ class MyConsumer(AsyncWebsocketConsumer):
             "chat",
             {
                 "type": "chat.message",
-                "text": "来自receive",
+                "text": "hello, %s" % self.user.username
             },
         )
 
@@ -85,10 +85,11 @@ class MyConsumer(AsyncWebsocketConsumer):
         # 连接关闭时调用
         # 将关闭的连接从群组中移除
         # await self.channel_layer.group_discard("chat", self.channel_name)
-
+        print('shoudown')
         await self.close()
 
     async def chat_message(self, event):
         # Handles the "chat.message" event when it's sent to us.
+        print(event)
         await self.send(text_data=event["text"])
 

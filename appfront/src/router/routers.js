@@ -80,7 +80,8 @@ export default [
     path: '/stock',
     name: 'stock',
     meta: {
-      hide: true
+      hide: false,
+      title: '库存管理'
     },
     component: Main,
     children: [
@@ -101,6 +102,15 @@ export default [
           title: '快速出库'
         },
         component: () => import('@/view/stock/stock-out.vue')
+      },
+      {
+        path: 'exam_task',
+        name: 'exam_task',
+        meta: {
+          icon: 'ios-calendar',
+          title: '审核任务'
+        },
+        component: () => import('@/view/stock/exam-task.vue')
       }
     ]
   }

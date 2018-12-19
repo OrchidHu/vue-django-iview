@@ -43,10 +43,18 @@ class GoodAdmin(admin.ModelAdmin):
 
 @admin.register(StockRecord)
 class StockRecordAdmin(admin.ModelAdmin):
-    list_display = ('batch_number', 'bar_id', 'name', 'quantify', 'number', 'package_number',
+    list_display = ('batch_number', 'stock_genre','bar_id', 'name', 'quantify', 'number', 'package_number',
                     'buy_price', 'shop_name', 'operator', 'create_time')
     search_fields = ['batch_number', 'bar_id', 'operator', 'name']
     list_filter = ['batch_number']
+
+    def shop_name(self, obj):
+        shop = Shop.objects.filter(id=obj.shop_id).first()
+        return format_html(
+            '<span style="color: #2d8cf0;">{}</span>',
+            shop.name if shop else "-"
+        )
+    shop_name.short_description = u"所属门店"
 
 
 admin.site.site_header = '鑫意超市后台管理系统'
@@ -83,17 +91,17 @@ class GoodStockAdmin(admin.ModelAdmin):
 
 
 @admin.register(ExamineStockRecord)
-class ExamineStockInRecordAdmin(admin.ModelAdmin):
-    list_display = ('batch_number', 'operator', 'examine_status_display', 'examine_person', 'examine_time',
+class ExamineStockRecordAdmin(admin.ModelAdmin):
+    list_display = ('batch_number', 'shop_name', 'stock_genre', 'operator', 'examine_status_display', 'examine_person', 'examine_time',
                     'stock_status_display', 'stock_time')
 
     def examine_status_display(self, obj):
-        if obj.examine_status == 0:
+        if obj.examine_status == -1:
             return format_html(
                 '<span>待审核</span>',
                 obj.examine_status
             )
-        if obj.examine_status == -1:
+        if obj.examine_status == 0:
             return format_html(
                 '<span style="color: red;">未通过</span>',
                 obj.examine_status
@@ -116,5 +124,13 @@ class ExamineStockInRecordAdmin(admin.ModelAdmin):
                 obj.stock_status
             )
 
+    def shop_name(self, obj):
+        shop = Shop.objects.filter(id=obj.shop_id).first()
+        return format_html(
+            '<span style="color: #2d8cf0;">{}</span>',
+            shop.name if shop else "-"
+        )
+
+    shop_name.short_description = u"所属门店"
     examine_status_display.short_description = u"审核状态"
     stock_status_display.short_description = u"出入库状态"
