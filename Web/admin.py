@@ -72,7 +72,7 @@ class GenreAdmin(admin.ModelAdmin):
 
 @admin.register(GoodPackage)
 class GoodPackageAdmin(admin.ModelAdmin):
-    list_display = ('name', 'bar_id', 'quantify', 'number', 'package_price')
+    list_display = ('name', 'bar_id', 'quantify', 'number', 'sale_price')
 
 
 @admin.register(Supplier)
@@ -92,7 +92,7 @@ class GoodStockAdmin(admin.ModelAdmin):
 
 @admin.register(ExamineStockRecord)
 class ExamineStockRecordAdmin(admin.ModelAdmin):
-    list_display = ('batch_number', 'shop_name', 'stock_genre', 'operator', 'examine_status_display', 'examine_person', 'examine_time',
+    list_display = ('batch_number', 'total_price', 'shop_name', 'stock_genre', 'operator', 'examine_status_display', 'examine_person', 'examine_time',
                     'stock_status_display', 'stock_time')
 
     def examine_status_display(self, obj):

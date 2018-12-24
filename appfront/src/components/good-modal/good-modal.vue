@@ -9,7 +9,7 @@
         <Input element-id="name" v-model="modalData.form.name"/>
       </FormItem>
       <FormItem label="类别" prop="genre_id">
-        <Cascader :data="genreList" v-model="modalData.form.genre_id" filterable @on-change="onChangeGenre"></Cascader>
+        <Cascader v-model="test" :data="genreList" filterable @on-change="onChangeGenre"></Cascader>
       </FormItem>
       <FormItem label="单位" prop="quantify_id">
         <Select v-model="modalData.form.quantify_id" filterable label-in-value
@@ -137,6 +137,7 @@ export default {
       createLoading: false,
       quantifyList: [],
       supplierList: [],
+      test: [],
       packageDataList: [],
       genreList: [],
       addQuantifyValue: null,
@@ -160,6 +161,8 @@ export default {
     onChangeQuantify (data) {
       if (data) {
         this.modalData.form.quantify = data.label
+      } else {
+        this.modalData.form.quantify = '-'
       }
     },
     addQuantifySubmit () {

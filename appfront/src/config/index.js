@@ -33,8 +33,11 @@ export default {
   addQuantifyUrl: djangoUrl + 'common/add_quantify',
   getPackageData: djangoUrl + 'shop/other_package_list',
   otherPackage: djangoUrl + 'shop/other_package',
-  scanSearch: djangoUrl + 'shop/scan_search',
+  scanStockSearch: djangoUrl + 'shop/scan_stock_search',
   saveStockGood: djangoUrl + 'shop/create_stock_in_record',
   getExamTask: djangoUrl + 'shop/get_exam_task',
-  commitExamTask: djangoUrl + 'shop/commit_exam_task'
+  commitExamTask: djangoUrl + 'shop/commit_exam_task',
+  getShopList: djangoUrl + 'shop/shop_list',
+  searchStockReport: djangoUrl + 'shop/search_stock_report',
+  scanSaleSearch: djangoUrl + 'shop/scan_sale_search'
 }

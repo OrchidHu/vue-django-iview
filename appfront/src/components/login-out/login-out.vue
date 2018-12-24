@@ -53,6 +53,8 @@ export default {
       }
       if (name === '1') {}
     }
+  },
+  created () {
   }
 }
 </script>

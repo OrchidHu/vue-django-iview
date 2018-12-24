@@ -4,6 +4,7 @@ import json
 import django.utils.timezone as timezone
 
 from django.contrib.auth import logout
+from django.db.models import Q
 from django.views.generic import View
 
 import Web.apps.shop.models as model
@@ -112,8 +113,8 @@ class UpdateGood(View):
             form = CreateGoodForm(data)
         if form.is_valid():
             good = form.save(commit=False)
-            good.supplier_id = data['supplier_id']
-            good.quantify_id = data['quantify_id']
+            good.supplier_id = data.get('supplier_id')
+            good.quantify_id = data.get('quantify_id')
             good.genre_id = data['genre_id'][-1] if data['genre_id'] else None
             good.save()
             return JsonSuccess("保存成功")
@@ -162,7 +163,7 @@ class OtherPackageList(View):
                 'quantify': data.quantify.name if data.quantify else "-",
                 'quantify_id': data.quantify.id if data.quantify else None,
                 'number': data.number,
-                'package_price': data.package_price
+                'sale_price': data.sale_price
             })
         return JsonSuccess("成功", data=ret)
 
@@ -202,13 +203,13 @@ class OtherPackage(View):
 
 def valid_package(instance, data):
     cost_price = instance.buy_price * int(data['number'])
-    if float(cost_price) > float(data['package_price']):
+    if float(cost_price) > float(data['sale_price']):
         return False
     return True
 
 
-class ScanSearch(View):
-    """扫码搜索"""
+class ScanStockSearch(View):
+    """出入库扫码搜索"""
 
     def get(self, request):
         bar_id = request.GET.get('data')
@@ -234,6 +235,38 @@ class ScanSearch(View):
         return JsonSuccess("获取商品成功", data=data)
 
 
+class ScanSaleSearch(View):
+    """扫码出售搜索"""
+
+    def get(self, request):
+        bar_id = request.GET.get('data')
+        instance = model.Good.objects.filter(bar_id=bar_id).first()
+        if not instance:
+            instance = model.GoodPackage.objects.filter(bar_id=bar_id).first()
+            if not instance:
+                return JsonError("商品不存在，是否创建商品")
+            sale_price = instance.sale_price
+            good_id = instance.good_id
+            number = instance.number
+        else: # 单包装查询是否有门店售价
+            good_id = instance.id
+            pack_good = model.GoodStock.objects.filter(good_id=good_id).first()
+            number = 1
+            if pack_good and pack_good.stock_sale_price:
+                sale_price = pack_good.stock_sale_price
+            else:
+                sale_price = instance.sale_price
+        data = {
+            'name': instance.name,
+            'bar_id': bar_id,
+            'good_id': good_id,
+            'number': number,
+            'price': sale_price,
+            'subtotal': sale_price
+        }
+        return JsonSuccess("查询成功", data=data)
+
+
 class GoodStockRecord(View):
     """"添加入库记录"""
 
@@ -243,14 +276,15 @@ class GoodStockRecord(View):
             data = json.loads(json_data)
         except Exception:
             return JsonError("解析失败")
-        if not data:
+        record = data.get('list')
+        if not record:
             return JsonError("无效数据")
         batch_num = batch_number()
         user = request.user
         # 权限判断
         if not user or not user.shop:
             return JsonError("没有入库权限")
-        for item in data:
+        for item in record:
             form = CreateStockRecordForm(item)
             if form.is_valid():
                 stock_record = form.save(commit=False)
@@ -264,8 +298,9 @@ class GoodStockRecord(View):
 
         model.ExamineStockRecord.objects.create(
             batch_number=batch_num,
+            total_price=data.get('total_price'),
             shop_id=user.shop.id,
-            stock_genre=data[0]['stock_genre'] if data else 1,
+            stock_genre=data.get('stock_genre') or 1,
             operator=user.username
         )
         notice_manager("sys_message", "你有审批任务啦")
@@ -289,7 +324,9 @@ class ExamTaskList(View):
                 result = {
                     'batch_number': task.batch_number,
                     'shop': task.shop_name,
-                    'examine_status': task.examine_status
+                    'examine_status': task.examine_status,
+                    'examine_display': task.get_examine_status_display(),
+                    'stock_genre': task.get_stock_genre_display()
                 }
                 ret.append(result)
             return JsonSuccess("获取成功", data=ret)
@@ -299,23 +336,25 @@ class ExamTaskList(View):
 class CommitExamTask(View):
     """审批任务提交"""
 
-    def get(self, request):
-        try:
-            json_data = request.body
-            data = json.loads(json_data)
-        except Exception:
-            return JsonError("解析失败")
-        if not data:
-            return JsonError("无效数据")
-        user = request.user
-
-        return JsonSuccess("")
+    # def get(self, request):
+    #     __import__("pdb").set_trace()
+    #     try:
+    #         json_data = request.GET.get('data')
+    #         data = json.loads(json_data)
+    #     except Exception:
+    #         return JsonError("解析失败")
+    #     if not data:
+    #         return JsonError("无效数据")
+    #     user = request.user
+    #
+    #     return JsonSuccess("")
 
     def get_data(self, batch_number):
         query_set = model.StockRecord.objects.filter(batch_number=batch_number)
         ret = []
         for data in query_set:
             ret.append({
+                'bar_id': data.bar_id,
                 'stock_genre': data.stock_genre,
                 'good_name': data.good_name,
                 'quantify': data.quantify,
@@ -324,7 +363,7 @@ class CommitExamTask(View):
                 'buy_price': data.buy_price,
                 'operator': data.operator,
                 'shop_name': data.shop_name,
-                'create_time': data.create_time
+                'create_time': data.create_time.strftime("%Y-%m-%d %H:%S:%M")
             })
         return ret
 
@@ -365,7 +404,7 @@ class CommitExamTask(View):
                 model.GoodStock.objects.create(
                     good_id=data.good_id,
                     shop_id=data.shop_id,
-                    number=data.number,
+                    number=data.number if data.stock_genre == 1 else (0 - data.number),
                     stock_buy_price=data.buy_price
                 )
             else:
@@ -383,3 +422,73 @@ class CommitExamTask(View):
                 good_stock.number = number
                 good_stock.stock_buy_price = buy_price
                 good_stock.save()
+
+
+class ShopList(View):
+    """门店列表"""
+
+    def get(self, request):
+        user = request.user
+        user_data = {'value': user.shop.id, 'label': user.shop.name}
+        if user.has_perm('Web.boss'):
+            shops = model.Shop.objects.all()
+            ret = [{'value': '', 'label': '全部'}]
+            for shop in shops:
+                ret.append({
+                    'value': shop.id,
+                    'label': shop.name
+                })
+            result = {
+                'shop_data': ret,
+                'user_data': [user.shop.id],
+                'identity': 'boos'
+            }
+            return JsonSuccess("门店列表", data=result)
+        elif user.has_perm('Web.manager'):
+            ret = {'shop_data': [user_data], 'user_data': [user.shop.id], 'identity': 'manager'}
+            return JsonSuccess("门店列表", data=ret)
+        return JsonError("没有权限")
+
+
+class SearchStockReport(View):
+    """库存查询"""
+
+    def post(self, request):
+        try:
+            json_data = request.body
+            data = json.loads(json_data)
+        except Exception:
+            return JsonError("解析失败")
+        if not data:
+            return JsonError("无效数据")
+        exam_batch = data
+        user = request.user
+        query_args = []
+        query_kwargs = {}
+        keyword = data.get('searchValue')
+        shop_id = data['shopSelected'].pop() if data['shopSelected'] else None
+        genre_id = data['genreSelected'].pop() if data['genreSelected'] else None
+        if keyword:
+            query_args.append(
+                Q(good__name__contains=keyword)|
+                Q(good__bar_id__contains=keyword)
+            )
+        if shop_id:
+            query_kwargs['shop_id'] = shop_id
+        if genre_id:
+            query_kwargs['good__genre_id'] = genre_id
+        query_set = model.GoodStock.objects.filter(
+            *query_args, **query_kwargs
+        )
+        ret = []
+        for data in query_set:
+            ret.append({
+                'good_name': data.good.name,
+                'bar_id': data.good.bar_id,
+                'shop_name': data.shop.name,
+                'number': data.number,
+                'quantify': data.good_quantify,
+                'stock_buy_price': round(data.stock_buy_price, 2),
+                'stock_sale_price': round(data.good.sale_price if not data.stock_sale_price else data.stock_sale_price, 2)
+            })
+        return JsonSuccess("", data=ret)

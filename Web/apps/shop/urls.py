@@ -37,9 +37,9 @@ urlpatterns =[
         name='other_package'
     ),
     path(
-        r'scan_search',
-        views.ScanSearch.as_view(),
-        name='scan_search'
+        r'scan_stock_search',
+        views.ScanStockSearch.as_view(),
+        name='scan_stock_search'
     ),
     path(
         r'create_stock_in_record',
@@ -55,5 +55,20 @@ urlpatterns =[
         r'commit_exam_task',
         views.CommitExamTask.as_view(),
         name='commit_exam_task'
+    ),
+    path(
+        r'shop_list',
+        views.ShopList.as_view(),
+        name='shop_list'
+    ),
+    path(
+        r'search_stock_report',
+        views.SearchStockReport.as_view(),
+        name='search_stock_report'
+    ),
+    path(
+        r'scan_sale_search',
+        views.ScanSaleSearch.as_view(),
+        name='scan_sale_search'
     )
 ]

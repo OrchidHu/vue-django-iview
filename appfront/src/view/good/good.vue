@@ -2,24 +2,24 @@
 <div >
   <div style=" font-size: 12px; height: 40px">
     <Row type="flex" justify="center" align="middle" :gutter="4">
-        <Col span="2">
+        <Col :sm="4" :md="3" justify="end" align="middle">
           多选框 <i-switch v-model="showCheckbox"></i-switch>
         </Col>
-      <Col span="4">
+      <Col :sm="6" :md="4">
         <Cascader :data="genreList" filterable v-model="genreSelected" @on-change="onChangeGenre" placeholder="选择类别"></Cascader>
       </Col>
-      <Col span="5">
+      <Col :sm="6" :md="5">
         <Input v-model="searchValue"  @keydown.enter.native="searchSubmit" search placeholder="条码 / 名称"/>
       </Col>
-      <Col span="2">
+      <Col :sm="3" :md="2">
         <Button @click="searchSubmit" style="background: #2d8cf0; color: white">搜 索</Button>
       </Col>
-      <Col span="8">
+      <Col :sm="3" :md="7">
         <a @click="reSetData"> 重置</a>
 
         <a v-if="selected" style="margin-left: 20px; color: chartreuse;">已选择 {{selectCount}} 项</a>
       </Col>
-      <Col span="3">
+      <Col :sm="2" :md="3">
       <Button @click="createGood" style="margin-right: 50px; color: white; background: #2d8cf0">新建</Button>
     </Col></Row>
   </div>
@@ -157,7 +157,7 @@ export default {
       this.genreSelected = []
       this.genreFilterFullData = []
     },
-    onChangeGenre (a, selectedData) {
+    onChangeGenre (value, selectedData) {
       if (selectedData.length < 1) return
       this.genreFilterFullData = []
       this.searchValue = null

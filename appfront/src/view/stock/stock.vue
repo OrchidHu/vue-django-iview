@@ -385,7 +385,7 @@ export default {
       })
     },
     scanSubmit () {
-      ajaxGet(config.scanSearch, this.scanBarId).then(res => {
+      ajaxGet(config.scanStockSearch, this.scanBarId).then(res => {
         if (res.data.stat === 'success') {
           this.openModal = true
           this.form = Object.assign({'stock_genre': this.stockGenre}, res.data.data)
@@ -413,7 +413,8 @@ export default {
     handleSubmitToSave () {
       if (this.loading) return
       this.loading = true
-      ajaxPost(config.saveStockGood, this.tableData).then(res => {
+      let submitData = {'list': this.tableData, 'total_price': this.totalPrice, 'stock_genre': this.stockGenre}
+      ajaxPost(config.saveStockGood, submitData).then(res => {
         if (res.data.stat === 'success') {
           this.$Message.success(res.data.msg)
           this.tableData = []

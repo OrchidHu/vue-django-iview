@@ -63,6 +63,13 @@ class Good(models.Model):
     def get_name(self):
         return self.name
 
+    @property
+    def quantify_name(self):
+        if self.quantify:
+            return self.quantify.name
+        else:
+            return '-'
+
 
 class GoodPackage(models.Model):
     """商品其他包装"""
@@ -94,7 +101,7 @@ class GoodPackage(models.Model):
     number = models.IntegerField(
         verbose_name='包装数量'
     )
-    package_price = models.FloatField(
+    sale_price = models.FloatField(
         verbose_name='包装售价'
     )
 
@@ -197,6 +204,10 @@ class GoodStock(models.Model):
     @property
     def good_buy_price(self):
         return self.good.buy_price
+
+    @property
+    def good_quantify(self):
+        return self.good.quantify_name
 
     class Meta:
         ordering = ['-id']
@@ -316,6 +327,9 @@ class ExamineStockRecord(models.Model):
     batch_number = models.CharField(
         "批次号",
         max_length=30
+    )
+    total_price = models.FloatField(
+        """总金额"""
     )
     shop = models.ForeignKey(
         Shop,

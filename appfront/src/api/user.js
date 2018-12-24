@@ -25,11 +25,21 @@ export const logout = () => {
 export const ajaxGet = (url, data) => {
   return axios.request({
     url: url,
+    timeout: 1000,
     params: {
       data
     },
     method: 'get'
-  }, 1000)
+  })
+}
+
+export const ajaxExamGet = (url) => {
+  return axios.request({
+    url: url,
+    timeout: 1000,
+    method: 'get',
+    withCredentials: true
+  })
 }
 
 export const ajaxPost = (url, params) => {
@@ -37,6 +47,7 @@ export const ajaxPost = (url, params) => {
   return axios.request({
     url: url,
     data,
+    timeout: 3000,
     method: 'post',
     withCredentials: true
   })

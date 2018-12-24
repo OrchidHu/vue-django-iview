@@ -38,15 +38,14 @@ def get_genre_parent_id(child_data):
 
 
 def genre_display(query_data):
-    display_list= []
+    display_list = []
     for genre in query_data:
         parent_dist = {
-            'value': genre.id,
+            'value': str(genre.id),
             'label': genre.title
         }
         display_list.append(parent_dist)
-
-        children= genre.children.all()
+        children = genre.children.all()
         if len(children) > 0:
             parent_dist['children'] = genre_display(children)
     return display_list

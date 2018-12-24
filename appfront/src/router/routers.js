@@ -15,8 +15,8 @@ import Main from '@/components/main'
 export default [
 
   {
-    path:'/',
-    redirect:'/home'
+    path: '/',
+    redirect: '/home'
   },
   {
     path: '/login',
@@ -55,7 +55,7 @@ export default [
     path: '/good',
     name: 'good',
     meta: {
-      hide: true,
+      hide: true
     },
     component: Main,
     children: [
@@ -68,6 +68,26 @@ export default [
           notCache: true
         },
         component: () => import('@/view/good/good.vue')
+      }
+    ]
+  },
+  {
+    path: '/sale',
+    name: 'sale',
+    meta: {
+      hide: true
+    },
+    component: Main,
+    children: [
+      {
+        path: 'good_sale',
+        name: 'good_sale',
+        meta: {
+          icon: 'logo-buffer',
+          title: '商品销售',
+          notCache: true
+        },
+        component: () => import('@/view/sale/good-sale.vue')
       }
     ]
   },
@@ -111,6 +131,26 @@ export default [
           title: '审核任务'
         },
         component: () => import('@/view/stock/exam-task.vue')
+      }
+    ]
+  },
+  {
+    path: '/report',
+    name: 'report',
+    meta: {
+      hide: false,
+      title: '报表查询'
+    },
+    component: Main,
+    children: [
+      {
+        path: 'stock_report',
+        name: 'stock_report',
+        meta: {
+          icon: 'ios-calendar',
+          title: '库存查询'
+        },
+        component: () => import('@/view/report/stock-report.vue')
       }
     ]
   }

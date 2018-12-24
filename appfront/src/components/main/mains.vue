@@ -10,13 +10,13 @@
                   {{ item.meta.title }}
                 </BreadcrumbItem>
               </Breadcrumb>
-                <Card>
+                <Card class="content">
                     <div style="min-height: 640px; ">
                       <router-view></router-view>
                     </div>
                 </Card>
             </Content>
-            <!--<Footer class="layout-footer-center">2018-2019 &copy; iView</Footer>-->
+            <Footer class="layout-footer-center">2018-2019 &copy; iView</Footer>
         </Layout>
     </div>
 </template>

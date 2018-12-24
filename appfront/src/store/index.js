@@ -52,7 +52,7 @@ export default new Vuex.Store({
             commit('setSessionId', data.session_id)
             commit('setUserName', data.username)
             commit('setAvator', data.avator)
-            console.log(data.avatar)
+            localStorage.setItem('userAvator', data.avator)
           }
           resolve(data)
         }).catch(err => {
@@ -62,7 +62,6 @@ export default new Vuex.Store({
     },
     // 退出登录
     handleLogOut ({ state, commit }) {
-      console.log('index')
       return new Promise((resolve, reject) => {
         logout(state.token).then(() => {
           commit('setToken', '')

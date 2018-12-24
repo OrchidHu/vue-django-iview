@@ -33,7 +33,7 @@ class Login(View):
             ret['token'] = token
             print(token)
             ret['session_id'] = session_id
-            ret['avator'] = user.avatar.name if user.avatar else None
+            ret['avator'] = user.avatar.name if user.avatar else ''
             return JsonSuccess('登录成功', **ret)
         user = XYUser.objects.filter(username=username).first()
         if not user:

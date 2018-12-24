@@ -1,12 +1,12 @@
 <template>
   <Header class="header-con">
-    <Row >
+    <Row>
       <Col :sm="0" :md="4">
         <div class="layout-logo">
           <img  height="30" width="80" :src="Logo" key="logo" />
         </div>
       </Col>
-      <Col :sm="18" :md="13">
+      <Col :sm="18" :md="15" style="min-width: 497px">
         <Menu class="menu-con" mode="horizontal" :theme="theme1" active-name="1">
           <Row type="flex" justify="end" class="code-row-bg">
             <i-col>
@@ -15,7 +15,7 @@
                 商品管理
               </MenuItem>
             </i-col>
-            <MenuItem name="2">
+            <MenuItem name="2" to="/sale/good_sale">
               <Icon color="orange" type="md-cart" />
               商品销售
             </MenuItem>
@@ -41,8 +41,15 @@
               </Dropdown>
             </MenuItem>
             <MenuItem name="4">
-              <Icon color="orange" type="md-list-box" />
-              报表查询
+              <Dropdown trigger="hover" @on-click="clickReport">
+                <Icon color="orange" type="md-list-box" />
+                报表查询
+                <DropdownMenu slot="list">
+                  <DropdownItem name="stockReport">
+                    <Icon size="16" color="#5cadff" type="ios-browsers" />
+                    库存查询</DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
             </MenuItem>
           </Row>
         </Menu>
@@ -67,18 +74,6 @@
                   <TabPane label="系统消息" icon="logo-apple" name="system">
                     <div class="notifications">
                       <CellGroup>
-                        <Cell title="Only show titles" />
-                        <Cell title="Display label content" label="label content" />
-                        <Cell title="Display right content" extra="details" />
-                        <Cell title="Link" extra="details" to="/components/button" />
-                        <Cell title="Open link in new window" to="/components/button" target="_blank" />
-                        <Cell title="Disabled" disabled />
-                        <Cell title="Selected" selected />
-                        <Cell title="With Badge" to="/components/badge">
-                          <Badge :count="10" slot="extra" />
-                        </Cell>
-                        <Cell title="With Switch">
-                        </Cell>
                       </CellGroup>
                     </div>
                   </TabPane>
@@ -124,7 +119,9 @@ export default {
   computed: {
     userAvator () {
       // let aa = 'images/2018/11/16/VXR5LLL18U_LNVNKCZECK.png'
-      let avator = this.$store.state.avator
+      console.log(this.$store.state.avator)
+      let storeAvator = this.$store.state.avator
+      let avator = storeAvator || localStorage.getItem('userAvator')
       if (!avator) {
         // return '' //如果后台没有传avator参数, 则使用的iview默认图片
         return // 直接return使用的是props默认值
@@ -156,6 +153,13 @@ export default {
       } else if (name === 'examTask') {
         this.$router.push({
           name: 'exam_task'
+        })
+      }
+    },
+    clickReport (name) {
+      if (name === 'stockReport') {
+        this.$router.push({
+          name: 'stock_report'
         })
       }
     }

@@ -67,7 +67,7 @@ class CreateOtherPackageForm(forms.ModelForm):
             'bar_id',
             'name',
             'number',
-            'package_price'
+            'sale_price'
         )
         error_messages = {
             "bar_id": {
@@ -82,7 +82,7 @@ class CreateOtherPackageForm(forms.ModelForm):
             "number": {
                 "required": u"包装数量是必填项"
             },
-            "package_price": {
+            "sale_price": {
                 "required": u"包装售价是必填项"
             }
         }
