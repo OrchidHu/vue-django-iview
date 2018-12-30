@@ -53,6 +53,7 @@
 import config from '@/config'
 import {ajaxGet} from '../../api/user'
 import GoodModal from '@/components/good-modal'
+import Bus from '../bus'
 
 const formData = {
   id: null,
@@ -297,6 +298,11 @@ export default {
   mounted () {
     ajaxGet(config.getGenreUrl).then(res => {
       this.genreList = res.data.data
+    })
+    Bus.$on('createGood', (barId) => {
+      this.modalData.changeType = 'create'
+      this.modalData.openModal = true
+      this.modalData.form.bar_id = barId
     })
   }
 }

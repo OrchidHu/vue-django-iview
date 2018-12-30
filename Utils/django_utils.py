@@ -80,6 +80,7 @@ def safe_compute(price, number, buy_price):
     else:
         return buy_price
 
+
 def notice_manager(room_name, text_data):
     channel_layer = get_channel_layer()
     async_to_sync(channel_layer.group_send)(
@@ -102,6 +103,8 @@ def JsonError(msg='', **kwargs):
     }
     ret.update(kwargs)
     return JsonResponse(ret)
+
+
 def JsonReLogin(msg='', **kwargs):
 
     ret = {
@@ -111,6 +114,7 @@ def JsonReLogin(msg='', **kwargs):
     }
     ret.update(kwargs)
     return JsonResponse(ret)
+
 
 def JsonForbid(msg='', **kwargs):
 

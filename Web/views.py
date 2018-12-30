@@ -44,7 +44,7 @@ class MyConsumer(AsyncWebsocketConsumer):
         # __import__("pdb").set_trace()
         if user and user.has_perm('boss') or user.has_perm('manager'):
             print("添加进来了")
-            await self.channel_layer.group_add("sys_message", self.channel_name)
+            await self.channel_layer.group_add("sys", self.channel_name)
         await self.channel_layer.group_add("chat", self.channel_name)
         # await channel_layer.send(c_name, {"type": "send.message", "text": "Hello there!"})
         # time.sleep(5)

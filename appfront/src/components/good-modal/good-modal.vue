@@ -64,6 +64,7 @@
 import config from '@/config'
 import {ajaxGet} from '@/api/user'
 import OtherPackage from './other-package'
+import Bus from '../../view/bus'
 export default {
   name: 'GoodModal',
   components: {
@@ -291,6 +292,12 @@ export default {
     })
     ajaxGet(config.getGenreUrl).then(res => {
       this.genreList = res.data.data
+    })
+    Bus.$on('focusName', () => {
+      setTimeout(() => {
+        var elInput = document.getElementById('name')
+        elInput.focus()
+      })
     })
   }
 }

@@ -6,20 +6,20 @@
           <img  height="30" width="80" :src="Logo" key="logo" />
         </div>
       </Col>
-      <Col :sm="18" :md="15" style="min-width: 497px">
-        <Menu class="menu-con" mode="horizontal" :theme="theme1" active-name="1">
+      <Col :sm="18" :md="15">
+        <Menu class="menu-con" mode="horizontal" :theme="theme1" :active-name="activeName">
           <Row type="flex" justify="end" class="code-row-bg">
             <i-col>
-              <MenuItem name="8" to="/good/good_page">
+              <MenuItem name="good_page" to="/good/good_page">
                 <Icon color="orange" type="logo-github" />
                 商品管理
               </MenuItem>
             </i-col>
-            <MenuItem name="2" to="/sale/good_sale">
+            <MenuItem name="good_sale" to="/sale/good_sale">
               <Icon color="orange" type="md-cart" />
               商品销售
             </MenuItem>
-            <MenuItem name="3">
+            <MenuItem name="stock">
               <Dropdown trigger="hover" @on-click="clickStock">
                 <div href="javascript:void(0)">
                   <Icon color="orange" type="ios-browsers" />
@@ -40,7 +40,7 @@
                 </DropdownMenu>
               </Dropdown>
             </MenuItem>
-            <MenuItem name="4">
+            <MenuItem name="report">
               <Dropdown trigger="hover" @on-click="clickReport">
                 <Icon color="orange" type="md-list-box" />
                 报表查询
@@ -100,6 +100,7 @@ export default {
   data () {
     return {
       isFullscreen: false,
+      activeName: '8',
       Logo,
       theme1: 'light',
       notification: this.$store.state.task,
@@ -162,6 +163,11 @@ export default {
           name: 'stock_report'
         })
       }
+    }
+  },
+  watch: {
+    '$route' (newRoute) {
+      this.activeName = newRoute.name
     }
   }
 }

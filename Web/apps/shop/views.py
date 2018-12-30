@@ -126,14 +126,15 @@ class Delete(View):
 
     def get(self, request):
         import time
-        time.sleep(0.8)
         json_data = request.GET.get('data')
         data = json.loads(json_data)
         if data['del_list']:
             for good in data.get('del_list'):
                 try:
                     model.Good.objects.filter(id=good['id']).delete()
-                except Exception:
+                except Exception as e:
+                    print([item .name for item in e.protected_objects])
+                    notice_manager("sys", "你有审批任务啦")
                     return JsonError("删除失败", data=self.full_data())
             return JsonSuccess("删除成功", data=self.full_data())
         return JsonError("请选择需要删除的商品")

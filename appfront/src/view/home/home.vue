@@ -35,8 +35,8 @@ export default {
       'setTask'
     ])
   },
-  destroyed () {
-    this.sock.close()
-  }
+  // destroyed () {
+  //   this.sock.close()
+  // }
 }
 </script>

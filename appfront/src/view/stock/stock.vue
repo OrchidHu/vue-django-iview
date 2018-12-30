@@ -48,14 +48,14 @@
           <Form ref="stockInForm" :model="form" :rules="rules" :label-width="50">
             <FormItem label="数量"  label-for="number" prop="number">
               <Input ref="number" element-id="number"
-                     @on-focus="numberOnFocus" @on-blur="onBlurNumber"
+                     @on-focus="currentInputId = 'number'" @on-blur="onBlurNumber"
                      style="width: 150px; text-align: right;" v-model="form.number" number>
                 <Icon type="md-clipboard" size="14" slot="prefix" />
               </Input>
             </FormItem>
             <FormItem label="进价"  label-for="buy_price" prop="buy_price" >
-              <Input ref="buy_price" element-id="buy_price"  @on-focus="buyPriceOnFocus"
-                     @on-blur="onBlurBuyPrice"
+              <Input ref="buy_price" element-id="buy_price"
+                     @on-focus="currentInputId = 'buy_price'" @on-blur="onBlurBuyPrice"
                      style="width: 150px; text-align: center;" v-model="form.buy_price">
                 <Icon type="logo-yen" size="12" slot="prefix" />
               </Input>
@@ -297,12 +297,6 @@ export default {
     remove (index) {
       this.tableData.splice(index, 1)
       localStorage.setItem(`${this.stockName}-table-data`, JSON.stringify(this.tableData))
-    },
-    numberOnFocus () {
-      this.currentInputId = 'number'
-    },
-    buyPriceOnFocus () {
-      this.currentInputId = 'buy_price'
     },
     onBlurNumber () {
       setTimeout(() => { // 如何失焦不是因为点击了价格输入框, 那就继续聚焦自身
