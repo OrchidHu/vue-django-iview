@@ -1,19 +1,20 @@
 <template>
 
-  <Modal :title="goodForm.name" v-model="setData.openModal">
+  <Modal title="结算" v-model="balance.openModal">
     <Row>
       <i-col span="11">
-        <Form ref="goodSaleForm" :model="goodForm" :label-width="50" :rules="rules">
-          <FormItem label="数量"  label-for="bar-id" prop="number" >
-            <Input ref="number" element-id="number" v-model="goodForm.number"
-                   @on-focus="currentInputId = 'number'" @on-blur="onBlurNumber" number/>
+        <Form ref="balanceForm" :model="balance" :label-width="60" :rules="rules">
+          <FormItem label="折扣优惠" label-for="discount" prop="discount" >
+            <InputNumber :min="0" number style="width: 55px" ref="discount" element-id="discount" v-model="balance.discount" /> %
           </FormItem>
-          <FormItem label="单价" label-for="name" prop="price" >
-            <Input ref="price" element-id="price" v-model="goodForm.price"
-                   @on-focus="currentInputId = 'price'" @on-blur="onBlurBuyPrice"/>
+          <FormItem label="折后金额"  label-for="sum-money" prop="sumMoney" >
+            <Input readonly ref="sumMoney" element-id="sum-money" :value="discountMoney" />
           </FormItem>
-          <FormItem label="小计">
-            <Input v-model="subtotal"/>
+          <FormItem label="实收金额">
+            <Input v-model="arrange"/>
+          </FormItem>
+          <FormItem label="找零">
+            <Input readonly v-model="oddChange"/>
           </FormItem>
         </Form>
       </i-col>
@@ -21,7 +22,8 @@
         <Divider type="vertical" style="height: 240px"/>
       </i-col>
       <i-col span="12">
-        <number-key-board @on-click="clickOnNumber"></number-key-board>
+        <!--<number-key-board @on-click="clickOnNumber"></number-key-board>-->
+        <Icon size="240" type="md-cart" />
       </i-col>
     </Row>
     <div slot="footer">
@@ -40,16 +42,11 @@
 <script>
 import NumberKeyBoard from '@/components/number-key-board'
 export default {
-  name: 'ChangeGood',
+  name: 'Balance',
   props: {
-    goodForm: {
+    balance: {
       type: Object,
       required: true
-    },
-    setData: {
-      openModal: {
-        type: Boolean
-      }
     }
   },
   components: {
@@ -58,6 +55,7 @@ export default {
   data () {
     return {
       currentInputId: 'number',
+      arrange: parseFloat((this.balance.discount * this.balance.sumMoney / 100).toFixed(2)),
       rules: {
         number: [ {required: true, message: '请输入数量'},
           {type: 'number', message: '输入正确的数字'},
@@ -78,11 +76,17 @@ export default {
     }
   },
   computed: {
-    subtotal () {
-      if (isNaN(parseInt(this.goodForm.number)) || isNaN(parseInt(this.goodForm.price))) {
-        return 0
-      }
-      return parseFloat(this.goodForm.number) * parseFloat(this.goodForm.price)
+    discountMoney () {
+      return parseFloat((this.balance.discount * this.balance.sumMoney / 100).toFixed(2))
+    },
+    // arrange () {
+    //   return this.discountMoney
+    // },
+    oddChange () {
+      let arrangeMoney = this.arrange
+      let discMoney = this.discountMoney
+      if (arrangeMoney < discMoney) return 0
+      return (arrangeMoney - discMoney).toFixed(1)
     }
   },
   methods: {

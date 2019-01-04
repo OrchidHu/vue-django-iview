@@ -9,7 +9,7 @@
         <Input element-id="name" v-model="modalData.form.name"/>
       </FormItem>
       <FormItem label="类别" prop="genre_id">
-        <Cascader v-model="test" :data="genreList" filterable @on-change="onChangeGenre"></Cascader>
+        <Cascader v-model="modalData.form.genre_id" :data="genreList" filterable @on-change="onChangeGenre"></Cascader>
       </FormItem>
       <FormItem label="单位" prop="quantify_id">
         <Select v-model="modalData.form.quantify_id" filterable label-in-value
@@ -138,7 +138,6 @@ export default {
       createLoading: false,
       quantifyList: [],
       supplierList: [],
-      test: [],
       packageDataList: [],
       genreList: [],
       addQuantifyValue: null,
@@ -194,8 +193,10 @@ export default {
       }
     },
     onChangeGenre (value, selectedData) {
+      console.log(selectedData)
       if (selectedData.length > 0) {
         this.modalData.form.genre = selectedData[selectedData.length - 1].label
+        this.modalData.form.genre_id = value
       }
     },
     closeTheModal () { // 为了避免新建和更新共用Modal在校验上存在缓存问题 如:(如关闭更新Modal后打开新建Modal出现"校验红字")

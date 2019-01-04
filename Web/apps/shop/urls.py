@@ -70,5 +70,10 @@ urlpatterns =[
         r'scan_sale_search',
         views.ScanSaleSearch.as_view(),
         name='scan_sale_search'
+    ),
+    path(
+        r'search_good_sale',
+        views.searchGoodSale.as_view(),
+        name='search_good_sale'
     )
 ]

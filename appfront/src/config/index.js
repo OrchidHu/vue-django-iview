@@ -39,5 +39,6 @@ export default {
   commitExamTask: djangoUrl + 'shop/commit_exam_task',
   getShopList: djangoUrl + 'shop/shop_list',
   searchStockReport: djangoUrl + 'shop/search_stock_report',
-  scanSaleSearch: djangoUrl + 'shop/scan_sale_search'
+  scanSaleSearch: djangoUrl + 'shop/scan_sale_search',
+  searchGoodSale: djangoUrl + 'shop/search_good_sale'
 }

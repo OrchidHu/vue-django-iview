@@ -30,9 +30,9 @@ def redis_get(key):
 def get_genre_parent_id(child_data):
     if not child_data:
         return []
-    ret = [child_data.id]
+    ret = [str(child_data.id)]
     while child_data.parent:
-        ret.append(child_data.parent_id)
+        ret.append(str(child_data.parent_id))
         child_data = child_data.parent
     return ret[::-1]
 

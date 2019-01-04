@@ -249,7 +249,7 @@ class ScanSaleSearch(View):
             sale_price = instance.sale_price
             good_id = instance.good_id
             number = instance.number
-        else: # 单包装查询是否有门店售价
+        else:  # 单包装查询是否有门店售价
             good_id = instance.id
             pack_good = model.GoodStock.objects.filter(good_id=good_id).first()
             number = 1
@@ -265,6 +265,33 @@ class ScanSaleSearch(View):
             'price': sale_price,
             'subtotal': sale_price
         }
+        return JsonSuccess("查询成功", data=data)
+
+
+class searchGoodSale(View):
+    """搜索出售商品"""
+
+    def get(self, request):
+        keyword = request.GET.get('data')
+        if not keyword:
+            return JsonError("keyword不能为空")
+        good_sets = model.Good.objects.filter(Q(bar_id__contains=keyword) | Q(name__contains=keyword)).all()
+        package_sets = model.GoodPackage.objects.filter(Q(bar_id__contains=keyword) | Q(name__contains=keyword)).all()
+        if not good_sets and not package_sets:
+            return JsonError("暂无结果")
+        data = []
+        for item in good_sets:
+            data.append({
+                'name': item.name,
+                'bar_id': item.bar_id,
+                'price': item.sale_price
+            })
+        for item in package_sets:
+            data.append({
+                'name': item.name,
+                'bar_id': item.bar_id,
+                'price': item.sale_price
+            })
         return JsonSuccess("查询成功", data=data)
 
 
