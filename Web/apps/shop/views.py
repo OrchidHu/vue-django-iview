@@ -275,8 +275,8 @@ class searchGoodSale(View):
         keyword = request.GET.get('data')
         if not keyword:
             return JsonError("keyword不能为空")
-        good_sets = model.Good.objects.filter(Q(bar_id__contains=keyword) | Q(name__contains=keyword)).all()
-        package_sets = model.GoodPackage.objects.filter(Q(bar_id__contains=keyword) | Q(name__contains=keyword)).all()
+        good_sets = model.Good.objects.filter(Q(bar_id__contains=keyword) | Q(name__contains=keyword)).all()[:10]
+        package_sets = model.GoodPackage.objects.filter(Q(bar_id__contains=keyword) | Q(name__contains=keyword)).all()[:10]
         if not good_sets and not package_sets:
             return JsonError("暂无结果")
         data = []
@@ -284,15 +284,17 @@ class searchGoodSale(View):
             data.append({
                 'name': item.name,
                 'bar_id': item.bar_id,
-                'price': item.sale_price
+                'price': '%.2f' % item.sale_price,
+                'quantify': item.quantify_name
             })
         for item in package_sets:
             data.append({
                 'name': item.name,
                 'bar_id': item.bar_id,
-                'price': item.sale_price
+                'price': '%.2f' % item.sale_price,
+                'quantify': item.quantify_name
             })
-        return JsonSuccess("查询成功", data=data)
+        return JsonSuccess("查询成功", data=data[:8])
 
 
 class GoodStockRecord(View):

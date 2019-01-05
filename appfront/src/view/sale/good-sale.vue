@@ -1,22 +1,32 @@
 <template>
   <div>
-    <Row :gutter="10">
-      <i-col :sm="24" :md="10">
+    <Row :gutter="10" >
+      <Col :sm="24" :md="10">
         <Input v-if="searchType === 'scan'" ref="scanInput" element-id="scanInput" icon="ios-clock-outline"
                v-model="scanBarId" placeholder="扫码" @keydown.enter.native="scanSubmit"
-               @on-click="searchType='search', searchData='', searchList=[]"
+               @on-click="searchType='search'"
         />
-        <AutoComplete v-if="searchType === 'search'" ref="searchInput" element-id="searchInput"
-                      v-model="searchData" placeholder="搜索" @on-blur="onBlur"
-                @on-search="onSearch" @on-select="onSelect">
-          <Option class="demo-auto-complete-item" :value="item.bar_id" :key="item.bar_id" v-for="item in searchList">
-            <Row>
-              <i-col span="6">{{item.name}}</i-col>
-              <i-col span="6">{{item.bar_id}}</i-col>
-              <i-col span="12">{{item.price}}</i-col>
-            </Row>
-          </Option>
-        </AutoComplete>
+        <div v-if="searchType === 'search'">
+          <Row :gutter="4">
+            <Col span="21">
+              <AutoComplete ref="searchInput" element-id="searchInput" transfer
+                            v-model="searchData" placeholder="搜索" @keydown.enter.native="searchSubmit"
+                            @on-search="onSearch" @on-select="onSelect" @on-change="onChange">
+                <Option v-for="item in searchList" :value="item.bar_id" :key="item.bar_id">
+                  <Row type="flex" justify="center" align="middle">
+                    <i-col span="18"><Row>{{item.bar_id}}</Row><Row>{{item.name}}</Row></i-col>
+                    <i-col span="3"><Row><Icon style="padding-bottom: 2px" type="logo-yen" /><span style="font-size: 12px"> {{item.price}}</span></Row>
+                      <Row>/ {{item.quantify}}</Row></i-col>
+                  </Row>
+                  <Divider style="height: 2px; margin: 1px;" dashed/>
+                </Option>
+              </AutoComplete>
+            </Col>
+            <Col span="3">
+              <Button long @click="searchType='scan'">扫码</Button>
+            </Col>
+          </Row>
+        </div>
         <div style="height: 10px"> </div>
         <Row>
           <i-col :sm="0" :md="24">
@@ -36,7 +46,7 @@
             </Card>
           </i-col>
         </Row>
-      </i-col>
+      </Col>
       <i-col :sm="24" :md="14">
         <Table ref="goodTable" height="380" highlight-row @on-current-change="currentChange"
                @on-keydown="upMove" @on-row-click="onRowClick" disabled-hover
@@ -74,7 +84,7 @@
   </div>
 </template>
 <script>
-import {ajaxGet, ajaxPost} from '../../api/user'
+import {ajaxGet} from '../../api/user'
 import config from '../../config'
 import Bus from '../bus'
 import ChangeGood from './change-good'
@@ -168,30 +178,38 @@ export default {
   },
   methods: {
     onSelect (value) {
-      console.log(value, 'sel')
-      if (value) {
-        this.searchType = 'scan'
-        setTimeout(() => {
-          this.scanBarId = value
-          this.scanSubmit()
-        }, 50)
+      console.log(value, 'select')
+    },
+    onChange (value) {
+      console.log(value, 'change')
+      // if (value) {
+      //   // this.searchType = 'scan'
+      //   // setTimeout(() => {
+      //     this.scanBarId = value
+      //     this.searchGood()
+      //   // }, 50)
+      // }
+      // setTimeout(() => {
+      //   this.searchType = 'search'
+      // }, 150)
+      // setTimeout(() => {
+      //   setTimeout(() => {
+      //     // var searchInput = document.getElementById('searchInput')
+      //     // this.searchData = ''
+      //     // searchInput.focus()
+      //   }, 150)
+      // })
+    },
+    },
+    onSearch (query) {
+      console.log(query, 'search')
+      console.log(typeof(query))
+      if (query === ' ') return  // 选择后
+      if (query !== this.searchData) {
+        console.log("已选择")
+        this.searchSubmit()
       }
-      setTimeout(() => {
-        this.searchType = 'search'
-      }, 150)
-      setTimeout(() => {
-        setTimeout(() => {
-          var searchInput = document.getElementById('searchInput')
-          this.searchData = ''
-          searchInput.focus()
-        }, 150)
-      })
-    },
-    onBlur () {
-      this.searchType = 'scan'
-    },
-    onSearch (value) {
-      ajaxGet(config.searchGoodSale, value).then((res) => {
+      ajaxGet(config.searchGoodSale, query).then((res) => {
         if (res.data.stat === 'success') {
           // this.searchList = [{'bar_id': 12, 'name': '3', 'price': 23}, {'bar_id': 123, 'name': '3', 'price': 23}]
           this.searchList = res.data.data
@@ -251,6 +269,22 @@ export default {
       this.handleHighLight()
     },
     scanSubmit () {
+      this.searchGood()
+      this.$refs.scanInput.focus()
+    },
+    searchSubmit () {
+      setTimeout(() => {
+        this.scanBarId = this.searchData
+        this.searchGood()
+      })
+      setTimeout(() => {
+        this.searchList = []
+        this.searchData = ''
+        var elInput = document.getElementById('searchInput')
+        elInput.focus()
+      }, 400)
+    },
+    searchGood () {
       if (!this.scanBarId) return
       console.log(this.scanBarId, '12bar')
       let isDav = false // 如果列表中有直接累加，如果没有访问后台
@@ -301,7 +335,6 @@ export default {
       this.scanBarId = null
       localStorage.setItem('good-sale-list', JSON.stringify(this.list))
       localStorage.setItem('high-light-index', this.highLightIndex)
-      this.$refs.scanInput.focus()
     },
     deleteRow () {
       if (this.highLightIndex === -1) {
@@ -325,11 +358,15 @@ export default {
     clearTableData () {
       this.list = []
       localStorage.setItem('good-sale-list', JSON.stringify(this.list))
-      this.$refs.scanInput.focus()
+      this.searchType = 'scan'
+      setTimeout(() => {
+        this.$refs.scanInput.focus()
+      }, 5)
     },
     cancel () {},
     handleSubmit () {
       this.balance.openModal = true
+      this.balance.discount = 100
     },
     subtotal (row) {
       return row.number * row.price

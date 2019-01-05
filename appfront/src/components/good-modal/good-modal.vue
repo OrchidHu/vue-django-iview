@@ -128,7 +128,7 @@ export default {
     },
     supplierIdRules: {type: Array,
       default: () => { // 此处value为id是数字，所以type为number，不然被视为没选
-        return [{ type: 'number', required: true, message: '请选择供应商', trigger: 'change'}]
+        return [{ type: 'number', message: '请输入类别', trigger: 'change'}]
       }
     }
   },
@@ -200,7 +200,7 @@ export default {
       }
     },
     closeTheModal () { // 为了避免新建和更新共用Modal在校验上存在缓存问题 如:(如关闭更新Modal后打开新建Modal出现"校验红字")
-      this.$nextTick(() => {
+      setTimeout(() => {
         this.$refs.goodForm.resetFields()
         this.modalData.openModal = false
       })
@@ -222,6 +222,7 @@ export default {
             let commitData = {form: this.modalData.form, package_data: this.packageDataList}
             ajaxGet(config.createGoodUrl, commitData).then(res => {
               if (res.data.stat === 'success') {
+                this.$refs.goodForm.resetFields()
                 this.$Message.success('新建成功')
                 this.modalData.form.id = res.data.id // 把新建的商品的id传到前端
                 this.modalData.supplier = this.supplierList
@@ -231,7 +232,6 @@ export default {
                 const copyData = Object.assign({}, this.modalData.form)
                 this.$emit('modal-success-valid', copyData)
                 this.modalData.openModal = false
-                this.$refs.goodForm.resetFields()
               } else {
                 this.$refs.child.modalChangeNotice()
                 this.$Message.error(res.data.msg)

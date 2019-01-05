@@ -109,6 +109,13 @@ class GoodPackage(models.Model):
     def good_id(self):
         return self.one_package.id
 
+    @property
+    def quantify_name(self):
+        if self.quantify:
+            return self.quantify.name
+        else:
+            return '-'
+
     class Meta:
         ordering = ['-id']
         verbose_name = _('其他包装')
