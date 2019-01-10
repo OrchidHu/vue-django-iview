@@ -24,8 +24,8 @@
       <br>
       <Row :gutter="80">
         <Col span="8">
-          <FormItem label="包装数量" prop="number">
-            <InputNumber v-model="form.number"></InputNumber>
+          <FormItem label="包装数量" prop="package_number">
+            <InputNumber v-model="form.package_number"></InputNumber>
           </FormItem>
         </Col>
         <Col span="8">
@@ -52,7 +52,7 @@ const formData = {
   name: '',
   quantify_id: null,
   quantify: null,
-  number: null,
+  package_number: null,
   sale_price: null
 }
 export default {
@@ -81,7 +81,7 @@ export default {
         bar_id: [{required: true, message: '请输入包装条码', trigger: 'blur'}],
         name: [{required: true, message: '请输入包装名称', trigger: 'blur'}],
         quantify_id: [{type: 'number', required: true, message: '请输入包装单位', trigger: 'blur'}],
-        number: [{type: 'number', required: true, message: '请输入包装数量', trigger: 'blur'}],
+        package_number: [{type: 'number', required: true, message: '请输入包装数量', trigger: 'blur'}],
         sale_price: [{required: true, message: '请输入包装售价', trigger: 'blur'}]
       },
       packageDataList: [],
@@ -101,7 +101,7 @@ export default {
         },
         {
           title: '包装数量',
-          key: 'number'
+          key: 'package_number'
         },
         {
           title: '包装售价',

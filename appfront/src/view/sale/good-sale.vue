@@ -2,16 +2,17 @@
   <div>
     <Row :gutter="10" >
       <Col :sm="24" :md="10">
-        <Input v-if="searchType === 'scan'" ref="scanInput" element-id="scanInput" icon="ios-clock-outline"
+        <Input v-if="searchType === 'scanInput'" ref="scanInput" element-id="scanInput" icon="ios-clock-outline"
                v-model="scanBarId" placeholder="扫码" @keydown.enter.native="scanSubmit"
-               @on-click="searchType='search'"
+               @keydown.tab.native="changeSearchType('searchInput')" @on-click="changeSearchType('searchInput')"
         />
-        <div v-if="searchType === 'search'">
+        <div v-if="searchType === 'searchInput'">
           <Row :gutter="4">
             <Col span="21">
               <AutoComplete ref="searchInput" element-id="searchInput" transfer
                             v-model="searchData" placeholder="搜索" @keydown.enter.native="searchSubmit"
-                            @on-search="onSearch" @on-select="onSelect" @on-change="onChange">
+                            @on-search="onSearch" @keydown.F3.native="changeSearchType('scanInput')"
+              >
                 <Option v-for="item in searchList" :value="item.bar_id" :key="item.bar_id">
                   <Row type="flex" justify="center" align="middle">
                     <i-col span="18"><Row>{{item.bar_id}}</Row><Row>{{item.name}}</Row></i-col>
@@ -23,7 +24,7 @@
               </AutoComplete>
             </Col>
             <Col span="3">
-              <Button long @click="searchType='scan'">扫码</Button>
+              <Button long @click="changeSearchType('scanInput')">扫码</Button>
             </Col>
           </Row>
         </div>
@@ -107,9 +108,8 @@ export default {
     if (!storeHighLight) {
       storeHighLight = -1
     }
-    console.log(this.scanBarId)
     return {
-      searchType: 'scan',
+      searchType: 'scanInput',
       currentRow: null,
       test: '',
       searchData: '',
@@ -155,6 +155,8 @@ export default {
       balance: {
         openModal: false,
         sumMoney: 0,
+        discMoney: 0,
+        arrangeMoney: 0,
         discount: 100
       }
     }
@@ -172,48 +174,19 @@ export default {
       this.list.forEach((value) => {
         totalPrice += value.subtotal
       })
-      this.balance.sumMoney = totalPrice
       return totalPrice
     }
   },
   methods: {
-    onSelect (value) {
-      console.log(value, 'select')
-    },
-    onChange (value) {
-      console.log(value, 'change')
-      // if (value) {
-      //   // this.searchType = 'scan'
-      //   // setTimeout(() => {
-      //     this.scanBarId = value
-      //     this.searchGood()
-      //   // }, 50)
-      // }
-      // setTimeout(() => {
-      //   this.searchType = 'search'
-      // }, 150)
-      // setTimeout(() => {
-      //   setTimeout(() => {
-      //     // var searchInput = document.getElementById('searchInput')
-      //     // this.searchData = ''
-      //     // searchInput.focus()
-      //   }, 150)
-      // })
-    },
-    },
     onSearch (query) {
-      console.log(query, 'search')
-      console.log(typeof(query))
-      if (query === ' ') return  // 选择后
+      if (query === ' ') return // 选择后on-search方法返回值value为空
       if (query !== this.searchData) {
-        console.log("已选择")
         this.searchSubmit()
       }
       ajaxGet(config.searchGoodSale, query).then((res) => {
         if (res.data.stat === 'success') {
           // this.searchList = [{'bar_id': 12, 'name': '3', 'price': 23}, {'bar_id': 123, 'name': '3', 'price': 23}]
           this.searchList = res.data.data
-          console.log(res.data.data)
         } else {
           this.searchList = []
         }
@@ -268,11 +241,24 @@ export default {
       this.list = data
       this.handleHighLight()
     },
+    changeSearchType (value) {
+      this.searchType = value
+      setTimeout(() => {
+        var elInput = document.getElementById(value)
+        elInput.focus()
+      }, 5)
+    },
     scanSubmit () {
+      if (!this.scanBarId) {
+        this.handleSubmit()
+      }
       this.searchGood()
       this.$refs.scanInput.focus()
     },
     searchSubmit () {
+      if (!this.searchData) {
+        this.handleSubmit()
+      }
       setTimeout(() => {
         this.scanBarId = this.searchData
         this.searchGood()
@@ -286,7 +272,6 @@ export default {
     },
     searchGood () {
       if (!this.scanBarId) return
-      console.log(this.scanBarId, '12bar')
       let isDav = false // 如果列表中有直接累加，如果没有访问后台
       let index = -1
       for (let _index in this.list) {
@@ -358,15 +343,19 @@ export default {
     clearTableData () {
       this.list = []
       localStorage.setItem('good-sale-list', JSON.stringify(this.list))
-      this.searchType = 'scan'
+      this.searchType = 'scanInput'
       setTimeout(() => {
         this.$refs.scanInput.focus()
       }, 5)
     },
     cancel () {},
     handleSubmit () {
+      if (!this.list.length) return
       this.balance.openModal = true
+      this.balance.sumMoney = this.totalPrice
       this.balance.discount = 100
+      this.balance.discMoney = this.balance.sumMoney
+      this.balance.arrangeMoney = this.balance.sumMoney
     },
     subtotal (row) {
       return row.number * row.price

@@ -25,5 +25,6 @@ urlpatterns = [
     path(r'', TemplateView.as_view(template_name='index.html')),
     path(r'account/', include('Web.apps.account.urls', namespace='account')),
     path(r'shop/', include('Web.apps.shop.urls', namespace='shop')),
+    path(r'sale/', include('Web.apps.sale.urls', namespace='sale')),
     path(r'common/', include('Web.apps.common.urls', namespace='common'))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

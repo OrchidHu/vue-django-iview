@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from Web.apps.common.models import Quantify, Supplier, Genre
+from Web.apps.sale.models import GoodOperateRecord, GoodOrder
 from Web.apps.shop.models import Good, GoodPackage, Shop, GoodStock, StockRecord, ExamineStockRecord
 from Web.models import XYUser
 from django.contrib.auth.admin import UserAdmin
@@ -72,7 +73,7 @@ class GenreAdmin(admin.ModelAdmin):
 
 @admin.register(GoodPackage)
 class GoodPackageAdmin(admin.ModelAdmin):
-    list_display = ('name', 'bar_id', 'quantify', 'number', 'sale_price')
+    list_display = ('name', 'bar_id', 'quantify', 'package_number', 'sale_price')
 
 
 @admin.register(Supplier)
@@ -88,6 +89,42 @@ class ShopAdmin(admin.ModelAdmin):
 @admin.register(GoodStock)
 class GoodStockAdmin(admin.ModelAdmin):
     list_display = ('good', 'shop', 'number', 'stock_buy_price', 'stock_sale_price')
+
+
+@admin.register(GoodOperateRecord)
+class GoodOperateRecordAdmin(admin.ModelAdmin):
+    list_display = ('serial_number', 'bar_id', 'name', 'quantify', 'number', 'package_number', 'stock_buy_price', 'sale_price',
+                    'profit', 'format_discount_profit', 'operate_type', 'sale_status', 'operator', 'shop_name', 'create_time')
+
+    def format_discount_profit(self, obj):
+        return format_html(
+            '<span>{}%</span>',
+            obj.discount_profit
+        )
+    format_discount_profit.short_description = u"毛利率"
+    search_fields = ['serial_number', 'bar_id', 'name', 'operator']
+
+
+@admin.register(GoodOrder)
+class GoodOrderAdmin(admin.ModelAdmin):
+    list_display = ('serial_number', 'operate_type', 'sale_status', 'number', 'buy_price_total', 'sale_price', 'discount_price',
+                    'format_discount', 'profit', 'format_discount_profit', 'operator', 'create_time', 'update_time')
+
+    def format_discount(self, obj):
+        return format_html(
+            '<span>{}%</span>',
+            obj.discount
+        )
+
+    format_discount.short_description = u"折扣"
+    search_fields = ['serial_number', 'operate_type', 'sale_status', 'operator', 'create_time']
+
+    def format_discount_profit(self, obj):
+        return format_html(
+            '<span>{}%</span>',
+            obj.discount_profit
+        )
+    format_discount_profit.short_description = u"毛利率"
 
 
 @admin.register(ExamineStockRecord)

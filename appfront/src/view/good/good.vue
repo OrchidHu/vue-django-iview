@@ -28,16 +28,20 @@
            @on-filter-change="handleFilterChange"
            @on-selection-change="handleSelect"
            border stripe show-header
-           :height="fixedHeader ? 390 : ''"
+           :height="fixedHeader ? 400 : ''"
            :loading="tableLoading"
            size="small"
            :data="dataWithPage"
            :columns="tableColumns"></Table>
-    <div style="margin: 10px;overflow: hidden">
-      <Button @click="deleteGood"
-              :loading="deleteLoading"
-              :disabled="this.selected ? false : true"
-              style=" background: tomato; color: white; letter-spacing: 2px; margin-left: 50px">删除</Button>
+    <div style="margin: 10px;">
+      <Row type="flex" justify="center" align="middle">
+        <i-col span="4" push="1">
+          <Button @click="deleteGood"
+                  :loading="deleteLoading"
+                  :disabled="this.selected ? false : true"
+                  style=" background: tomato; color: white; letter-spacing: 2px; ">删除</Button>
+        </i-col>
+        <i-col span="20" pull="2">
         <span style="text-align:center; ">
             <Page :total="limitData.length"
                   :current.sync="current"
@@ -45,6 +49,8 @@
                   @on-page-size-change="handleChangePageSize"
             ></Page>
         </span>
+        </i-col>
+      </Row>
     </div>
   <good-modal ref="child" :modal-data="modalData" @modal-success-valid="handleSubmit"></good-modal>
 </div>
@@ -121,7 +127,7 @@ export default {
       columns.push({ title: '类别', key: 'genre' })
       columns.push({ title: '单位', key: 'quantify' })
       columns.push({ title: '进价', key: 'buy_price', sortable: 'custom' })
-      columns.push({ title: '售价', key: 'sale_price' })
+      columns.push({ title: '售价', key: 'sale_price', sortable: 'custom'})
       columns.push({ title: '供应商', key: 'supplier' })
       return columns
     },

@@ -163,7 +163,7 @@ class OtherPackageList(View):
                 'name': data.name,
                 'quantify': data.quantify.name if data.quantify else "-",
                 'quantify_id': data.quantify.id if data.quantify else None,
-                'number': data.number,
+                'package_number': data.number,
                 'sale_price': data.sale_price
             })
         return JsonSuccess("成功", data=ret)
@@ -219,7 +219,7 @@ class ScanStockSearch(View):
             instance = model.GoodPackage.objects.filter(bar_id=bar_id).first()
             if not instance:
                 return JsonError("商品不存在，是否创建商品")
-            package_number = instance.number
+            package_number = instance.package_number
             buy_price = instance.one_package.buy_price * package_number
         else:
             package_number = 1
@@ -248,11 +248,11 @@ class ScanSaleSearch(View):
                 return JsonError("商品不存在，是否创建商品")
             sale_price = instance.sale_price
             good_id = instance.good_id
-            number = instance.number
+            package_number = instance.package_number
         else:  # 单包装查询是否有门店售价
             good_id = instance.id
             pack_good = model.GoodStock.objects.filter(good_id=good_id).first()
-            number = 1
+            package_number = 1
             if pack_good and pack_good.stock_sale_price:
                 sale_price = pack_good.stock_sale_price
             else:
@@ -261,7 +261,8 @@ class ScanSaleSearch(View):
             'name': instance.name,
             'bar_id': bar_id,
             'good_id': good_id,
-            'number': number,
+            'number': 1,
+            'package_number': package_number,
             'price': sale_price,
             'subtotal': sale_price
         }
@@ -284,6 +285,8 @@ class searchGoodSale(View):
             data.append({
                 'name': item.name,
                 'bar_id': item.bar_id,
+                'good_id': item.id,
+                'package_number': 1,
                 'price': '%.2f' % item.sale_price,
                 'quantify': item.quantify_name
             })
@@ -291,6 +294,8 @@ class searchGoodSale(View):
             data.append({
                 'name': item.name,
                 'bar_id': item.bar_id,
+                'good_id': item.good_id,
+                'package_number': item.package_number,
                 'price': '%.2f' % item.sale_price,
                 'quantify': item.quantify_name
             })

@@ -98,7 +98,7 @@ class GoodPackage(models.Model):
         related_name="other_packages",
         verbose_name=u"单个包装"
     )
-    number = models.IntegerField(
+    package_number = models.IntegerField(
         verbose_name='包装数量'
     )
     sale_price = models.FloatField(

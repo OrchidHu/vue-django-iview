@@ -52,7 +52,8 @@ INSTALLED_APPS = (
     'corsheaders',
     'Web',
     'Web.apps.shop',
-    'Web.apps.common'
+    'Web.apps.common',
+    'Web.apps.sale'
 )
 
 AUTH_USER_MODEL = 'Web.XYUser'

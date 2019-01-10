@@ -66,7 +66,7 @@ class CreateOtherPackageForm(forms.ModelForm):
         fields = (
             'bar_id',
             'name',
-            'number',
+            'package_number',
             'sale_price'
         )
         error_messages = {
