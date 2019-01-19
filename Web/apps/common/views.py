@@ -3,11 +3,13 @@ from django.shortcuts import render
 # Create your views here.
 from django.views.generic import View
 import Web.apps.common.models as model
-from Utils.django_utils import JsonSuccess, JsonError, genre_display
+from Utils.django_utils import JsonSuccess, JsonError, genre_display, ArgsMixin, str2datetime, str1datetime
+from Web.apps.sale.models import GoodOrder, GoodOperateRecord
+from Web.models import XYUser
 
 
 def query_quantify():
-    query_data =  model.Quantify.objects.all()
+    query_data = model.Quantify.objects.all()
     ret = []
     for em in query_data:
         ret.append({
@@ -45,7 +47,7 @@ class GenreList(View):
     """分类列表"""
 
     def get(self, request):
-        query_data =  model.Genre.objects.all()
+        query_data = model.Genre.objects.all()
         if query_data:
             parent_genre = []
             for em in query_data:
@@ -53,7 +55,7 @@ class GenreList(View):
                     parent_genre.append(em)
             data = genre_display(parent_genre)
             return JsonSuccess("请求成功", data=data)
-        return JsonError('没有数据')
+        return JsonError('没有数据', data=[])
 
 
 class AddQuantify(View):
@@ -70,3 +72,21 @@ class AddQuantify(View):
             'quantify_list': query_quantify()
         }
         return JsonSuccess("添加成功", data=ret)
+
+
+class PersonList(View):
+    """员工列表"""
+
+    def get(self, request):
+        user = request.user
+        if user.has_perm('boss'):
+            print(user)
+        query_set = XYUser.objects.filter(is_active=True, is_staff=True).all()
+        ret = [{'value': -1, 'label': '全部'}]
+        for data in query_set:
+            ret.append({
+                'value': data.id,
+                'label': data.username
+            })
+        return JsonSuccess("员工列表", data=ret)
+

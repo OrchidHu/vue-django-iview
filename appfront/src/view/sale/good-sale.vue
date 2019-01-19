@@ -16,7 +16,7 @@
                 <Option v-for="item in searchList" :value="item.bar_id" :key="item.bar_id">
                   <Row type="flex" justify="center" align="middle">
                     <i-col span="18"><Row>{{item.bar_id}}</Row><Row>{{item.name}}</Row></i-col>
-                    <i-col span="3"><Row><Icon style="padding-bottom: 2px" type="logo-yen" /><span style="font-size: 12px"> {{item.price}}</span></Row>
+                    <i-col span="3"><Row><Icon style="padding-bottom: 2px" type="logo-yen" /><span style="font-size: 12px"> {{item.sale_price}}</span></Row>
                       <Row>/ {{item.quantify}}</Row></i-col>
                   </Row>
                   <Divider style="height: 2px; margin: 1px;" dashed/>
@@ -81,11 +81,11 @@
     </Modal>
     <change-good :good-form="goodForm" :set-data="setData"
                  @on-good-data="onGoodData" @delete-current-good="deleteRow"></change-good>
-    <balance :balance="balance"></balance>
+    <balance :balance="balance" :balance-set-data="balanceSetData" @on-balance-submit="handleBalanceSubmit"></balance>
   </div>
 </template>
 <script>
-import {ajaxGet} from '../../api/user'
+import {ajaxGet, ajaxPost} from '../../api/user'
 import config from '../../config'
 import Bus from '../bus'
 import ChangeGood from './change-good'
@@ -134,7 +134,7 @@ export default {
         {title: '条码', key: 'bar_id', minWidth: 108},
         {title: '名称', key: 'name', minWidth: 160},
         {title: '数量', key: 'number', minWidth: 60},
-        {title: '单价', key: 'price', minWidth: 80},
+        {title: '单价', key: 'sale_price', minWidth: 80},
         {title: '小计',
           key: 'subtotal',
           minWidth: 80,
@@ -147,17 +147,20 @@ export default {
       goodForm: {
         number: '',
         name: '',
-        price: null
+        sale_price: null
       },
       setData: {
         openModal: false
       },
       balance: {
-        openModal: false,
         sumMoney: 0,
         discMoney: 0,
-        arrangeMoney: 0,
-        discount: 100
+        discount: 100,
+        totalNumber: 0
+      },
+      balanceSetData: {
+        openModal: false,
+        arrangeMoney: 0
       }
     }
   },
@@ -235,8 +238,9 @@ export default {
       })
     },
     onGoodData (value) {
+      value['sale_price'] = parseFloat(value['sale_price'])
       const data = [...this.list]
-      value['subtotal'] = value.number * value.price
+      value['subtotal'] = value.number * value.sale_price
       data[this.editIndex] = Object.assign({}, value)
       this.list = data
       this.handleHighLight()
@@ -278,7 +282,7 @@ export default {
         index += 1
         if (this.list[_index].bar_id === this.scanBarId) {
           this.list[_index].number += 1
-          this.list[_index].subtotal += this.list[_index].price
+          this.list[_index].subtotal += this.list[_index].sale_price
           isDav = true
           break
         }
@@ -351,14 +355,33 @@ export default {
     cancel () {},
     handleSubmit () {
       if (!this.list.length) return
-      this.balance.openModal = true
+      this.balanceSetData.openModal = true
       this.balance.sumMoney = this.totalPrice
       this.balance.discount = 100
       this.balance.discMoney = this.balance.sumMoney
-      this.balance.arrangeMoney = this.balance.sumMoney
+      this.balanceSetData.arrangeMoney = this.balance.sumMoney
+      this.balance.totalNumber = this.totalNumber
+      var elInput = document.getElementById('arrange')
+      setTimeout(() => {
+        elInput.selectionStart = 0
+        elInput.selectionEnd = toString(this.balance.sumMoney).length - 1
+        elInput.focus()
+      })
+    },
+    handleBalanceSubmit () {
+      let data = {
+        'order_data': this.balance,
+        'goods_data': this.list
+      }
+      ajaxPost(config.arrangeGoodsSale, data).then((res) => {
+        if (res.data.stat === 'success') {
+          this.clearTableData()
+          this.$Message.success('结算成功')
+        }
+      })
     },
     subtotal (row) {
-      return row.number * row.price
+      return row.number * row.sale_price
     }
   },
   mounted () {

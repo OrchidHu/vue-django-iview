@@ -89,13 +89,17 @@ class XYUser(AbstractUser):
 
     # 返回此model实例对象名称，如在admin中xyuser可见
 
+    @property
+    def shop_name(self):
+        return self.shop.name if self.shop else '-'
+
     class Meta:
         db_table = 'auth_user'
         ordering = ['-id']
         verbose_name = _('鑫意用户')
         verbose_name_plural = _('用户')
         permissions = (
-            ('boos', u'老板'),
+            ('boss', u'老板'),
             ('manager', u'管理员'),
             ('cashier', u'收银员'),
             ('staff', u"普通员工"),

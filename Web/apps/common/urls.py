@@ -5,7 +5,7 @@ from . import views
 
 app_name = 'common'
 
-urlpatterns =[
+urlpatterns = [
     path(
         r'quantify_list/',
         views.QuantifyList.as_view(),
@@ -26,4 +26,9 @@ urlpatterns =[
         views.AddQuantify.as_view(),
         name='add_quantify'
     ),
+    path(
+        r'person_list',
+        views.PersonList.as_view(),
+        name='person_list'
+    )
 ]

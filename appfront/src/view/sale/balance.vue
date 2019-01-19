@@ -1,6 +1,7 @@
 <template>
 
-  <Modal title="结算" v-model="balance.openModal" @on-ok="handleSubmit">
+  <Modal title="结算" v-model="balanceSetData.openModal"
+         @on-ok="handleSubmit" @keydown.enter.native="handleSubmit">
     <Row>
       <i-col span="11">
         <Form ref="balanceForm" :model="balance" :label-width="60">
@@ -19,7 +20,8 @@
             />
           </FormItem>
           <FormItem label="实收金额" label-for="arrange">
-            <InputNumber ref="arrange" element-id="arrange" :min="0" :max="99999999" v-model="balance.arrangeMoney"/>
+            <InputNumber ref="arrange" element-id="arrange" :min="0" :max="99999999"
+                         v-model="balanceSetData.arrangeMoney" @keydown.enter.native="handleSubmit"/>
           </FormItem>
           <FormItem label="找零">
             <Input readonly v-model="oddChange" style="color: red"/>
@@ -50,6 +52,10 @@ export default {
     balance: {
       type: Object,
       required: true
+    },
+    balanceSetData: {
+      type: Object,
+      required: true
     }
   },
   components: {
@@ -57,13 +63,12 @@ export default {
   },
   data () {
     return {
-      AddMe: addMe,
-      currentInputId: 'number'
+      AddMe: addMe
     }
   },
   computed: {
     oddChange () {
-      let arrangeMoney = this.balance.arrangeMoney
+      let arrangeMoney = this.balanceSetData.arrangeMoney
       let discMoney = this.balance.discMoney
       if (arrangeMoney < discMoney) return 0
       return (arrangeMoney - discMoney).toFixed(1)
@@ -71,18 +76,16 @@ export default {
   },
   methods: {
     handleSubmit () {
-      console.log('ok')
+      this.balanceSetData.openModal = false
+      this.$emit('on-balance-submit')
     },
     discMoneyChange () {
-      this.balance.discount = (this.balance.discMoney / this.balance.sumMoney * 100).toFixed(2)
-      this.balance.arrangeMoney = this.balance.discMoney
+      this.balance.discount = parseFloat((this.balance.discMoney / this.balance.sumMoney * 100).toFixed(2))
+      this.balanceSetData.arrangeMoney = parseFloat(this.balance.discMoney)
     },
     discountChange () {
-      this.balance.discMoney = (this.balance.discount * this.balance.sumMoney / 100).toFixed(2)
-      this.balance.arrangeMoney = this.balance.discMoney
-    },
-    cancle () {
-      this.setData.openModal = false
+      this.balance.discMoney = parseFloat((this.balance.discount * this.balance.sumMoney / 100).toFixed(2))
+      this.balanceSetData.arrangeMoney = parseFloat(this.balance.discMoney)
     }
   }
 }

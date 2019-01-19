@@ -263,7 +263,7 @@ class ScanSaleSearch(View):
             'good_id': good_id,
             'number': 1,
             'package_number': package_number,
-            'price': sale_price,
+            'sale_price': sale_price,
             'subtotal': sale_price
         }
         return JsonSuccess("查询成功", data=data)
@@ -287,7 +287,7 @@ class searchGoodSale(View):
                 'bar_id': item.bar_id,
                 'good_id': item.id,
                 'package_number': 1,
-                'price': '%.2f' % item.sale_price,
+                'sale_price': '%.2f' % item.sale_price,
                 'quantify': item.quantify_name
             })
         for item in package_sets:
@@ -296,7 +296,7 @@ class searchGoodSale(View):
                 'bar_id': item.bar_id,
                 'good_id': item.good_id,
                 'package_number': item.package_number,
-                'price': '%.2f' % item.sale_price,
+                'sale_price': '%.2f' % item.sale_price,
                 'quantify': item.quantify_name
             })
         return JsonSuccess("查询成功", data=data[:8])
@@ -467,7 +467,7 @@ class ShopList(View):
         user_data = {'value': user.shop.id, 'label': user.shop.name}
         if user.has_perm('Web.boss'):
             shops = model.Shop.objects.all()
-            ret = [{'value': '', 'label': '全部'}]
+            ret = [{'value': -1, 'label': '全部'}]
             for shop in shops:
                 ret.append({
                     'value': shop.id,
@@ -479,10 +479,9 @@ class ShopList(View):
                 'identity': 'boos'
             }
             return JsonSuccess("门店列表", data=result)
-        elif user.has_perm('Web.manager'):
+        else:
             ret = {'shop_data': [user_data], 'user_data': [user.shop.id], 'identity': 'manager'}
             return JsonSuccess("门店列表", data=ret)
-        return JsonError("没有权限")
 
 
 class SearchStockReport(View):
@@ -496,8 +495,6 @@ class SearchStockReport(View):
             return JsonError("解析失败")
         if not data:
             return JsonError("无效数据")
-        exam_batch = data
-        user = request.user
         query_args = []
         query_kwargs = {}
         keyword = data.get('searchValue')
@@ -508,7 +505,7 @@ class SearchStockReport(View):
                 Q(good__name__contains=keyword)|
                 Q(good__bar_id__contains=keyword)
             )
-        if shop_id:
+        if shop_id != -1:
             query_kwargs['shop_id'] = shop_id
         if genre_id:
             query_kwargs['good__genre_id'] = genre_id

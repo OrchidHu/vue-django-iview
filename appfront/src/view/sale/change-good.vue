@@ -8,9 +8,9 @@
             <Input ref="number" element-id="number" v-model="goodForm.number"
                    @on-focus="currentInputId = 'number'" @on-blur="onBlurNumber" number/>
           </FormItem>
-          <FormItem label="单价" label-for="name" prop="price" >
-            <Input ref="price" element-id="price" v-model="goodForm.price"
-                   @on-focus="currentInputId = 'price'" @on-blur="onBlurBuyPrice"/>
+          <FormItem label="单价" label-for="name" prop="sale_price" >
+            <Input ref="sale_price" element-id="sale_price" v-model="goodForm.sale_price"
+                   @on-focus="currentInputId = 'sale_price'" @on-blur="onBlurBuyPrice"/>
           </FormItem>
           <FormItem label="小计">
             <Input v-model="subtotal"/>
@@ -67,7 +67,7 @@ export default {
             callback(errors)
           }}
         ],
-        price: [{required: true, message: '请输入价格'},
+        sale_price: [{required: true, message: '请输入价格'},
           {validator (rule, value, callback) {
             let errors = []
             if ((parseInt(value) < 0 || isNaN(parseInt(value))) || isNaN(value) === true || parseInt(value) > 9999999999) { callback('价格输入有误') }
@@ -79,10 +79,10 @@ export default {
   },
   computed: {
     subtotal () {
-      if (isNaN(parseInt(this.goodForm.number)) || isNaN(parseInt(this.goodForm.price))) {
+      if (isNaN(parseInt(this.goodForm.number)) || isNaN(parseInt(this.goodForm.sale_price))) {
         return 0
       }
-      return parseFloat(this.goodForm.number) * parseFloat(this.goodForm.price)
+      return parseFloat(this.goodForm.number) * parseFloat(this.goodForm.sale_price)
     }
   },
   methods: {
@@ -99,7 +99,7 @@ export default {
     },
     onBlurNumber () {
       setTimeout(() => { // 如何失焦不是因为点击了价格输入框, 那就继续聚焦自身
-        if (this.currentInputId !== 'price' && this.setData.openModal === true) {
+        if (this.currentInputId !== 'sale_price' && this.setData.openModal === true) {
           this.$refs.number.focus()
         }
       })
@@ -107,7 +107,7 @@ export default {
     onBlurBuyPrice () {
       setTimeout(() => { // 如果失焦不是因为点击了数量输入框, 那就继续聚焦到自身
         if (this.currentInputId !== 'number' && this.setData.openModal === true) {
-          this.$refs.price.focus()
+          this.$refs.sale_price.focus()
         }
       })
     },
@@ -129,7 +129,7 @@ export default {
           return
         }
       } else { // 价格输入规则
-        elInput = document.getElementById('price')
+        elInput = document.getElementById('sale_price')
         if (value === '.') {
           if (elInput.value.indexOf('.') !== -1 || elInput.selectionStart === 0) {
             elInput.focus()
@@ -171,7 +171,7 @@ export default {
         if (!result) {
           result = ''
         }
-        this.goodForm.price = result
+        this.goodForm.sale_price = result
       }
       // elInput.value = parseInt(result) // 普通input可以使用这行，InputNumber要双向绑定才行
       // 此处需要等待赋值给input完成后，再执行光标定位，不然不成功

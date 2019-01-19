@@ -1,9 +1,8 @@
 # -*- coding: UTF-8 -*-
-
+import datetime
 import os, json
 import time
 import uuid
-
 from Utils.db_connections import get_redis
 os.environ['DJANGO_SETTINGS_MODULE'] = 'Web.settings'
 from urllib import parse as _urlparse
@@ -68,6 +67,34 @@ def _fixfloat(num, fix_num=2):
     return ret or "0"
 
 
+def str1datetime(time_str):
+    return datetime.datetime.strptime(time_str, "%Y-%m-%dT%H:%M:%S.%fZ") + datetime.timedelta(hours=8)
+
+
+def str2datetime(time_str, format=None):
+    default_formats = [
+        '%Y-%m-%d',
+        '%Y-%m-%d %H:%M:%S',
+        '%Y-%m-%d %H:%M',
+        '%Y-%m',
+        '%Y',
+        '%Y/%m/%d',
+        '%Y/%m',
+        '%Y.%m',
+    ]
+
+    if format:
+        default_formats.append(format)
+
+    for format in default_formats[::-1]:
+        try:
+            time = datetime.datetime.strptime(time_str, format)
+            return time
+        except ValueError:
+            continue
+    return None
+
+
 def batch_number():
     percent_time = time.strftime('%y%m%d%H', time.localtime(time.time()))
     uuid_number = str(int(uuid.uuid1()))[30:-1]
@@ -75,8 +102,8 @@ def batch_number():
 
 
 def safe_compute(price, number, buy_price):
-    if number > 0:
-        return price/number
+    if number > 0 and price > 0:
+        return round(price/number, 2)
     else:
         return buy_price
 
@@ -141,33 +168,20 @@ def JsonSuccess(msg='', **kwargs):
 
 class ArgsMixin(object):
 
-    # def dispatch(self, *args, **kwargs):
-    #     request = self.request
-    #     method = request.method
-    #     method_args_map = {
-    #         'GET': request.GET,
-    #         'POST': request.POST,
-    #         'PUT': parse_put(request),
-    #         'DELETE': request.GET,
-    #     }
-    #     self.args = method_args_map[method]
-    #     if settings.DEBUG:
-    #         payload = self.request.POST.urlencode()
-    #         if payload:
-    #             LOGGER.debug('Payload: %s' % payload)
-    #     injection_ret = self._dispatch_injection(*args, **kwargs)
-    #     if injection_ret:
-    #         return injection_ret
-    #     try:
-    #         return super(ArgsMixin, self).dispatch(*args, **kwargs)
-    #     except Exception:
-    #         LOGGER.exception('Mysql save error.')
-    #         return JsonError(u'您的输入不合法， 请正确填写后重试。')
-    #     except ValidationError as err:
-    #         return JsonError(str(err.message))
+    def dispatch(self, *args, **kwargs):
+        request = self.request
+        user = request.user
+        method = request.method
+        method_args_map = {
+            'GET': request.GET,
+            'POST': json.loads(request.body) if request.body else '',
+            'DELETE': request.GET,
+        }
+        self.args = method_args_map[method]
+        return super(ArgsMixin, self).dispatch(*args, **kwargs)
 
     def get_arg(self, arg_key):
-        return self.args.get(arg_key, '').strip()
+        return self.args.get(arg_key, '')
 
     def _dispatch_injection(self, *args, **kwargs):
         """ 执行method方法前的注入点，返回任何非空值将导致dispatch直接返回"""

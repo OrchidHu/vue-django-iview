@@ -2,9 +2,6 @@
 <div >
   <div style=" font-size: 12px; height: 40px">
     <Row type="flex" justify="center" align="middle" :gutter="4">
-        <Col :sm="4" :md="3" justify="end" align="middle">
-          多选框 <i-switch v-model="showCheckbox"></i-switch>
-        </Col>
       <Col :sm="6" :md="4">
         <Cascader :data="genreList" filterable v-model="genreSelected" @on-change="onChangeGenre" placeholder="选择类别"></Cascader>
       </Col>
@@ -13,6 +10,9 @@
       </Col>
       <Col :sm="3" :md="2">
         <Button @click="searchSubmit" style="background: #2d8cf0; color: white">搜 索</Button>
+      </Col>
+      <Col :sm="4" :md="3" justify="end" align="middle">
+        多选框 <i-switch v-model="showCheckbox"></i-switch>
       </Col>
       <Col :sm="3" :md="7">
         <a @click="reSetData"> 重置</a>

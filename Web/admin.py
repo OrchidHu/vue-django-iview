@@ -94,21 +94,22 @@ class GoodStockAdmin(admin.ModelAdmin):
 @admin.register(GoodOperateRecord)
 class GoodOperateRecordAdmin(admin.ModelAdmin):
     list_display = ('serial_number', 'bar_id', 'name', 'quantify', 'number', 'package_number', 'stock_buy_price', 'sale_price',
-                    'profit', 'format_discount_profit', 'operate_type', 'sale_status', 'operator', 'shop_name', 'create_time')
+                    'profit', 'format_discount_profit', 'operate_type', 'sale_status', 'operate_name', 'shop_name', 'create_time')
 
     def format_discount_profit(self, obj):
         return format_html(
             '<span>{}%</span>',
             obj.discount_profit
         )
+
     format_discount_profit.short_description = u"毛利率"
-    search_fields = ['serial_number', 'bar_id', 'name', 'operator']
+    search_fields = ['serial_number', 'bar_id', 'name', 'operate_name']
 
 
 @admin.register(GoodOrder)
 class GoodOrderAdmin(admin.ModelAdmin):
-    list_display = ('serial_number', 'operate_type', 'sale_status', 'number', 'buy_price_total', 'sale_price', 'discount_price',
-                    'format_discount', 'profit', 'format_discount_profit', 'operator', 'create_time', 'update_time')
+    list_display = ('serial_number', 'operate_type', 'sale_status', 'number', 'buy_price_total', 'pre_sale_price', 'discount_price',
+                    'format_discount', 'profit', 'format_discount_profit', 'operate_name', 'shop_name', 'create_time', 'update_time')
 
     def format_discount(self, obj):
         return format_html(
@@ -117,7 +118,7 @@ class GoodOrderAdmin(admin.ModelAdmin):
         )
 
     format_discount.short_description = u"折扣"
-    search_fields = ['serial_number', 'operate_type', 'sale_status', 'operator', 'create_time']
+    search_fields = ['serial_number', 'operate_type', 'sale_status', 'operate_name', 'create_time']
 
     def format_discount_profit(self, obj):
         return format_html(

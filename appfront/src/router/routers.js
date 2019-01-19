@@ -151,6 +151,15 @@ export default [
           title: '库存查询'
         },
         component: () => import('@/view/report/stock-report.vue')
+      },
+      {
+        path: 'sale_detail',
+        name: 'sale_detail',
+        meta: {
+          icon: 'ios-calendar',
+          title: '交易明细'
+        },
+        component: () => import('@/view/report/sale_detail.vue')
       }
     ]
   }

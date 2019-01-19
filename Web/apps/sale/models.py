@@ -63,20 +63,23 @@ class GoodOperateRecord(models.Model):
         '操作类型',
         max_length=20,
         choices=OPERATE_TYPE,
-        default=1
+        default='sale'
     )
     sale_status = models.CharField(
         '订单状态',
         max_length=20,
         choices=ORDER_STATUS,
-        default=1
+        default='finish'
     )
-    operator = models.CharField(
-        max_length=30,
-        verbose_name=u"操作人"
+    operator = models.ForeignKey(
+        'Web.XYUser',
+        on_delete=models.PROTECT,
+        related_name="set_goods_sale",
+        verbose_name=u"销售人"
     )
-    shop_name = models.CharField(
-        max_length=100,
+    shop = models.ForeignKey(
+        'shop.Shop',
+        on_delete=models.PROTECT,
         verbose_name='所属门店'
     )
     create_time = models.DateTimeField(
@@ -84,6 +87,15 @@ class GoodOperateRecord(models.Model):
         auto_now_add=True,
         db_index=True,
     )
+
+    def operate_name(self):
+        return self.operator.username if self.operator else '-'
+
+    def shop_name(self):
+        return self.shop.name if self.shop else '-'
+
+    shop_name.short_description = u'门店'
+    shop_name.short_description = u'操作人'
 
     def __unicode__(self):
         return self.serial_number
@@ -119,13 +131,13 @@ class GoodOrder(models.Model):
         '操作类型',
         max_length=20,
         choices=OPERATE_TYPE,
-        default=1
+        default='sale'
     )
     sale_status = models.CharField(
         '订单状态',
         max_length=20,
         choices=ORDER_STATUS,
-        default=1
+        default='finish'
     )
     number = models.IntegerField(
         "商品个数"
@@ -133,7 +145,7 @@ class GoodOrder(models.Model):
     buy_price_total = models.FloatField(
         '成本总额'
     )
-    sale_price = models.FloatField(
+    pre_sale_price = models.FloatField(
         "预期售价总额"
     )
     discount_price = models.FloatField(
@@ -148,9 +160,16 @@ class GoodOrder(models.Model):
     discount_profit = models.FloatField(
         "毛利率"
     )
-    operator = models.CharField(
-        "操作人",
-        max_length=50
+    operator = models.ForeignKey(
+        'Web.XYUser',
+        on_delete=models.PROTECT,
+        related_name="set_orders",
+        verbose_name=u"订单操作人"
+    )
+    shop = models.ForeignKey(
+        'shop.Shop',
+        on_delete=models.PROTECT,
+        verbose_name='所属门店'
     )
     create_time = models.DateTimeField(
         u'创建时间',
@@ -162,6 +181,15 @@ class GoodOrder(models.Model):
         blank=True,
         null=True
     )
+
+    def operate_name(self):
+        return self.operator.username if self.operator else '-'
+
+    def shop_name(self):
+        return self.shop.name if self.shop else '-'
+
+    shop_name.short_description = u'门店'
+    operate_name.short_description = u'操作人'
 
     def __unicode__(self):
         return self.serial_number

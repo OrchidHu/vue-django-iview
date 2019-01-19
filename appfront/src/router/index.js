@@ -33,9 +33,8 @@ router.beforeEach((to, from, next) => {
     next({
       name: 'home' // 跳转到home页
     })
-  }
-   else {
-    setToken(token) //当用户刷新页面时，重置token的过期时间
+  } else {
+    setToken(token) // 当用户刷新页面时，重置token的过期时间
     next()
   }
 })

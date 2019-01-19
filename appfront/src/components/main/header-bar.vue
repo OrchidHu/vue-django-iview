@@ -47,7 +47,12 @@
                 <DropdownMenu slot="list">
                   <DropdownItem name="stockReport">
                     <Icon size="16" color="#5cadff" type="ios-browsers" />
-                    库存查询</DropdownItem>
+                    库存查询
+                  </DropdownItem>
+                  <DropdownItem name="saleDetail">
+                    <Icon size="16" color="#5cadff" type="ios-browsers" />
+                    交易明细
+                  </DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             </MenuItem>
@@ -161,6 +166,11 @@ export default {
       if (name === 'stockReport') {
         this.$router.push({
           name: 'stock_report'
+        })
+      }
+      if (name === 'saleDetail') {
+        this.$router.push({
+          name: 'sale_detail'
         })
       }
     }

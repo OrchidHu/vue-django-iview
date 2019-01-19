@@ -2,13 +2,16 @@
   <div>
     <Row style="height: 48px" type="flex" justify="start" align="middle" :gutter="4">
       <Col :sm='6' :md="3">
-        <Cascader :data="shopList" :disabled="identity==='manager'? true : false" filterable v-model="shopSelect" @on-change="onChangeShop" placeholder="选择门店"></Cascader>
+        <Cascader :data="shopList" :disabled="identity==='manager'? true : false" filterable
+                  v-model="shopSelect" @on-change="onChangeShop" placeholder="选择门店"></Cascader>
       </Col>
       <Col :sm="8" :md="4">
-        <Cascader :data="genreList" filterable v-model="genreSelect" @on-change="onChangeGenre" placeholder="选择类别"></Cascader>
+        <Cascader :data="genreList" filterable v-model="genreSelect" @on-change="onChangeGenre"
+                  placeholder="选择类别"></Cascader>
       </Col>
       <Col :sm="7" :md="5">
-        <Input v-model="submitData.searchValue"  @keydown.enter.native="searchSubmit" search placeholder="条码 / 名称"/>
+        <Input v-model="submitData.searchValue"  @keydown.enter.native="searchSubmit"
+               earch placeholder="条码 / 名称"/>
       </Col>
       <Col :sm="1" :md="2">
         <Button @click="searchSubmit" style="background: #2d8cf0; color: white">搜 索</Button>
@@ -78,7 +81,6 @@ export default {
     }
   },
   mounted () {
-    console.log(this.$store.state.avator)
     ajaxExamGet(config.getShopList).then((res) => {
       if (res.data.stat === 'success') {
         this.shopList = res.data.data['shop_data']

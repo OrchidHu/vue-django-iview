@@ -33,11 +33,12 @@ export const ajaxGet = (url, data) => {
   })
 }
 
-export const ajaxExamGet = (url) => {
+export const ajaxExamGet = (url, data) => {
   return axios.request({
     url: url,
     timeout: 1000,
     method: 'get',
+    params: data,
     withCredentials: true
   })
 }
@@ -46,7 +47,7 @@ export const ajaxPost = (url, params) => {
   const data = JSON.stringify(params)
   return axios.request({
     url: url,
-    data,
+    data: data,
     timeout: 3000,
     method: 'post',
     withCredentials: true

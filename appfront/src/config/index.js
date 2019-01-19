@@ -40,5 +40,9 @@ export default {
   getShopList: djangoUrl + 'shop/shop_list',
   searchStockReport: djangoUrl + 'shop/search_stock_report',
   scanSaleSearch: djangoUrl + 'shop/scan_sale_search',
-  searchGoodSale: djangoUrl + 'shop/search_good_sale'
+  searchGoodSale: djangoUrl + 'shop/search_good_sale',
+  arrangeGoodsSale: djangoUrl + 'sale/goods_sale',
+  getPersonList: djangoUrl + 'common/person_list',
+  getOrderList: djangoUrl + 'sale/order_list',
+  getOrderDetail: djangoUrl + 'sale/order_detail'
 }
