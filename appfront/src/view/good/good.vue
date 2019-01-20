@@ -1,5 +1,5 @@
 <template>
-<div >
+<div style="height: 100%">
   <div style=" font-size: 12px; height: 40px">
     <Row type="flex" justify="center" align="middle" :gutter="4">
       <Col :sm="6" :md="4">
@@ -176,6 +176,7 @@ export default {
         }
       }
       this.copyFullData = this.genreFilterFullData
+      this.current = 1
     },
     searchSubmit () {
       if (!this.searchValue && this.genreSelected.length < 1) {
@@ -195,7 +196,9 @@ export default {
           result.push(this.copyFullData[index])
         }
       }
-      this.copyFullData = result
+      this.copyFullData = result // 如果搜索筛选不是第一页，进行的时候。
+      this.current = 1 // 搜索后数据改变了，理当显示第一页。 页面导航Tab自定义组件显示会自动跳转到第一页，但实际数据却可能为空
+      // 如果不设置当前页为第一页，默认显示的是搜索之前的页面。从而入坑：显示的是第一页，实际数据却不是
     },
     // 自定义过滤
     handleFilterChange () {

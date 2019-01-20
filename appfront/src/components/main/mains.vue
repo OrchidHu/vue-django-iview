@@ -1,8 +1,8 @@
 <template>
     <div class="layout">
         <Layout :style="{minHeight: '100vh'}">
-          <hearder-bar></hearder-bar>
-            <Content :style="{padding: '0 48px'}">
+          <hearder-bar :style="{position: 'fixed', width: '100%', zIndex: 1}"></hearder-bar>
+            <Content :style="{padding: '0 48px', margin: '60px 0 0', minHeight: '400px'}">
               <Breadcrumb :style="{margin: '12px 0'}">
                 <Icon size="16" type="md-home" />
                 <BreadcrumbItem v-for="item in breadCrumbList" :to="item.to" :key="`bread-crumb-${item.name}`">
@@ -11,12 +11,10 @@
                 </BreadcrumbItem>
               </Breadcrumb>
                 <Card class="content">
-                    <div style="min-height: 640px; ">
-                      <router-view></router-view>
-                    </div>
+                  <router-view></router-view>
                 </Card>
             </Content>
-            <Footer class="layout-footer-center">2018-2019 &copy; iView</Footer>
+            <!--<Footer class="layout-footer-center">2018-2019 &copy; iView</Footer>-->
         </Layout>
     </div>
 </template>

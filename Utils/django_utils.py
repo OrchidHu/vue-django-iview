@@ -68,6 +68,8 @@ def _fixfloat(num, fix_num=2):
 
 
 def str1datetime(time_str):
+    if not time_str:
+        return ''
     return datetime.datetime.strptime(time_str, "%Y-%m-%dT%H:%M:%S.%fZ") + datetime.timedelta(hours=8)
 
 

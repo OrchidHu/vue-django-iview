@@ -4,7 +4,7 @@
           show-header
          :loading="loading"
          size="small"
-          :height="390"
+          :height="480"
          :data="tableData"
          :columns="columns"></Table>
   <StockRecord ref="stockRecordView" :openDrawer="openDrawer"></StockRecord>

@@ -58,7 +58,8 @@
             <div>数量: {{totalNumber}}</div>
           </Col>
           <Col span="13">
-            <div><Icon type="logo-yen" size="12" slot="prefix" />合计:  <span style="font-weight:bold;font-size: 24px; color: red;">{{totalPrice}}</span></div>
+            <div>合计: <Icon style="padding-bottom: 8px" type="logo-yen" size="16" slot="prefix" />
+              <span style="font-weight:bold;font-size: 24px; color: red;">{{totalPrice}}</span></div>
           </Col>
           <Col span="3">
             <Button :disabled="this.list.length !== 0 ? false : true" @click="deleteRow">删除</Button>
@@ -227,8 +228,11 @@ export default {
       }
     },
     onRowClick (row, index) {
+      // 如何单击高亮行则打开编辑
+      if (index === this.editIndex) { // 这样比判断 row['_highlight'] ==== true 好，因为单击本身会形成高亮
+        this.setData.openModal = true
+      }
       this.editIndex = index
-      this.setData.openModal = true
       this.goodForm = Object.assign({}, row)
       var elInput = document.getElementById('number')
       setTimeout(() => {
@@ -322,6 +326,7 @@ export default {
         }
       }
       this.scanBarId = null
+      this.editIndex = this.highLightIndex
       localStorage.setItem('good-sale-list', JSON.stringify(this.list))
       localStorage.setItem('high-light-index', this.highLightIndex)
     },

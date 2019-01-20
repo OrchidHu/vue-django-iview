@@ -193,7 +193,6 @@ export default {
       }
     },
     onChangeGenre (value, selectedData) {
-      console.log(selectedData)
       if (selectedData.length > 0) {
         this.modalData.form.genre = selectedData[selectedData.length - 1].label
         this.modalData.form.genre_id = value
@@ -219,7 +218,8 @@ export default {
       this.$refs.goodForm.validate((valid) => {
         if (valid) {
           if (this.myValidate()) {
-            let commitData = {form: this.modalData.form, package_data: this.packageDataList}
+            const copyForm = Object.assign({}, this.modalData.form) // 合并之后this.modalData.form 内元素的值貌似为空了
+            let commitData = {form: copyForm, package_data: this.packageDataList}
             ajaxGet(config.createGoodUrl, commitData).then(res => {
               if (res.data.stat === 'success') {
                 this.$refs.goodForm.resetFields()
@@ -229,8 +229,7 @@ export default {
                 if (this.modalData.form.genre_id.length === 0) {
                   this.modalData.form.genre = null
                 }
-                const copyData = Object.assign({}, this.modalData.form)
-                this.$emit('modal-success-valid', copyData)
+                this.$emit('modal-success-valid', copyForm) // 所以这里使用copyForm，不用this.modalData.form
                 this.modalData.openModal = false
               } else {
                 this.$refs.child.modalChangeNotice()

@@ -59,6 +59,7 @@ class CreateGood(View):
     def get(self, request):
         json_data = request.GET.get('data')
         data = json.loads(json_data)
+        print(data)
         form_data = data['form']
         package_data = data['package_data']
         bar_id = form_data.get('bar_id')

@@ -20,7 +20,7 @@
     <Table
       show-header
       size="small"
-      :height="390"
+      :height="440"
       :data="tableData"
       :columns="columns"></Table>
   </div>

@@ -48,6 +48,7 @@ class GoodsSale(ArgsMixin, View):
                 instance.operator = user
                 instance.shop = user.shop
                 instance.save()
+        print(order_data)
         discount_profit = round((order_data['discMoney'] - buy_price_total) / order_data['discMoney'] * 100, 2)
         GoodOrder.objects.create(
             serial_number=serial_number,
@@ -86,11 +87,12 @@ class OrderList(ArgsMixin, View):
         start_time = str1datetime(self.get_arg('start_time'))
         end_time = str1datetime(self.get_arg('end_time'))
         query_kwargs = {}
-        if start_time and end_time:
-            query_kwargs['create_time__range'] = [start_time, end_time]
-        if shop_id and shop_id[0] != -1:
+        if not start_time or not end_time or not shop_id or not operator_id:
+            return JsonError("请正确输入")
+        query_kwargs['create_time__range'] = [start_time, end_time]
+        if shop_id[0] != -1:
             query_kwargs['shop_id'] = shop_id[0]
-        if operator_id and operator_id[0] != -1:
+        if operator_id[0] != -1:
             query_kwargs['operator_id'] = operator_id[0]
         query_set = GoodOrder.objects.filter(**query_kwargs)
         format = '%m-%d %H:%M:%S' if start_time and end_time and (end_time - start_time).days > 0 else '%H:%M:%S'
@@ -139,5 +141,4 @@ class OrderDetail(ArgsMixin, View):
                 'shop_name': item.shop.name,
                 'create_time': item.create_time
             })
-        print(ret)
         return JsonSuccess("成功", data=ret)

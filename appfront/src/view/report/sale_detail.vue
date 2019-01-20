@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="height: 100%; min-height: 480px">
     <Row :gutter="10">
       <Col :sm="24" :md="8">
         <Input placeholder="订单流水号" search @keydown.enter.native="handleSubmit"/>
@@ -32,7 +32,7 @@
       </Col>
     </Row>
     <div style="height: 10px"></div>
-    <Card>
+    <Card v-if="orderList.length">
       <Collapse simple accordion @on-change="onChangeCollapse">
         <Panel :key="order.serial_number" v-for="order in orderList">
           {{order.create_time}} &#8195 {{order.serial_number}}({{order.text}}) <span style="float: right; padding-right: 40px">¥{{order.discount_price}}</span>
@@ -64,27 +64,29 @@
         </Panel>
       </Collapse>
     </Card>
+    <Card v-if="displayNoData" style="height: 440px; text-align: center;">
+        <img height="400" width="400" src="@/assets/images/no-data.jpg" alt="">
+    </Card>
     <div style="height: 10px"></div>
   </div>
 </template>
 <script>
-  import {ajaxExamGet, ajaxGet, ajaxPost} from '../../api/user'
+import {ajaxExamGet, ajaxGet, ajaxPost} from '../../api/user'
 import config from '@/config'
 export default {
   data () {
-    const time1 = new Date()
-    console.log(time1)
     return {
       nameString: '1',
       orderList: [],
       orderDetails: [],
       personList: [],
       shopList: [],
+      displayNoData: false,
       identity: false,
       personSelected: [-1],
-      shopSelected: [-1],
-      startTime: time1.toLocaleDateString() + '00-00-00',
-      endTime: time1.toLocaleDateString() + '23-59-59'
+      shopSelected: [],
+      startTime: '',
+      endTime: ''
     }
   },
   computed: {
@@ -93,8 +95,8 @@ export default {
 
     onChangeShop (value) {
       this.shopSelected = value
+      console.log(value)
       this.searchData()
-      console.log('mend')
     },
     handleSubmit () {
       alert()
@@ -116,7 +118,6 @@ export default {
       this.searchData()
     },
     onChangeCollapse (key) {
-      console.log(key)
       if (key.length) {
         let value = this.orderList[key[0]].serial_number
         ajaxGet(config.getOrderDetail, value).then((res) => {
@@ -126,15 +127,19 @@ export default {
         })
       }
     },
+    initToDay () {
+      let time = (new Date()).toLocaleDateString() // 得到今天'yyyy-mth-dd'格式的日期
+      let today = (new Date(time)).getTime() // 由今天的'yyyy-mth-dd'格式，再算出今天(time)凌晨12点时间
+      this.startTime = new Date(today) // 如 2019-01-20 00-00-00
+      this.endTime = new Date(today + 86400000 - 1) // 如 2019-01-20 23-59-59
+    },
     onOpenChange () {
       if (this.startTime > this.endTime) {
-        let time = new Date()
-        this.startTime = time.toLocaleDateString() + '00-00-00'
-        this.endTime = time.toLocaleDateString() + '23-59-59'
+        this.initToDay()
+        this.searchData()
       }
     },
     searchData () {
-      console.log(this.startTime)
       let searchParams = {
         person_id: this.personSelected,
         shop_id: this.shopSelected,
@@ -144,16 +149,16 @@ export default {
       ajaxPost(config.getOrderList, searchParams).then((res) => {
         if (res.data.stat === 'success') {
           this.orderList = res.data.data
-          console.log(this.orderList)
+          this.orderList.length ? this.displayNoData = false : this.displayNoData = true
         }
       })
     }
   },
   mounted () {
+    this.initToDay()
     ajaxExamGet(config.getPersonList).then((res) => {
       if (res.data.stat === 'success') {
         this.personList = res.data.data
-        console.log(this.personList)
       }
     })
     ajaxExamGet(config.getShopList).then((res) => {
@@ -161,7 +166,6 @@ export default {
         this.shopList = res.data.data['shop_data']
         this.shopSelected = res.data.data['user_data']
         this.identity = res.data.data['identity']
-        console.log(this.shopSelected, '11111111')
       }
     })
     setTimeout(() => {
