@@ -1,5 +1,5 @@
 <template>
-  <div style="height: 100%; min-height: 480px">
+  <div class="content" v-bind:style="{height: currentHeight}">
     <Row :gutter="10">
       <Col :sm="24" :md="8">
         <Input placeholder="订单流水号" search @keydown.enter.native="handleSubmit"/>
@@ -86,13 +86,21 @@ export default {
       personSelected: [-1],
       shopSelected: [],
       startTime: '',
-      endTime: ''
+      endTime: '',
+      myHeight: `${document.documentElement.clientHeight}`
     }
   },
   computed: {
+    currentHeight () {
+      let aa = `${document.documentElement.clientHeight}`
+      console.log('asdf')
+      return aa + 1200
+    }
+  },
+  watch: {
+    'myHeight': console.log(this.myHeight)
   },
   methods: {
-
     onChangeShop (value) {
       this.shopSelected = value
       console.log(value)

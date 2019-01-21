@@ -1,6 +1,6 @@
 <template>
   <Modal width="960" title="入库详情" placement="left" footer-hide closable v-model="openDrawer.open">
-    <Table :data="tableData" size="small" :columns="columns"></Table>
+    <Table :data="tableData" :height="currentHeight" size="small" :columns="columns"></Table>
   </Modal>
 </template>
 <script>
@@ -35,6 +35,16 @@ export default {
     }
   },
   computed: {
+    currentHeight () {
+      let clientHeight = `${document.documentElement.clientHeight}`
+      if (clientHeight >= 768) {
+        return clientHeight - 280
+      }
+      if (clientHeight >= 1024) {
+        return clientHeight - 300
+      }
+      return clientHeight - 270
+    }
   },
   methods: {
     compute (row) {

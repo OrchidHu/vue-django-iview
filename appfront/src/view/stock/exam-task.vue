@@ -4,7 +4,7 @@
           show-header
          :loading="loading"
          size="small"
-          :height="480"
+          :height="currentHeight"
          :data="tableData"
          :columns="columns"></Table>
   <StockRecord ref="stockRecordView" :openDrawer="openDrawer"></StockRecord>
@@ -80,6 +80,15 @@ export default {
     }
   },
   computed: {
+    currentHeight () {
+      let clientHeight = `${document.documentElement.clientHeight}`
+      if (clientHeight >= 768) {
+      }
+      if (clientHeight >= 1024) {
+        return clientHeight - 300
+      }
+      return clientHeight - 180
+    }
   },
   methods: {
     allow (row, index) {

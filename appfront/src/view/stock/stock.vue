@@ -13,7 +13,7 @@
     </Row>
     <br>
     <!--<Divider dashed />-->
-    <Table :data="tableData" :columns="columns" border height="360"></Table>
+    <Table :data="tableData" :columns="columns" border :height="currentHeight"></Table>
     <br/>
     <Row :gutter="8" type="flex" justify="start" align="middle">
       <Col span="2" type="flex"  justify="center" align="middle">
@@ -47,14 +47,14 @@
         <Col span="10">
           <Form ref="stockInForm" :model="form" :rules="rules" :label-width="50">
             <FormItem label="数量"  label-for="number" prop="number">
-              <Input ref="number" element-id="number"
+              <Input ref="number" element-id="number" @keydown.enter.native="handleSubmit"
                      @on-focus="currentInputId = 'number'" @on-blur="onBlurNumber"
                      style="width: 150px; text-align: right;" v-model="form.number" number>
                 <Icon type="md-clipboard" size="14" slot="prefix" />
               </Input>
             </FormItem>
             <FormItem label="进价"  label-for="buy_price" prop="buy_price" >
-              <Input ref="buy_price" element-id="buy_price"
+              <Input ref="buy_price" element-id="buy_price" @keydown.enter.native="handleSubmit"
                      @on-focus="currentInputId = 'buy_price'" @on-blur="onBlurBuyPrice"
                      style="width: 150px; text-align: center;" v-model="form.buy_price">
                 <Icon type="logo-yen" size="12" slot="prefix" />
@@ -71,7 +71,7 @@
       <div slot="close" @click="closeTheModal"><Icon type="ios-close" /></div>
       <div slot="footer">
         <Button type="text" size="large" @click="closeTheModal">取消</Button>
-        <Button type="primary" size="large" @keydown.enter.native="handleSubmit"
+        <Button type="primary" size="large"
                 @click="handleSubmit" :loading="loading">确定</Button>
       </div>
     </Modal>
@@ -278,7 +278,16 @@ export default {
       this.tableData.forEach(function (value, index, array) {
         totalPrice += value.buy_price * value.number
       })
-      return totalPrice
+      return totalPrice.toFixed(2)
+    },
+    currentHeight () {
+      let clientHeight = `${document.documentElement.clientHeight}`
+      if (clientHeight >= 768) {
+      }
+      if (clientHeight >= 1024) {
+        return clientHeight - 300
+      }
+      return clientHeight - 270
     }
   },
   methods: {

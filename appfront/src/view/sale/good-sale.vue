@@ -49,7 +49,7 @@
         </Row>
       </Col>
       <i-col :sm="24" :md="14">
-        <Table ref="goodTable" height="380" highlight-row @on-current-change="currentChange"
+        <Table ref="goodTable" :height="currentHeight" style="min-height: 360px" highlight-row @on-current-change="currentChange"
                @on-keydown="upMove" @on-row-click="onRowClick" disabled-hover
                :data="list" :columns="columns"></Table>
         <br>
@@ -110,6 +110,7 @@ export default {
       storeHighLight = -1
     }
     return {
+      clientHeight: 641,
       searchType: 'scanInput',
       currentRow: null,
       test: '',
@@ -179,6 +180,14 @@ export default {
         totalPrice += value.subtotal
       })
       return totalPrice
+    },
+    currentHeight () {
+      let clientHeight = `${document.documentElement.clientHeight}`
+      if (clientHeight >= 768) {
+        return clientHeight - 290
+      } else {
+        return clientHeight - 260
+      }
     }
   },
   methods: {
@@ -388,6 +397,8 @@ export default {
     subtotal (row) {
       return row.number * row.sale_price
     }
+  },
+  beforeCreate () {
   },
   mounted () {
     this.$nextTick(() => { // 扫码框自动聚焦

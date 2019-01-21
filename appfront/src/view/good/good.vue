@@ -28,9 +28,9 @@
            @on-filter-change="handleFilterChange"
            @on-selection-change="handleSelect"
            border stripe show-header
-           :height="fixedHeader ? 400 : ''"
+           :height="currentHeight"
            :loading="tableLoading"
-           size="small"
+           :size="tableSize"
            :data="dataWithPage"
            :columns="tableColumns"></Table>
     <div style="margin: 10px;">
@@ -89,6 +89,7 @@ export default {
       },
       total: 0,
       current: 1,
+      tableSize: 'small',
       deleteLoading: false,
       changeType: 'create',
       pageSize: 10,
@@ -155,6 +156,16 @@ export default {
       const start = this.current * this.pageSize - this.pageSize
       this.cleanData = [...data].splice(start, this.pageSize)
       return this.cleanData
+    },
+    currentHeight () {
+      let clientHeight = `${document.documentElement.clientHeight}`
+      if (clientHeight >= 768) {
+        this.tableSize = 'default'
+      }
+      if (clientHeight >= 1024) {
+        this.tableSize = 'large'
+      }
+      return clientHeight - 260
     }
   },
   methods: {

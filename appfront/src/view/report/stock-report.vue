@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="height: 100%; min-height: 480px">
     <Row style="height: 48px" type="flex" justify="start" align="middle" :gutter="4">
       <Col :sm='6' :md="3">
         <Cascader :data="shopList" :disabled="identity==='manager'? true : false" filterable
@@ -20,7 +20,7 @@
     <Table
       show-header
       size="small"
-      :height="440"
+      :height="currentHeight"
       :data="tableData"
       :columns="columns"></Table>
   </div>
@@ -55,6 +55,17 @@ export default {
         {title: '进价', key: 'stock_buy_price'},
         {title: '售价', key: 'stock_sale_price', width: 100}
       ]
+    }
+  },
+  computed: {
+    currentHeight () {
+      let clientHeight = `${document.documentElement.clientHeight}`
+      if (clientHeight >= 768) {
+      }
+      if (clientHeight >= 1024) {
+        return clientHeight - 300
+      }
+      return clientHeight - 220
     }
   },
   methods: {
