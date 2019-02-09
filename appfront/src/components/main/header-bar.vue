@@ -25,7 +25,7 @@
                   <Icon color="orange" type="ios-browsers" />
                   库存管理
                 </div>
-                <DropdownMenu slot="list">
+                <DropdownMenu id="abc" slot="list">
                   <DropdownItem name="stockIn">
                     <Icon size="16" color="#5cadff" type="md-exit" />
                      快速入库</DropdownItem>
@@ -182,3 +182,10 @@ export default {
   }
 }
 </script>
+<style>
+  /*#abc{*/
+    /*background: red;*/
+    /*position: relative;*/
+    /*z-index: 200000000000000*/
+  /*}*/
+</style>

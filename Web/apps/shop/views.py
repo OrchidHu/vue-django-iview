@@ -270,7 +270,7 @@ class ScanSaleSearch(View):
         return JsonSuccess("查询成功", data=data)
 
 
-class searchGoodSale(View):
+class SearchGoodSale(View):
     """搜索出售商品"""
 
     def get(self, request):
@@ -499,6 +499,7 @@ class SearchStockReport(View):
         query_args = []
         query_kwargs = {}
         keyword = data.get('searchValue')
+        current = data.get('currentPage')
         shop_id = data['shopSelected'].pop() if data['shopSelected'] else None
         genre_id = data['genreSelected'].pop() if data['genreSelected'] else None
         if keyword:
@@ -524,4 +525,4 @@ class SearchStockReport(View):
                 'stock_buy_price': round(data.stock_buy_price, 2),
                 'stock_sale_price': round(data.good.sale_price if not data.stock_sale_price else data.stock_sale_price, 2)
             })
-        return JsonSuccess("", data=ret)
+        return JsonSuccess("", data=ret[(current-1)*15: current*15], total=len(ret))

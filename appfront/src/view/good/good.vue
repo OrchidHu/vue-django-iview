@@ -42,7 +42,7 @@
                   style=" background: tomato; color: white; letter-spacing: 2px; ">删除</Button>
         </i-col>
         <i-col span="20" pull="2">
-        <span style="text-align:center; ">
+        <span style="text-align:center">
             <Page :total="limitData.length"
                   :current.sync="current"
                   show-sizer
@@ -160,10 +160,10 @@ export default {
     currentHeight () {
       let clientHeight = `${document.documentElement.clientHeight}`
       if (clientHeight >= 768) {
-        this.tableSize = 'default'
+        this.pageSize = 15
       }
       if (clientHeight >= 1024) {
-        this.tableSize = 'large'
+        this.pageSize = 25
       }
       return clientHeight - 260
     }

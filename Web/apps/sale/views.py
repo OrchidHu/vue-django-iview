@@ -142,3 +142,43 @@ class OrderDetail(ArgsMixin, View):
                 'create_time': item.create_time
             })
         return JsonSuccess("成功", data=ret)
+
+
+class MarketingAnalysis(View):
+    """销售分析"""
+
+    def get(self, request):
+        user = request.user
+        fast_report = request.GET.get('fast_report')
+        query_kwargs = {}
+        if not user:
+            return
+        if fast_report:
+            import datetime
+            # 获取当前时间
+            now = datetime.datetime.now()
+            # 获取今天零点
+            zeroToday = now - datetime.timedelta(hours=now.hour, minutes=now.minute, seconds=now.second, microseconds=now.microsecond)
+            # 获取23:59:59
+            lastToday = zeroToday + datetime.timedelta(hours=23, minutes=59, seconds=59)
+            query_kwargs['shop_id'] = user.shop
+            query_kwargs['create_time__range'] = [zeroToday, lastToday]
+        query_set = GoodOrder.objects.filter(
+            operate_type='sale',
+            sale_status='finish',
+            **query_kwargs
+        ).all()
+        total_sale = 0
+        total_profit = 0
+        sales_favour = 0
+        for data in query_set:
+            total_sale += data.discount_price
+            total_profit += data.profit
+            sales_favour += data.pre_sale_price - data.discount_price
+        data = {
+            'total_sale': total_sale,
+            'total_profit': total_profit,
+            'sales_discount': total_profit/total_sale*100,
+            'sales_favour': sales_favour
+        }
+        return JsonSuccess("success", data=data)

@@ -44,5 +44,6 @@ export default {
   arrangeGoodsSale: djangoUrl + 'sale/goods_sale',
   getPersonList: djangoUrl + 'common/person_list',
   getOrderList: djangoUrl + 'sale/order_list',
-  getOrderDetail: djangoUrl + 'sale/order_detail'
+  getOrderDetail: djangoUrl + 'sale/order_detail',
+  getCommonData: djangoUrl + 'sale/marketing_analysis'
 }

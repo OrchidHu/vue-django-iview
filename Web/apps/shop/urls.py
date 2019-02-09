@@ -73,7 +73,7 @@ urlpatterns =[
     ),
     path(
         r'search_good_sale',
-        views.searchGoodSale.as_view(),
+        views.SearchGoodSale.as_view(),
         name='search_good_sale'
     )
 ]

@@ -8,7 +8,7 @@
         <Row :gutter="10">
           <Col span="4">
             <Tooltip :disabled="identity==='manager'? true : false" content="选择门店" placement="top" transfer>
-              <Cascader :data="shopList" :disabled="identity==='manager'? true : false" filterable
+              <Cascader :data="shopList" :disabled="identity==='manager'? true : false" filterable  style="z-index: 1"
                         v-model="shopSelected" @on-change="onChangeShop" placeholder="选择门店"></Cascader>
             </Tooltip>
           </Col>
@@ -19,13 +19,13 @@
           </Col>
           <Col span="17">
             <Tooltip content="选择起始时间" placement="top" transfer>
-              <DatePicker v-model="startTime" type="datetime" placeholder="请选择起始时间"
-                          style="width: 200px" @on-change="onChange" @on-ok="onOkSelectTime" @on-open-change="onOpenChange"></DatePicker>
+              <DatePicker v-model="startTime" type="datetime" placeholder="请选择起始时间" :clearable="false"
+                          style="width: 200px; position: static; z-index: 1" @on-change="onChange" @on-ok="onOkSelectTime" @on-open-change="onOpenChange"></DatePicker>
             </Tooltip>
             -
             <Tooltip content="选择结束时间" placement="top" transfer>
-              <DatePicker v-model="endTime" type="datetime" placeholder="请选择结束时间"
-                          style="width: 200px" @on-change="onChange" @on-ok="onOkSelectTime" @on-open-change="onOpenChange"></DatePicker>
+              <DatePicker id="mmp" v-model="endTime" type="datetime" placeholder="请选择结束时间" :clearable="false"
+                          style="width: 200px; position: relative; z-index: 11" @on-change="onChange" @on-ok="onOkSelectTime" @on-open-change="onOpenChange"></DatePicker>
             </Tooltip>
           </Col>
         </Row>
@@ -179,6 +179,10 @@ export default {
     setTimeout(() => {
       this.searchData()
     }, 250)
+    document.getElementById('abc').style.position = 'static'
+    console.log(document.getElementById('abc').style.zIndex = 1111, 2332)
+    console.log(document.getElementById('abc').style)
+    console.log(document.getElementById('mmp').style.zIndex = 0)
   }
 }
 </script>

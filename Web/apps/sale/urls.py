@@ -20,5 +20,10 @@ urlpatterns = [
         r'order_detail',
         views.OrderDetail.as_view(),
         name='order_list'
+    ),
+    path(
+        r'marketing_analysis',
+        views.MarketingAnalysis.as_view(),
+        name='marketing_analysis'
     )
 ]

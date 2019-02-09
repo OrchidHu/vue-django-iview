@@ -2,19 +2,22 @@
   <div>
     <Row :gutter="16">
       <i-col span="6">
-        <Card title="访问量">
-          <Tag color="green" slot="extra">周</Tag>
-          <div class="count">123,000</div>
-          <Divider></Divider>
-          日访问量1,230
-        </Card>
-      </i-col>
-      <i-col span="6">
         <Card title="销售额">
           <Tooltip content="这里是指标说明" slot="extra" placement="top" transfer>
             <Icon type="ios-alert-outline" size="18"/>
           </Tooltip>
-          <div class="count"> ¥88,000</div>
+          <div class="count"> ¥ {{salesVolume}}</div>
+          <Divider></Divider>
+          周同比 12% <Icon type="md-arrow-dropup" size="22" color="#ed4014"></Icon>
+          日环比 10% <Icon type="md-arrow-dropdown" size="22" color="#19be6b"></Icon>
+        </Card>
+      </i-col>
+      <i-col span="6">
+        <Card title="毛利润">
+          <Tooltip content="这里是指标说明" slot="extra" placement="top" transfer>
+            <Icon type="ios-alert-outline" size="18"/>
+          </Tooltip>
+          <div class="count"> ¥ {{salesProfit}}</div>
           <Divider></Divider>
           周同比 12% <Icon type="md-arrow-dropup" size="22" color="#ed4014"></Icon>
           日环比 10% <Icon type="md-arrow-dropdown" size="22" color="#19be6b"></Icon>
@@ -25,28 +28,25 @@
           <Tooltip content="这里是指标说明" slot="extra" placement="top" transfer>
             <Icon type="ios-alert-outline" size="18"/>
           </Tooltip>
-          <div class="count">75%</div>
+          <div class="count">{{salesDiscount}} %</div>
           <Divider></Divider>
-          <Progress :percent="75" status="success" hide-info />
+          <Progress :percent="salesDiscount" status="success" hide-info />
         </Card>
       </i-col>
       <i-col span="6">
-        <Card title="销售额">
-          <Tooltip content="这里是指标说明" slot="extra" placement="top" transfer>
-            <Icon type="ios-alert-outline" size="18"/>
-          </Tooltip>
-          <div class="count"> ¥88,000</div>
+        <Card title="优惠额">
+          <Tag color="green" slot="extra">日</Tag>
+          <div class="count">¥ {{salesFavour}}</div>
           <Divider></Divider>
-          周同比 12% <Icon type="md-arrow-dropup" size="22" color="#ed4014"></Icon>
-          日环比 10% <Icon type="md-arrow-dropdown" size="22" color="#19be6b"></Icon>
+          日访问量1,230
         </Card>
       </i-col>
     </Row>
     <Card style="margin-top: 16px">
-      <Tabs>
+      <Tabs @on-click="clickTabs">
         <template slot="extra">
           <RadioGroup v-model="dateType" @on-change="handleSetDate">
-            <Radio label="day">今日</Radio>
+            <Radio label="day">今天</Radio>
             <Radio label="week">本周</Radio>
             <Radio label="month">本月</Radio>
             <Radio label="year">今年</Radio>
@@ -61,18 +61,32 @@
             <i-col span="6"></i-col>
           </Row>
         </TabPane>
-        <TabPane label="访问量" name="visit"></TabPane>
+        <TabPane label="访问量" name="visit">
+          <Row>
+            <i-col span="18">
+              <div style="width: 100%; height: 400px;" ref="todayChart"></div>
+            </i-col>
+            <i-col span="6"></i-col>
+          </Row>
+        </TabPane>
       </Tabs>
     </Card>
   </div>
 </template>
 <script>
 import { mapMutations } from 'vuex'
+import {ajaxExamGet} from '../../api/user'
 import echarts from 'echarts'
+import config from '@/config'
+
 export default {
   data () {
     this.initSocket()
     return {
+      salesVolume: 0.00,
+      salesProfit: 0.00,
+      salesDiscount: 0.00,
+      salesFavour: 0.00,
       dateType: 'day', // 'week', 'month', 'year'
       countDate: [new Date(), new Date()]
     }
@@ -93,6 +107,34 @@ export default {
         case 'year': date = today - 86400000 * 365; break
       }
       this.countDate = [new Date(date), new Date()]
+    },
+    getData () {
+      ajaxExamGet(config.getCommonData, {fast_report: true}).then(res => {
+        let data = res.data.data
+        this.salesVolume = data.total_sale.toFixed(2)
+        this.salesProfit = data.total_profit.toFixed(2)
+        this.salesDiscount = parseFloat(data.sales_discount.toFixed(2))
+        this.salesFavour = data.sales_favour.toFixed(2)
+      })
+    },
+    clickTabs (value) {
+      if (value === 'visit') {
+        const todayChart = echarts.init(this.$refs.todayChart)
+        const option = {
+          xAxis: {
+            type: 'category',
+            data: ['0', '2', '4', '6', '8', '10', '12', '14', '16', '18', '20', '22']
+          },
+          yAxis: {
+            type: 'value'
+          },
+          series: [{
+            data: [820, 932, 901, 934, 1290, 1330, 1320, 820, 932, 901, 934, 1290, 1330, 1320, 820, 932, 901, 934, 1290, 1330, 1320, 820, 932, 901, 934, 1290, 1330, 1320],
+            type: 'line'
+          }]
+        }
+        todayChart.setOption(option)
+      }
     },
     initChart () {
       const myChart = echarts.init(this.$refs.chart)
@@ -140,6 +182,7 @@ export default {
   },
   mounted () {
     this.initChart()
+    this.getData()
   },
   destroyed () {
     this.sock.close()
