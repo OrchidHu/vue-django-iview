@@ -46,6 +46,7 @@
             <Page :total="limitData.length"
                   :current.sync="current"
                   show-sizer
+                  :page-size="pageSize"
                   @on-page-size-change="handleChangePageSize"
             ></Page>
         </span>
@@ -160,10 +161,10 @@ export default {
     currentHeight () {
       let clientHeight = `${document.documentElement.clientHeight}`
       if (clientHeight >= 768) {
-        this.pageSize = 15
+        this.pageSize = 20
       }
       if (clientHeight >= 1024) {
-        this.pageSize = 25
+        this.pageSize = 30
       }
       return clientHeight - 260
     }

@@ -2,5 +2,7 @@
 *__pycache__/       
 _xxx*
 node_modules/
+package-lock.json
+static/
 virenv/
 appfront/src/assets/images/2018/                                                                                                                                                                                                                                                                                                                            

@@ -44,7 +44,7 @@
     </Row>
     <Card style="margin-top: 16px">
       <Tabs @on-click="clickTabs">
-        <template slot="extra">
+        <template v-if="displayDateButton" slot="extra">
           <RadioGroup v-model="dateType" @on-change="handleSetDate">
             <Radio label="day">今天</Radio>
             <Radio label="week">本周</Radio>
@@ -87,6 +87,7 @@ export default {
       salesProfit: 0.00,
       salesDiscount: 0.00,
       salesFavour: 0.00,
+      displayDateButton: true,
       dateType: 'day', // 'week', 'month', 'year'
       countDate: [new Date(), new Date()]
     }
@@ -118,7 +119,9 @@ export default {
       })
     },
     clickTabs (value) {
+      if (value === 'sell') this.displayDateButton = true
       if (value === 'visit') {
+        this.displayDateButton = false
         const todayChart = echarts.init(this.$refs.todayChart)
         const option = {
           xAxis: {

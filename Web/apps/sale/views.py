@@ -178,7 +178,7 @@ class MarketingAnalysis(View):
         data = {
             'total_sale': total_sale,
             'total_profit': total_profit,
-            'sales_discount': total_profit/total_sale*100,
+            'sales_discount': total_profit/total_sale*100 if total_profit > 0 else 0,
             'sales_favour': sales_favour
         }
         return JsonSuccess("success", data=data)
