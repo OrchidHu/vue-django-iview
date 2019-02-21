@@ -21,6 +21,7 @@ export default {
   /**
    * @description 配置路由到django后台的url
    */
+  registerUrl: djangoUrl + 'account/register',
   loginUrl: djangoUrl + 'account/login/',
   logoutUrl: djangoUrl + 'account/logout',
   goodUrl: djangoUrl + 'shop/good/',

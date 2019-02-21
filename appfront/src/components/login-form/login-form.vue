@@ -14,8 +14,10 @@
         </span>
       </Input>
     </FormItem>
+
+    <div style="text-align: end"><a href="register">注册</a> <a href="">忘记密码?</a></div>
     <FormItem>
-      <Button @click="handleSubmit" type="primary" long>登录</Button>
+      <Button id = "login-button" @click="handleSubmit" type="primary" long>登录</Button>
     </FormItem>
   </Form>
 </template>
@@ -63,6 +65,9 @@ export default {
           this.$emit('on-success-valid', {
             userName: this.form.userName,
             password: this.form.password
+          })
+        } else {
+          this.$emit('on-error-valid', {
           })
         }
       })

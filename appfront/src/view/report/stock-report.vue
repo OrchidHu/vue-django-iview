@@ -113,7 +113,6 @@ export default {
         if (res.data.stat === 'success') {
           this.tableData = res.data.data
           this.totalCount = res.data.total
-          console.log(this.submitData.currentPage)
         }
       })
       this.searchLoading = false

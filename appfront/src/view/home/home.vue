@@ -175,7 +175,11 @@ export default {
         this.setTask(message)
       }
       setTimeout(() => {
-        this.$Message.success(message)
+        if (message) {
+          this.$Message.success(message)
+        } else {
+          console.log('websock连接错误')
+        }
       }, 2000)
       return {
         sock: sock,
@@ -186,9 +190,6 @@ export default {
   mounted () {
     this.initChart()
     this.getData()
-  },
-  destroyed () {
-    this.sock.close()
   }
 }
 </script>

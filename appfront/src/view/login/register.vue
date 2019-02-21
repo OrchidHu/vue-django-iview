@@ -1,19 +1,14 @@
 <style lang="less">
-  @import './login.less';
+  @import './register.less';
 </style>
 
 <template>
   <div class="login">
     <div class="login-con">
-      <Card icon="log-in" title="欢迎登录" :bordered="false">
+      <Card icon="log-in" title="注册" :bordered="false">
         <div class="form-con">
-          <login-form @on-success-valid="handleSubmit" @on-error-valid="handleErrorValid"></login-form>
-          <Row style="height: 30px" type="flex" justify="start" align="middle">
-            <Col span="9" style="font-size: 12px">使用第三方登录：</Col>
-            <Col span="2"><img height="15" width="18" :src="QQ" key="logo" /></Col>
-            <Col span="2"><img height="15" width="16" :src="WeiXin" key="logo" /></Col>
-            <Col span="2"><img height="15" width="16" :src="Github" key="logo" /></Col>
-          </Row>
+          <register-form @on-success-valid="handleSubmit" @on-error-valid="handleErrorValid"></register-form>
+          <div style="text-align: end; padding-right: 16px;">已有账号... <a href="login">直接登录 >></a></div>
           <span style="font-size: 12px"></span>
         </div>
       </Card>
@@ -22,21 +17,15 @@
 </template>
 
 <script>
-import LoginForm from '../../components/login-form'
-import QQ from '@/assets/images/qq.jpg'
-import Github from '@/assets/images/github.jpg'
-import WeiXin from '@/assets/images/weixin.jpg'
+import RegisterForm from '@/components/register-form'
 import { mapActions } from 'vuex'
 import $ from 'jquery'
 export default {
   components: {
-    LoginForm
+    RegisterForm
   },
   data () {
     return {
-      QQ,
-      WeiXin,
-      Github,
       vaptchaObj: '', // 定义全局变量, vaptcha实例
       token: '',
       isValid: false, // 这里是表单通过验证，才启动vaptcha验证

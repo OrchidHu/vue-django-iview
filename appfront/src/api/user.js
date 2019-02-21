@@ -14,6 +14,20 @@ export const login = ({ userName, password }) => {
   })
 }
 
+export const register = ({ userName, password }) => {
+  console.log(22)
+  const username = userName
+  const data = {
+    username,
+    password
+  }
+  return axios.request({
+    url: config.registerUrl,
+    data,
+    method: 'post'
+  })
+}
+
 export const logout = () => {
   return axios.request({
     url: config.logoutUrl,

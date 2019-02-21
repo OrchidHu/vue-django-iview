@@ -48,3 +48,11 @@ class Logout(LogoutView):
         logout(request)
         return JsonSuccess("退出成功")
 
+
+class Register(View):
+    """注册"""
+
+    def post(self, request):
+
+        return JsonSuccess("ok")
+

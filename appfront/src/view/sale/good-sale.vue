@@ -53,9 +53,9 @@
                @on-keydown="upMove" @on-row-click="onRowClick" disabled-hover
                :data="list" :columns="columns"></Table>
         <br>
-        <Row type="flex" justify="start" align="middle" :gutter="36" :offset="1">
-          <Col span="4">
-            <div>数量: {{totalNumber}}</div>
+        <Row type="flex" justify="center" align="middle" :gutter="36" :offset="1">
+          <Col span="3">
+            <div>数量: <span style="font-size: 16px; font-weight: bold; color: chocolate">{{totalNumber}}</span></div>
           </Col>
           <Col span="13">
             <div>合计: <Icon style="padding-bottom: 8px" type="logo-yen" size="16" slot="prefix" />
@@ -179,7 +179,7 @@ export default {
       this.list.forEach((value) => {
         totalPrice += value.subtotal
       })
-      return totalPrice
+      return totalPrice.toFixed(2)
     },
     currentHeight () {
       let clientHeight = `${document.documentElement.clientHeight}`

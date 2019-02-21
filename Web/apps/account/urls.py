@@ -7,6 +7,11 @@ app_name = 'account'
 
 urlpatterns =[
     path(
+        r'register',
+        views.Register.as_view(),
+        name='register'
+    ),
+    path(
         r'login/',
         views.Login.as_view(),
         name='login'
