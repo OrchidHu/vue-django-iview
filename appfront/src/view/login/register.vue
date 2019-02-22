@@ -62,28 +62,17 @@ export default {
     }
   },
   mounted: function () {
-    // 加载完成后启动vaptcha
-    window.vaptcha({
-      // 配置参数
-      vid: config.captchaVid,
-      type: 'invisible'
-      // 其他配置参数省略
-    }).then(vaptchaObj => {
-      this.vaptchaObj = vaptchaObj // 将VAPTCHA验证实例保存到局部变量中
-      // 验证码加载完成后将事件绑定到按钮
-      // 调用validate()方法的伪代码，将该方法的调用绑定在'click'事件上，实际开发中需要更改为合适的调用方式
-      this.vaptchaObj.render() // 执行该方法, 生成验证码
-      // 点击登录按钮，启动vaptcha验证
-      $('#login-button').on('click', () => {
-        if (this.isValid) {
-          vaptchaObj.validate()
-        }
+    vaptcha({
+      vid: config.vaptchaVid, // 验证单元id
+      type: 'embed', // 显示类型 点击式
+      container: '#vaptchaContainer' // 按钮容器，可为Element 或者 selector
+    }).then((vaptchaObj) => {
+      vaptchaObj.listen('pass', () => {
+        // 验证成功， 进行登录操作
+        this.isValid = true
       })
-      // $('#reset').on('click', function () {
-      //   vaptchaObj.reset()
-      // })
+      vaptchaObj.render()// 调用验证实例 vpObj 的 render 方法加载验证按钮
     })
-    // 登录清除上次的localStorage
     var storage = window.localStorage
     storage.clear()
   }

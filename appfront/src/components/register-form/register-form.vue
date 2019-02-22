@@ -108,19 +108,6 @@ export default {
         }
       })
     }
-  },
-  mounted () {
-    vaptcha({
-      vid: '5c6e0bd8fc650e1408d0a2b2', // 验证单元id
-      type: 'embed', // 显示类型 点击式
-      container: '#vaptchaContainer' // 按钮容器，可为Element 或者 selector
-    }).then((vaptchaObj) => {
-      vaptchaObj.listen('pass', () => {
-        // 验证成功， 进行登录操作
-        this.isValid = true
-      })
-      vaptchaObj.render()// 调用验证实例 vpObj 的 render 方法加载验证按钮
-    })
   }
 }
 </script>

@@ -27,6 +27,7 @@ export default {
    * @description api请求基础路径
    */
   webSocket: webSocket,
+  vaptchaVid: vaptchaVid,
   baseUrl: {
     dev: 'http://127.0.0.1:8000/',
     pro: 'http://47.105.169.97:8000/'
