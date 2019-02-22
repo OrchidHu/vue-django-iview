@@ -39,7 +39,6 @@
   </Form>
 </template>
 <script>
-import {register} from '@/api/user'
 
 export default {
   name: 'LoginForm',
@@ -72,9 +71,9 @@ export default {
   data () {
     return {
       form: {
-        userName: '1',
-        password: '1',
-        rePassword: '1'
+        userName: '',
+        password: '',
+        rePassword: ''
       },
       isValid: false
     }
@@ -98,13 +97,10 @@ export default {
             this.$Message.error('两次输入的密码不相同')
             return
           }
-          if (!this.isValid) this.$Message.error('请完成人机验证')
-          else {
-            console.log(11)
-            register({username, password}).then(res => {
-              console.log(res)
-            })
-          }
+          this.$emit('on-success-valid', {
+            userName: this.form.userName,
+            password: this.form.password
+          })
         }
       })
     }

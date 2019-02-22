@@ -7,7 +7,7 @@
     <div class="login-con">
       <Card icon="log-in" title="注册" :bordered="false">
         <div class="form-con">
-          <register-form @on-success-valid="handleSubmit" @on-error-valid="handleErrorValid"></register-form>
+          <register-form @on-success-valid="handleSubmit"></register-form>
           <div style="text-align: end; padding-right: 16px;">已有账号... <a href="login">直接登录 >></a></div>
           <span style="font-size: 12px"></span>
         </div>
@@ -20,7 +20,7 @@
 import RegisterForm from '@/components/register-form'
 import config from '@/config'
 import { mapActions } from 'vuex'
-import $ from 'jquery'
+import {register} from '@/api/user'
 export default {
   components: {
     RegisterForm
@@ -38,24 +38,12 @@ export default {
       'handleLogin'
     ]),
     handleSubmit ({ userName, password }) {
-      this.isValid = true
-      this.vaptchaObj.listen('pass', () => {
-        // 验证成功进行后续操作
-        if (this.isPass) return
-        this.isPass = true
-        this.token = this.vaptchaObj.getToken()
-        this.handleLogin({ userName, password }).then(res => {
-          if (res.stat === 'success') {
-            this.$router.push({
-              name: 'home'
-            })
-          } else {
-            this.vaptchaObj.reset();
-            this.$Notice.error({title: res.msg})
-          }
+      if (!this.isValid) this.$Message.error('请完成人机验证')
+      else {
+        register({userName, password}).then(res => {
+          console.log(res)
         })
-      })
-      this.isPass = false
+      }
     },
     handleErrorValid () {
       this.isValid = false

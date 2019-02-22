@@ -5,7 +5,7 @@ import re
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.views import LogoutView
 from django.views.generic import View
-from Utils.django_utils import  JsonError, JsonSuccess, get_token, redis_get, redis_db
+from Utils.django_utils import JsonError, JsonSuccess, get_token, redis_get, redis_db, ArgsMixin
 from Web.models import XYUser
 
 
@@ -49,10 +49,14 @@ class Logout(LogoutView):
         return JsonSuccess("退出成功")
 
 
-class Register(View):
+class Register(ArgsMixin, View):
     """注册"""
 
     def post(self, request):
-
+        username = self.get_arg('username').strip()
+        password = self.get_arg('password')
+        user = XYUser.objects.create(username=username)
+        user.set_password(password)
+        user.save()
         return JsonSuccess("ok")
 
