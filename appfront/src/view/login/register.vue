@@ -18,6 +18,7 @@
 
 <script>
 import RegisterForm from '@/components/register-form'
+import config from '@/config'
 import { mapActions } from 'vuex'
 import $ from 'jquery'
 export default {
@@ -64,7 +65,7 @@ export default {
     // 加载完成后启动vaptcha
     window.vaptcha({
       // 配置参数
-      vid: '5c6e0bd8fc650e1408d0a2b2',
+      vid: config.captchaVid,
       type: 'invisible'
       // 其他配置参数省略
     }).then(vaptchaObj => {

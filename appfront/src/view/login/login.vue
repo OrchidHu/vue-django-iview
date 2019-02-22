@@ -23,6 +23,7 @@
 
 <script>
 import LoginForm from '../../components/login-form'
+import config from '@/config'
 import QQ from '@/assets/images/qq.jpg'
 import Github from '@/assets/images/github.jpg'
 import WeiXin from '@/assets/images/weixin.jpg'
@@ -75,7 +76,7 @@ export default {
     // 加载完成后启动vaptcha
     window.vaptcha({
       // 配置参数
-      vid: '5c6e0bd8fc650e1408d0a2b2',
+      vid: config.vaptchaVid,
       type: 'invisible'
       // 其他配置参数省略
     }).then(vaptchaObj => {

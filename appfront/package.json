@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "cross-env": "^5.2.0",
     "echarts": "^4.2.0-rc.2",
     "extract-text-webpack-plugin": "^2.1.2",
     "iview": "^3.2.1",

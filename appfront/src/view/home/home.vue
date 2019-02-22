@@ -165,7 +165,8 @@ export default {
       var sock
       var message
       if ('WebSocket' in window) { // 判断当前浏览器是否支持webSocket
-        sock = new WebSocket('ws://127.0.0.1:8000/chart/push') // 建立连接
+        sock = new WebSocket(config.webSocket) // 建立连接
+        console.log(config.webSocket)
       }
       sock.onopen = (e) => { // 成功建立连接
         sock.send('hello world')
