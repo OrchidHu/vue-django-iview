@@ -5,12 +5,21 @@
 <template>
   <div class="login">
     <div class="login-con">
-      <Card icon="log-in" title="注册" :bordered="false">
-        <div class="form-con">
-          <register-form @on-success-valid="handleSubmit"></register-form>
-          <div style="text-align: end; padding-right: 16px;">已有账号... <a href="login">直接登录 >></a></div>
-          <span style="font-size: 12px"></span>
-        </div>
+      <Card class="login-card" icon="log-in" title="注册" :bordered="false">
+        <Row>
+          <i-col span="18">
+            <div class="form-con">
+              <register-form @on-success-valid="handleSubmit"></register-form>
+            </div>
+          </i-col>
+          <i-col span="1">
+            <Divider style="height: 450px" type="vertical" />
+          </i-col>
+          <i-col span="5">
+            <div style="text-align: end;padding-top: 15px;">已有账号. <a href="login">直接登录 >></a></div>
+            <span style="font-size: 12px"></span>
+          </i-col>
+        </Row>
       </Card>
     </div>
   </div>
@@ -41,7 +50,11 @@ export default {
       if (!this.isValid) this.$Message.error('请完成人机验证')
       else {
         register({userName, password}).then(res => {
-          console.log(res)
+          if (res.data.stat === 'success') {
+
+          } else {
+            this.$Message.error(res.data.msg)
+          }
         })
       }
     },

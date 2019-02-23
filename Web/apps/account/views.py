@@ -55,8 +55,11 @@ class Register(ArgsMixin, View):
     def post(self, request):
         username = self.get_arg('username').strip()
         password = self.get_arg('password')
+        user = XYUser.objects.filter(username=username).first()
+        if user:
+            return JsonError("该账户已存在")
         user = XYUser.objects.create(username=username)
         user.set_password(password)
         user.save()
-        return JsonSuccess("ok")
+        return JsonSuccess("注册成功")
 
