@@ -174,6 +174,8 @@ export default {
         this.shopList = res.data.data['shop_data']
         this.shopSelected = res.data.data['user_data']
         this.identity = res.data.data['identity']
+      } else {
+        this.$Message.error(res.data.msg)
       }
     })
     setTimeout(() => {

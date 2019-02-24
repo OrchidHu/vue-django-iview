@@ -55,8 +55,21 @@ class Register(ArgsMixin, View):
     def post(self, request):
         username = self.get_arg('username').strip()
         password = self.get_arg('password')
+        user = XYUser.objects.filter(username=username).first()
+        if user:
+            return JsonError("用户名已存在")
+        if not self.valid_password(password):
+            return JsonError("输入的密码不合法")
         user = XYUser.objects.create(username=username)
         user.set_password(password)
         user.save()
-        return JsonSuccess("ok")
+        return JsonSuccess("注册成功")
+
+    def valid_password(self, password):
+        if len(password) not in range(6, 17):
+            return False
+        for word in password:
+            if not word.isdigit() and not word.isalpha() and word not in '_,.*&^%$#@!`?':
+                return False
+        return True
 

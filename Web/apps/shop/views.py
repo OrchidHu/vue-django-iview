@@ -465,6 +465,8 @@ class ShopList(View):
 
     def get(self, request):
         user = request.user
+        if not user.shop:
+            return JsonError("没有绑定相关门店")
         user_data = {'value': user.shop.id, 'label': user.shop.name}
         if user.has_perm('Web.boss'):
             shops = model.Shop.objects.all()

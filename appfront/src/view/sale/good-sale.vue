@@ -370,7 +370,7 @@ export default {
     handleSubmit () {
       if (!this.list.length) return
       this.balanceSetData.openModal = true
-      this.balance.sumMoney = this.totalPrice
+      this.balance.sumMoney = parseFloat(this.totalPrice) // totalPrice计算出来以字符串格式输出的需浮点化
       this.balance.discount = 100
       this.balance.discMoney = this.balance.sumMoney
       this.balanceSetData.arrangeMoney = this.balance.sumMoney
@@ -391,6 +391,8 @@ export default {
         if (res.data.stat === 'success') {
           this.clearTableData()
           this.$Message.success('结算成功')
+        } else {
+          this.$Message.error(res.data.msg)
         }
       })
     },

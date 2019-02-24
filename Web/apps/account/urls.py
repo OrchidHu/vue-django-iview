@@ -12,7 +12,7 @@ urlpatterns =[
         name='register'
     ),
     path(
-        r'login/',
+        r'login',
         views.Login.as_view(),
         name='login'
     ),

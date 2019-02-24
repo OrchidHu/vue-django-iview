@@ -15,7 +15,6 @@ export const login = ({ userName, password }) => {
 }
 
 export const register = ({ userName, password }) => {
-  console.log(22)
   const username = userName
   const data = {
     username,

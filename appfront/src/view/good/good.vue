@@ -58,7 +58,7 @@
 </template>
 <script>
 import config from '@/config'
-import {ajaxGet} from '../../api/user'
+import {ajaxGet, ajaxExamGet} from '../../api/user'
 import GoodModal from '@/components/good-modal'
 import Bus from '../bus'
 
@@ -290,7 +290,7 @@ export default {
   created () {
     // 利用{withCredentials: true} 闯入COOKIES包含（sessionid）到django后台， 自动识别请求用户 此时params无效
     this.tableLoading = true
-    this.$http.get(config.goodUrl, {withCredentials: true}).then(res => {
+    ajaxExamGet(config.goodUrl).then(res => {
       this.tableLoading = false
       let dictData = res.data
       if (dictData.stat === 'success') {

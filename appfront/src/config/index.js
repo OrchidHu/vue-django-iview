@@ -36,9 +36,9 @@ export default {
    * @description 配置路由到django后台的url
    */
   registerUrl: 'account/register',
-  loginUrl: 'account/login/',
+  loginUrl: 'account/login',
   logoutUrl: 'account/logout',
-  goodUrl: 'shop/good/',
+  goodUrl: 'shop/good',
   createGoodUrl: 'shop/create_good',
   updateGoodUrl: 'shop/update_good',
   deleteGoodUrl: 'shop/delete_good',

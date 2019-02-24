@@ -14,7 +14,6 @@
         </span>
       </Input>
     </FormItem>
-
     <div style="text-align: end"><a href="register">注册</a> <a href="">忘记密码?</a></div>
     <FormItem>
       <Button id = "login-button" @click="handleSubmit" type="primary" long>登录</Button>
@@ -37,7 +36,7 @@ export default {
       type: Array,
       default: () => {
         return [
-          { required: true, message: '密码不能为空', trigger: 'blur' }
+          { required: true, message: '密码不能为空', trigger: 'change' }
         ]
       }
     }
@@ -45,8 +44,8 @@ export default {
   data () {
     return {
       form: {
-        userName: 'admin',
-        password: '826446178lxl'
+        userName: '',
+        password: ''
       }
     }
   },
