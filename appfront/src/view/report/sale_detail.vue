@@ -20,12 +20,12 @@
           <Col span="17">
             <Tooltip content="选择起始时间" placement="top" transfer>
               <DatePicker v-model="startTime" type="datetime" placeholder="请选择起始时间" :clearable="false"
-                          style="width: 200px; position: static; z-index: 1" @on-change="onChange" @on-ok="onOkSelectTime" @on-open-change="onOpenChange"></DatePicker>
+                          style="width: 200px;" @on-change="onChange" @on-ok="onOkSelectTime" @on-open-change="onOpenChange"></DatePicker>
             </Tooltip>
             -
             <Tooltip content="选择结束时间" placement="top" transfer>
               <DatePicker id="mmp" v-model="endTime" type="datetime" placeholder="请选择结束时间" :clearable="false"
-                          style="width: 200px; position: relative; z-index: 11" @on-change="onChange" @on-ok="onOkSelectTime" @on-open-change="onOpenChange"></DatePicker>
+                          style="width: 200px" @on-change="onChange" @on-ok="onOkSelectTime" @on-open-change="onOpenChange"></DatePicker>
             </Tooltip>
           </Col>
         </Row>
@@ -93,17 +93,15 @@ export default {
   computed: {
     currentHeight () {
       let aa = `${document.documentElement.clientHeight}`
-      console.log('asdf')
       return aa + 1200
     }
   },
-  watch: {
-    'myHeight': console.log(this.myHeight)
-  },
+  // watch: {
+  //   'myHeight': console.log(this.myHeight)
+  // },
   methods: {
     onChangeShop (value) {
       this.shopSelected = value
-      console.log(value)
       this.searchData()
     },
     handleSubmit () {
@@ -136,7 +134,8 @@ export default {
       }
     },
     initToDay () {
-      let time = (new Date()).toLocaleDateString() // 得到今天'yyyy-mth-dd'格式的日期
+      let now = new Date()
+      let time = String(now.getFullYear()) + '/' + String(now.getMonth()) + '/' + String(now.getDay()) // 得到今天'yyyy-mth-dd'格式的日期
       let today = (new Date(time)).getTime() // 由今天的'yyyy-mth-dd'格式，再算出今天(time)凌晨12点时间
       this.startTime = new Date(today) // 如 2019-01-20 00-00-00
       this.endTime = new Date(today + 86400000 - 1) // 如 2019-01-20 23-59-59
@@ -181,10 +180,6 @@ export default {
     setTimeout(() => {
       this.searchData()
     }, 250)
-    document.getElementById('abc').style.position = 'static'
-    console.log(document.getElementById('abc').style.zIndex = 1111, 2332)
-    console.log(document.getElementById('abc').style)
-    console.log(document.getElementById('mmp').style.zIndex = 0)
   }
 }
 </script>

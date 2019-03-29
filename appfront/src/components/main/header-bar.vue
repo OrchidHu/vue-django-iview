@@ -20,7 +20,7 @@
               商品销售
             </MenuItem>
             <MenuItem name="stock">
-              <Dropdown trigger="hover" @on-click="clickStock">
+              <Dropdown trigger="hover" @on-click="clickStock" transfer>
                 <div href="javascript:void(0)">
                   <Icon color="orange" type="ios-browsers" />
                   库存管理
@@ -40,11 +40,11 @@
                 </DropdownMenu>
               </Dropdown>
             </MenuItem>
-            <MenuItem name="report">
-              <Dropdown trigger="hover" @on-click="clickReport">
+            <MenuItem name="report" style="position:relative;">
+              <Dropdown trigger="hover" @on-click="clickReport" transfer>
                 <Icon color="orange" type="md-list-box" />
                 报表查询
-                <DropdownMenu slot="list">
+                <DropdownMenu slot="list" style="position:relative  ;">
                   <DropdownItem name="stockReport">
                     <Icon size="16" color="#5cadff" type="ios-browsers" />
                     库存查询
