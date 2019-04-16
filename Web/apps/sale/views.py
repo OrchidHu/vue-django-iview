@@ -182,3 +182,11 @@ class MarketingAnalysis(View):
             'sales_favour': sales_favour
         }
         return JsonSuccess("success", data=data)
+
+
+class GoodsSaleRank(View):
+    """商品销售排行"""
+
+    def get(self, request):
+        __import__("pdb").set_trace()
+        return JsonSuccess("成功")

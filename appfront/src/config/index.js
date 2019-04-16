@@ -60,5 +60,6 @@ export default {
   getPersonList: 'common/person_list',
   getOrderList: 'sale/order_list',
   getOrderDetail: 'sale/order_detail',
-  getCommonData: 'sale/marketing_analysis'
+  getCommonData: 'sale/marketing_analysis',
+  goodsSalesRank: 'sale/goods_sales_rank'
 }

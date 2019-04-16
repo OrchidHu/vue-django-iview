@@ -25,5 +25,10 @@ urlpatterns = [
         r'marketing_analysis',
         views.MarketingAnalysis.as_view(),
         name='marketing_analysis'
+    ),
+    path(
+        r'goods_sales_rank',
+        views.GoodsSaleRank.as_view(),
+        name='goods_sales_rank'
     )
 ]

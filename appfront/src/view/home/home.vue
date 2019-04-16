@@ -75,7 +75,7 @@
 </template>
 <script>
 import { mapMutations } from 'vuex'
-import {ajaxExamGet} from '../../api/user'
+import {ajaxExamGet, ajaxGet} from '../../api/user'
 import echarts from 'echarts'
 import config from '@/config'
 
@@ -140,6 +140,11 @@ export default {
       }
     },
     initChart () {
+      ajaxGet(config.goodsSalesRank, JSON.stringify(this.countDate)).then(res => {
+        if (res.data.stat === 'success') {
+          console.log(11)
+        }
+      })
       const myChart = echarts.init(this.$refs.chart)
       const option = {
         title: {

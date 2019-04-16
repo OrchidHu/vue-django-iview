@@ -20,9 +20,9 @@ class Good(View):
         user = request.user
         token = request.COOKIES.get("token")
         db_token = redis_get(user.username)
-        if not db_token or db_token != token:
-            logout(request)
-            return JsonReLogin('需要身份验证')
+        # if not db_token or db_token != token:
+        #     logout(request)
+        #     return JsonReLogin('需要身份验证')
         if user.is_staff:
             data = self.get_data()
             return JsonSuccess("请求成功", data=data)

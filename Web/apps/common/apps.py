@@ -1,5 +1,6 @@
 from django.apps import AppConfig
 
+
 class CommonConfig(AppConfig):
-    name = 'common'
-    verbose_name = '普通'
+    name = 'Web.apps.common'
+    verbose_name = '普通分类管理'
