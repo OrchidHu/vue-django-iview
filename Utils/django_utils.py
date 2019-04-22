@@ -4,7 +4,6 @@ import os, json
 import time
 import uuid
 from Utils.db_connections import get_redis
-os.environ['DJANGO_SETTINGS_MODULE'] = 'Web.settings'
 from urllib import parse as _urlparse
 from django.http import JsonResponse
 from Conf import config

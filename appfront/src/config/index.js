@@ -2,7 +2,7 @@
 
 let socket = {
   dev: 'ws://127.0.0.1:8000/chart/push',
-  pro: 'ws://47.105.169.97:8000/chart/push'
+  pro: 'ws://47.105.169.97:9000/chart/push'
 }
 let vid = {
   dev: '5c6e0bd8fc650e1408d0a2b2',
@@ -30,7 +30,7 @@ export default {
   vaptchaVid: vaptchaVid,
   baseUrl: {
     dev: 'http://127.0.0.1:8000/',
-    pro: 'http://47.105.169.97:8000/'
+    pro: 'http://47.105.169.97:9000/'
   },
   /**
    * @description 配置路由到django后台的url

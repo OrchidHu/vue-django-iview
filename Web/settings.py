@@ -30,14 +30,14 @@ ALLOWED_HOSTS = ['*']
 ASGI_APPLICATION = "Web.routing.application"
 # Application definition
 
-# CHANNEL_LAYERS = {
-#     "default": {
-#         "BACKEND": "channels_redis.core.RedisChannelLayer",
-#         "CONFIG": {
-#             "hosts": [("localhost", 6379)],
-#         },
-#     },
-# }
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        },
+    },
+}
 
 INSTALLED_APPS = (
     'django.contrib.admin',
