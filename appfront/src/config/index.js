@@ -1,8 +1,8 @@
 // const djangoUrl = 'http://127.0.0.1:8000/'
 
 let socket = {
-  dev: 'ws://127.0.0.1:8000/chart/push',
-  pro: 'ws://47.105.169.97:9000/chart/push'
+  dev: 'ws://.//chart/push',
+  pro: 'ws://.//chart/push'
 }
 let vid = {
   dev: '5c6e0bd8fc650e1408d0a2b2',
@@ -29,8 +29,8 @@ export default {
   webSocket: webSocket,
   vaptchaVid: vaptchaVid,
   baseUrl: {
-    dev: 'http://127.0.0.1:8000/',
-    pro: 'http://47.105.169.97:9000/'
+    dev: './',
+    pro: './'
   },
   /**
    * @description 配置路由到django后台的url
