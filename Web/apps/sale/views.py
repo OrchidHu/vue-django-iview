@@ -188,5 +188,5 @@ class GoodsSaleRank(View):
     """商品销售排行"""
 
     def get(self, request):
-        __import__("pdb").set_trace()
+        # __import__("pdb").set_trace()
         return JsonSuccess("成功")

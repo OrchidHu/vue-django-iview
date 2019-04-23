@@ -11,6 +11,7 @@ let vid = {
 const webSocket = process.env.NODE_ENV === 'development' ? socket.dev : socket.pro
 const vaptchaVid = process.env.NODE_ENV === 'development' ? vid.dev : vid.pro
 console.log(process.env)
+let djUrl = '/vue'
 
 export default {
   /**
@@ -29,37 +30,37 @@ export default {
   webSocket: webSocket,
   vaptchaVid: vaptchaVid,
   baseUrl: {
-    dev: './vue',
-    pro: './vue'
+    dev: djUrl,
+    pro: djUrl
   },
   /**
    * @description 配置路由到django后台的url
    */
-  registerUrl: 'account/register',
-  loginUrl: 'account/login',
-  logoutUrl: 'account/logout',
-  goodUrl: 'shop/good',
-  createGoodUrl: 'shop/create_good',
-  updateGoodUrl: 'shop/update_good',
-  deleteGoodUrl: 'shop/delete_good',
-  getQuantifyUrl: 'common/quantify_list',
-  getSupplierUrl: 'common/supplier_list',
-  getGenreUrl: 'common/genre_list',
-  addQuantifyUrl: 'common/add_quantify',
-  getPackageData: 'shop/other_package_list',
-  otherPackage: 'shop/other_package',
-  scanStockSearch: 'shop/scan_stock_search',
-  saveStockGood: 'shop/create_stock_in_record',
-  getExamTask: 'shop/get_exam_task',
-  commitExamTask: 'shop/commit_exam_task',
-  getShopList: 'shop/shop_list',
-  searchStockReport: 'shop/search_stock_report',
-  scanSaleSearch: 'shop/scan_sale_search',
-  searchGoodSale: 'shop/search_good_sale',
-  arrangeGoodsSale: 'sale/goods_sale',
-  getPersonList: 'common/person_list',
-  getOrderList: 'sale/order_list',
-  getOrderDetail: 'sale/order_detail',
-  getCommonData: 'sale/marketing_analysis',
-  goodsSalesRank: 'sale/goods_sales_rank'
+  registerUrl: djUrl + 'account/register',
+  loginUrl: djUrl + 'account/login',
+  logoutUrl: djUrl + 'account/logout',
+  goodUrl: djUrl + 'shop/good',
+  createGoodUrl: djUrl + 'shop/create_good',
+  updateGoodUrl: djUrl + 'shop/update_good',
+  deleteGoodUrl: djUrl + 'shop/delete_good',
+  getQuantifyUrl: djUrl + 'common/quantify_list',
+  getSupplierUrl: djUrl + 'common/supplier_list',
+  getGenreUrl: djUrl + 'common/genre_list',
+  addQuantifyUrl: djUrl + 'common/add_quantify',
+  getPackageData: djUrl + 'shop/other_package_list',
+  otherPackage: djUrl + 'shop/other_package',
+  scanStockSearch: djUrl + 'shop/scan_stock_search',
+  saveStockGood: djUrl + 'shop/create_stock_in_record',
+  getExamTask: djUrl + 'shop/get_exam_task',
+  commitExamTask: djUrl + 'shop/commit_exam_task',
+  getShopList: djUrl + 'shop/shop_list',
+  searchStockReport: djUrl + 'shop/search_stock_report',
+  scanSaleSearch: djUrl + 'shop/scan_sale_search',
+  searchGoodSale: djUrl + 'shop/search_good_sale',
+  arrangeGoodsSale: djUrl + 'sale/goods_sale',
+  getPersonList: djUrl + 'common/person_list',
+  getOrderList: djUrl + 'sale/order_list',
+  getOrderDetail: djUrl + 'sale/order_detail',
+  getCommonData: djUrl + 'sale/marketing_analysis',
+  goodsSalesRank: djUrl + 'sale/goods_sales_rank'
 }
